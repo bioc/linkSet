@@ -5,6 +5,7 @@ setGeneric("anchor2", function(x) standardGeneric("anchor2"))
 setGeneric("regions", function(x, ...) standardGeneric("regions"))
 setGeneric("bait", function(x) standardGeneric("bait"))
 setGeneric("oe", function(x) standardGeneric("oe"))
+setGeneric("anchorIds", function(x, ...) standardGeneric("anchorIds"))
 
 # annotate.R
 setGeneric("annotatePromoter", function(x, ...) standardGeneric("annotatePromoter"))

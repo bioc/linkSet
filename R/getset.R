@@ -16,7 +16,7 @@ setMethod("regions", "linkSet", function(x,type = "both",combine = F) {
     out=x@regionOE
   }
   return(out)
-})
+  })
 
 
 ###############################################################
@@ -27,7 +27,7 @@ setMethod("seqinfo", "linkSet", function(x) {
 })
 
 ###############################################################
-# Exported getters for anchors. 
+# Exported getters for anchors.
 
 
 setMethod("anchorIds", "linkSet", function(x, type="both") {
@@ -43,14 +43,14 @@ setMethod("anchorIds", "linkSet", function(x, type="both") {
     names(out) <- names(x)
   }
   return(out)
-}) 
+})
 
 
 setMethod("anchors", "linkSet", function(x, type="both", id=FALSE) {
-  if (id) { 
-    return(anchorIds(x, type=type)) 
+  if (id) {
+    return(anchorIds(x, type=type))
   }
-  
+
   type <- match.arg(type, c("both", "bait", "oe"))
   if (type=="both") {
     out <- list(bait=x@nameBait[anchor1(x)], oe=regions(x,"oe")[anchor2(x)])
