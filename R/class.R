@@ -6,7 +6,7 @@ setClass("linkSet",
            anchor1="integer",
            anchor2="integer",
            nameBait = "character",
-           region="GenomicRanges_OR_missing",
+           regions="GenomicRanges_OR_missing",
            NAMES="character_OR_NULL",
            elementMetadata="DataFrame"
          )

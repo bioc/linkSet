@@ -1,7 +1,7 @@
 ###############################################################
 # Setting validity and show methods.
 
-.check_inputs <- function(anchor1, anchor2, nameBait, regionBait, regionOE,same.length=TRUE) {
+.check_inputs <- function(anchor1, anchor2, nameBait, regions,same.length=TRUE) {
   if (!all(is.finite(anchor1)) || !all(is.finite(anchor2))) {
     return("all anchor indices must be finite integers")
   }
@@ -9,15 +9,33 @@
     return('all anchor indices must be positive integers')
   }
   nregs1 <- length(nameBait)
-  nregs2 <- length(regionOE)
-  if ( !all(anchor1 <= nregs1) || !all(anchor2 <= nregs2)) {
+  nregs2 <- length(regions)
+  if (!all(anchor1 <= nregs2) || !all(anchor2 <= nregs2)) {
     return("all anchor indices must refer to entries in 'regions'")
   }
-  if (same.length && length(anchor1)!=length(anchor2)) {
+  if (same.length && length(nameBait)!=length(anchor2)) {
     return("first and second anchor vectors have different lengths")
   }
   return(TRUE)
 }
+
+setValidity2("linkSet", function(object) {
+  if (is.unsorted(regions(object))) { # Don't move into .check_inputs, as resorting comes after checking validity in various methods.
+    return("'regions' should be sorted")
+  }
+  msg <- .check_inputs(anchor1(object), anchor2(object), bait(object),regions(object))
+  if (is.character(msg)) { return(msg) }
+
+  ### Length of anchors versus object is automatically checked by 'parallel_slot_names.'
+
+  if (!is.null(names(object))) {
+    if (length(names(object))!=length(object)) {
+      stop("'NAMES' must be NULL or have length equal to that of the object")
+    }
+  }
+
+  return(TRUE)
+})
 
 #' @export
 setMethod("show", "linkSet", function(object){
@@ -51,7 +69,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
   print(out, quote=FALSE, right=TRUE, max=length(out))
   if (print.seqinfo) {
     cat(margin, "-------\n", sep="")
-    ncr <- .safeNMcols(c(regions(x)[[1]],regions(x)[[2]]))
+    ncr <-  .safeNMcols(regions(x))
     cat(margin, "regions: ", nr, " ranges and ", ncr, " metadata ", ifelse(ncr==1L, "column", "columns"), "\n", sep="")
     cat(margin, "seqinfo: ", summary(seqinfo(x)), "\n", sep="")
   }
@@ -92,7 +110,20 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
 ###############################################################
 # Constructors
 
-.new_LK <- function(anchor1, anchor2, nameBait, regionBait, regionOE, metadata) {
+.resort_regions <- function(anchor1, anchor2, regions) {
+  if (is.unsorted(regions)) {
+    o <- order(regions)
+    new.pos <- seq_along(o)
+    new.pos[o] <- new.pos
+    anchor1 <- new.pos[anchor1]
+    anchor2 <- new.pos[anchor2]
+    regions <- regions[o]
+  }
+  return(list(anchor1=anchor1, anchor2=anchor2, regions=regions))
+}
+
+
+.new_LK <- function(anchor1, anchor2, nameBait, regions, metadata) {
   elementMetadata <- make_zero_col_DFrame(length(anchor1))
 
   # Checking odds and ends.
@@ -101,7 +132,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
   if (is.null(nameBait)){
     nameBait <- paste(gr1)
   }
-  msg <- .check_inputs(anchor1, anchor2, nameBait, regionBait,regionOE)
+  msg <- .check_inputs(anchor1, anchor2, nameBait, regions)
   if (is.character(msg)) { stop(msg) }
 
   #out <- .resort_regions(anchor1, anchor2, regions)
@@ -115,8 +146,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
       anchor1=anchor1,
       anchor2=anchor2,
       nameBait=nameBait,
-      regionBait=regionBait,
-      regionOE = regionOE,
+      regions=regions,
       elementMetadata=elementMetadata,
       metadata=as.list(metadata))
 }
@@ -134,18 +164,34 @@ setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
             mcolBind <- cbind(extraCols, mcol2)
             nameBait <- anchor1
             anchor1 <- seq_along(nameBait)
-            regionOE <- anchor2
-            anchor2 <- seq_along(regionOE)
-            regionBait <- GRanges()
+            regions <- anchor2
+            anchor2 <- seq_along(regions)
             out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
-                           nameBait=nameBait,regionBait=regionBait,
-                           regionOE=regionOE, metadata=metadata)
+                           nameBait=nameBait,regions=regions,
+                           metadata=metadata)
             mcols(out) <- mcolBind
             out
-
           }
 )
 
+.collate_GRanges <- function(...) {
+  incoming <- list(...)
+  obj.dex <- rep(factor(seq_along(incoming)), lengths(incoming))
+  combined <- do.call(c, incoming)
+
+  # Sorting and re-indexing.
+  o <- order(combined)
+  refdex <- integer(length(o))
+  refdex[o] <- seq_along(combined)
+  combined <- combined[o]
+
+  # Removing duplicates and re-indexing.
+  is.first <- !duplicated(combined)
+  new.pos <- cumsum(is.first)
+  combined <- combined[is.first]
+  refdex <- new.pos[refdex]
+  return(list(indices=split(refdex, obj.dex), ranges=combined))
+}
 
 #' @export
 setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
@@ -165,6 +211,7 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
             }
 
             mcolBind <- cbind(extraCols, mcol1, mcol2)
+
             if (!missing(specificCol)){
               specificColName <- paste0("anchor1.",specificCol)
               if (specificColName %in% colnames(mcolBind)){
@@ -177,15 +224,21 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
               nameBait <- paste(anchor1)
             }
 
-            regionBait <- anchor1
-            anchor1 <- seq_along(regionBait)
-            regionOE <- anchor2
-            anchor2 <- seq_along(regionOE)
+
+            collated <- .collate_GRanges(anchor1, anchor2)
+            regions <- collated$ranges
+            anchor1 <- collated$indices[[1]]
+            anchor2 <- collated$indices[[2]]
+
+            # regionBait <- anchor1
+            # anchor1 <- seq_along(regionBait)
+            # regionOE <- anchor2
+            # anchor2 <- seq_along(regionOE)
 
             out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
                            nameBait=nameBait,
-                           regionBait = regionBait,
-                           regionOE=regionOE, metadata=metadata)
+                           region= regions,
+                           metadata=metadata)
             mcols(out) <- mcolBind
             out
           }

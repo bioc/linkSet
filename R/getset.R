@@ -7,26 +7,14 @@ setMethod("anchor1", "linkSet", function(x) { x@anchor1 })
 setMethod("anchor2", "linkSet", function(x) { x@anchor2 })
 
 #' @export
-setMethod("regions", "linkSet", function(x,type = "both",combine = F) {
-  type <- match.arg(type, c("both", "bait", "oe"))
-  if (type=="both" & !combine) {
-    out <- list(bait=x@regionBait, oe=x@regionOE)
-  }else if(type=="both" & combine){
-    out <- c(x@regionBait, x@regionOE)
-  }else if (type=="bait") {
-    out <- x@regionBait
-  }else {
-    out=x@regionOE
-  }
-  return(out)
-  })
+setMethod("regions", "linkSet", function(x) {x@regions})
 
 
 ###############################################################
 # Seqinfo getting and setting.
 #' @export
 setMethod("seqinfo", "linkSet", function(x) {
-  seqinfo(regions(x,combine = T))
+  seqinfo(regions(x))
 })
 
 ###############################################################
@@ -57,13 +45,13 @@ setMethod("anchors", "linkSet", function(x, type="both", id=FALSE) {
 
   type <- match.arg(type, c("both", "bait", "oe"))
   if (type=="both") {
-    out <- list(bait=x@nameBait[anchor1(x)], oe=regions(x,"oe")[anchor2(x)])
+    out <- list(bait=x@nameBait, oe=regions(x)[anchor2(x)])
     names(out$bait) <- names(out$oe) <- names(x)
   } else if (type=="bait") {
-    out <- x@nameBait[anchor1(x)]
+    out <- x@nameBait
     names(out) <- names(x)
   } else {
-    out <- regions(x,"oe")[anchor2(x)]
+    out <- regions(x)[anchor2(x)]
     names(out) <- names(x)
   }
   return(out)
