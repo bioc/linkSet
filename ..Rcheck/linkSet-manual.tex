@@ -1,0 +1,62 @@
+\nonstopmode{}
+\documentclass[letterpaper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\makeatletter\@ifl@t@r\fmtversion{2018/04/01}{}{\usepackage[utf8]{inputenc}}\makeatother
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `linkSet'}}
+\par\bigskip{\large \today}
+\end{center}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {linkSet: Base Classes for Storing Genomic Link Data}}}{}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdfauthor = {Gilbert Han}}}{}
+\begin{description}
+\raggedright{}
+\item[Title]\AsIs{Base Classes for Storing Genomic Link Data}
+\item[Version]\AsIs{0.0.0.1}
+\item[Description]\AsIs{This package is created to manage gene-peak links}
+\item[License]\AsIs{MIT + file LICENSE}
+\item[Encoding]\AsIs{UTF-8}
+\item[Roxygen]\AsIs{list(markdown = TRUE)}
+\item[RoxygenNote]\AsIs{7.3.2}
+\item[Depends]\AsIs{GenomicRanges, SummarizedExperiment}
+\item[Imports]\AsIs{methods, Matrix, S4Vectors, IRanges, GenomeInfoDb,
+BiocGenerics, Organism.dplyr}
+\item[Collate]\AsIs{class.R AllGenerics.R getset.R methods.R annotate.R}
+\item[Author]\AsIs{Gilbert Han [aut]}
+\item[Maintainer]\AsIs{Gilbert Han }\email{gilberthan1011@gmail.com}\AsIs{}
+\end{description}
+\Rdcontents{Contents}
+\HeaderA{annotatePromoter,linkSet-method}{Annotate the link set with txDb. Give a gene list, and return a}{annotatePromoter,linkSet.Rdash.method}
+%
+\begin{Description}
+Annotate the link set with txDb. Give a gene list, and return a
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+annotatePromoter(x, genome = "hg38", keyType = "symbol", upstream = 500)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] linkSet
+
+\item[\code{genome}] the genome you want to annotate
+
+\item[\code{keyType}] the key type. You can check with AnnotationDbi::keytypes
+
+\item[\code{upstream}] The upstream base from the gene
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+linkSet object
+\end{Value}
+\printindex{}
+\end{document}

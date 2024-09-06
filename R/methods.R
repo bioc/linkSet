@@ -2,23 +2,24 @@
 # Setting validity and show methods.
 
 .check_inputs <- function(anchor1, anchor2, nameBait, regionBait, regionOE,same.length=TRUE) {
-  if (!all(is.finite(anchor1)) || !all(is.finite(anchor2))) { 
+  if (!all(is.finite(anchor1)) || !all(is.finite(anchor2))) {
     return("all anchor indices must be finite integers")
   }
   if (!all(anchor1 >= 1L) || !all(anchor2 >= 1L)) {
     return('all anchor indices must be positive integers')
-  } 
+  }
   nregs1 <- length(nameBait)
   nregs2 <- length(regionOE)
   if ( !all(anchor1 <= nregs1) || !all(anchor2 <= nregs2)) {
     return("all anchor indices must refer to entries in 'regions'")
-  } 
-  if (same.length && length(anchor1)!=length(anchor2)) { 
+  }
+  if (same.length && length(anchor1)!=length(anchor2)) {
     return("first and second anchor vectors have different lengths")
   }
   return(TRUE)
 }
 
+#' @export
 setMethod("show", "linkSet", function(object){
   showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE)
 })
@@ -32,9 +33,9 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
       nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
       ":\n", sep="")
   out <- makePrettyMatrixForCompactPrinting(x, .makeNakedMatFromGInteractions)
-  
+
   # Ripped from GenomicRanges:::showGenomicRanges (with some mods).
-  if (print.classinfo) { 
+  if (print.classinfo) {
     .COL2CLASS <- c(bait = "character", "   "="", seqnames_oe="Rle", ranges_oe="IRanges")
     extraColumnNames <- GenomicRanges:::extraColumnSlotNames(x)
     .COL2CLASS <- c(.COL2CLASS, getSlots(class(x))[extraColumnNames])
@@ -43,7 +44,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
     stopifnot(identical(colnames(classinfo), colnames(out)))
     out <- rbind(classinfo, out)
   }
-  
+
   if (nrow(out) != 0L) {
     rownames(out) <- paste0(margin, rownames(out))
   }
@@ -93,7 +94,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
 
 .new_LK <- function(anchor1, anchor2, nameBait, regionBait, regionOE, metadata) {
   elementMetadata <- make_zero_col_DFrame(length(anchor1))
-  
+
   # Checking odds and ends.
   anchor1 <- as.integer(anchor1)
   anchor2 <- as.integer(anchor2)
@@ -102,15 +103,15 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
   }
   msg <- .check_inputs(anchor1, anchor2, nameBait, regionBait,regionOE)
   if (is.character(msg)) { stop(msg) }
-  
+
   #out <- .resort_regions(anchor1, anchor2, regions)
   # anchor1 <- out$anchor1
   # anchor2 <- out$anchor2
   # regions <- out$regions
-  
+
   cls <- "linkSet"
 
-  new(cls, 
+  new(cls,
       anchor1=anchor1,
       anchor2=anchor2,
       nameBait=nameBait,
@@ -120,6 +121,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
       metadata=as.list(metadata))
 }
 
+#' @export
 setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
           function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
             mcol2 <- mcols(anchor2)
@@ -128,24 +130,24 @@ setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
             extraCols <- DataFrame(...)
             if (ncol(extraCols) == 0L) {
               extraCols <- make_zero_col_DFrame(length(anchor1))
-            } 
+            }
             mcolBind <- cbind(extraCols, mcol2)
             nameBait <- anchor1
             anchor1 <- seq_along(nameBait)
             regionOE <- anchor2
             anchor2 <- seq_along(regionOE)
             regionBait <- GRanges()
-            out <- .new_LK(anchor1=anchor1, anchor2=anchor2,  
+            out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
                            nameBait=nameBait,regionBait=regionBait,
                            regionOE=regionOE, metadata=metadata)
             mcols(out) <- mcolBind
             out
-            
+
           }
 )
-          
 
 
+#' @export
 setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
           function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
             # Stripping metadata and putting it somewhere else.
@@ -155,13 +157,13 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
             mcol2 <- mcols(anchor2)
             mcols(anchor2) <- NULL
             colnames(mcol2) <- sprintf("anchor2.%s", colnames(mcol2))
-            
+
             # Additional Interaction-specific metadata
             extraCols <- DataFrame(...)
             if (ncol(extraCols) == 0L) {
               extraCols <- make_zero_col_DFrame(length(anchor1))
-            } 
-            
+            }
+
             mcolBind <- cbind(extraCols, mcol1, mcol2)
             if (!missing(specificCol)){
               specificColName <- paste0("anchor1.",specificCol)
@@ -174,13 +176,13 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
             } else{
               nameBait <- paste(anchor1)
             }
-            
+
             regionBait <- anchor1
             anchor1 <- seq_along(regionBait)
             regionOE <- anchor2
             anchor2 <- seq_along(regionOE)
-            
-            out <- .new_LK(anchor1=anchor1, anchor2=anchor2,  
+
+            out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
                            nameBait=nameBait,
                            regionBait = regionBait,
                            regionOE=regionOE, metadata=metadata)

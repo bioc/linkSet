@@ -1,9 +1,12 @@
 ###############################################################
 # Simple getters and setters (some of these are exported):
-
+#' @export
 setMethod("anchor1", "linkSet", function(x) { x@anchor1 })
+
+#' @export
 setMethod("anchor2", "linkSet", function(x) { x@anchor2 })
 
+#' @export
 setMethod("regions", "linkSet", function(x,type = "both",combine = F) {
   type <- match.arg(type, c("both", "bait", "oe"))
   if (type=="both" & !combine) {
@@ -21,7 +24,7 @@ setMethod("regions", "linkSet", function(x,type = "both",combine = F) {
 
 ###############################################################
 # Seqinfo getting and setting.
-
+#' @export
 setMethod("seqinfo", "linkSet", function(x) {
   seqinfo(regions(x,combine = T))
 })
@@ -29,7 +32,7 @@ setMethod("seqinfo", "linkSet", function(x) {
 ###############################################################
 # Exported getters for anchors.
 
-
+#' @export
 setMethod("anchorIds", "linkSet", function(x, type="both") {
   type <- match.arg(type, c("both", "bait", "oe"))
   if (type=="both") {
@@ -46,6 +49,7 @@ setMethod("anchorIds", "linkSet", function(x, type="both") {
 })
 
 
+#' @export
 setMethod("anchors", "linkSet", function(x, type="both", id=FALSE) {
   if (id) {
     return(anchorIds(x, type=type))
@@ -66,7 +70,14 @@ setMethod("anchors", "linkSet", function(x, type="both", id=FALSE) {
 })
 
 # Defining some convenience methods.
+#' @export
 setMethod("first", "linkSet", function(x) { anchors(x, type="bait") })
+
+#' @export
 setMethod("second", "linkSet", function(x) { anchors(x, type="oe") })
+
+#' @export
 setMethod("bait", "linkSet", function(x) { anchors(x, type="bait") })
+
+#' @export
 setMethod("oe", "linkSet", function(x) { anchors(x, type="oe") })

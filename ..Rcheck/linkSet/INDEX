@@ -1,0 +1,3 @@
+annotatePromoter,linkSet-method
+                        Annotate the link set with txDb. Give a gene
+                        list, and return a

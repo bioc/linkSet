@@ -1,5 +1,6 @@
 #== make linkObj-------------------------
-setClass("linkSet", 
+#' @export
+setClass("linkSet",
          contains="Vector",
          representation(
            anchor1="integer",
@@ -12,5 +13,5 @@ setClass("linkSet",
          )
 )
 
-
+#' @export
 setClassUnion("character_Or_missing", c("character", "missing"))
