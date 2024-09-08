@@ -18,7 +18,7 @@
   }
   return(TRUE)
 }
-
+#
 setValidity2("linkSet", function(object) {
   if (is.unsorted(regions(object))) { # Don't move into .check_inputs, as resorting comes after checking validity in various methods.
     return("'regions' should be sorted")
@@ -37,12 +37,28 @@ setValidity2("linkSet", function(object) {
   return(TRUE)
 })
 
-#' @export
-setMethod("show", "linkSet", function(object){
-  showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE)
+
+setMethod("parallel_slot_names", "linkSet", function(x) {
+  base_slots <- callNextMethod() # Get the base slots from the parent class
+  if (length(x@anchor1) == 0) {
+    c("anchor2", "nameBait", "NAMES", base_slots)
+  } else {
+    c("anchor1", "anchor2", "nameBait", "NAMES", base_slots)
+  }
 })
 
-showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE) {
+# For coercion to an environment:
+setMethod("parallelVectorNames", "linkSet", function(x) {
+  c("anchor1", "anchor2","nameBait", "regions", "names")
+})
+
+
+#' @export
+setMethod("show", "linkSet", function(object) {
+  showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE, baitRegion=FALSE)
+})
+
+showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE, baitRegion=FALSE) {
   lx <- length(x)
   nr <- lx
   nc <- .safeNMcols(x)
@@ -50,11 +66,27 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
       lx, " ", ifelse(lx == 1L, "interaction", "interactions"), " and ",
       nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
       ":\n", sep="")
-  out <- makePrettyMatrixForCompactPrinting(x, .makeNakedMatFromGInteractions)
+  
+  if (baitRegion && is.null(regionsBait(x))) {
+    message("Please annotate bait first.")
+    baitRegion <- FALSE
+  }
+  
+  if (baitRegion) {
+    out <- makePrettyMatrixForCompactPrinting(x, function(x) {
+      .makeNakedMatFromGInteractions(x, baitRegion=TRUE)
+    })
+  } else {
+    out <- makePrettyMatrixForCompactPrinting(x, .makeNakedMatFromGInteractions)
+  }
 
-  # Ripped from GenomicRanges:::showGenomicRanges (with some mods).
   if (print.classinfo) {
-    .COL2CLASS <- c(bait = "character", "   "="", seqnames_oe="Rle", ranges_oe="IRanges")
+    if (baitRegion) {
+      .COL2CLASS <- c(bait = "character", seqnames_bait = "Rle", ranges_bait = "IRanges", 
+                      "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges")
+    } else {
+      .COL2CLASS <- c(bait = "character", "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges")
+    }
     extraColumnNames <- GenomicRanges:::extraColumnSlotNames(x)
     .COL2CLASS <- c(.COL2CLASS, getSlots(class(x))[extraColumnNames])
     classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
@@ -83,15 +115,24 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
   return(nc)
 }
 
-.makeNakedMatFromGInteractions <- function(x) {
+.makeNakedMatFromGInteractions <- function(x, baitRegion=FALSE) {
   lx <- length(x)
   nc <- .safeNMcols(x)
-  ans <- cbind(.pasteAnchor(anchors(x, type="bait"), append="bait"),
-               "   "=rep.int("---", lx),
-               .pasteAnchor(anchors(x, type="oe"), append="oe"))
+  
+  if (baitRegion && !is.null(regionsBait(x))) {
+    ans <- cbind(.pasteAnchor(anchors(x, type="bait"), append="bait"),
+                 .pasteAnchor(regionsBait(x), append="bait"),
+                 "   " = rep.int("---", lx),
+                 .pasteAnchor(anchors(x, type="oe"), append="oe"))
+  } else {
+    ans <- cbind(.pasteAnchor(anchors(x, type="bait"), append="bait"),
+                 "   " = rep.int("---", lx),
+                 .pasteAnchor(anchors(x, type="oe"), append="oe"))
+  }
+  
   if (nc > 0L) {
     tmp <- do.call(data.frame, c(lapply(mcols(x), showAsCell), list(check.names=FALSE)))
-    ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
+    ans <- cbind(ans, `|` = rep.int("|", lx), as.matrix(tmp))
   }
   ans
 }
@@ -109,6 +150,16 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
 }
 ###############################################################
 # Constructors
+.enforce_order <- function(anchor1, anchor2) {
+    swap <- anchor2 < anchor1
+    if (any(swap)) { 
+        temp <- anchor1[swap]
+        anchor1[swap] <- anchor2[swap]
+        anchor2[swap] <- temp
+    }
+    return(list(anchor1=anchor1, anchor2=anchor2))
+}
+
 
 .resort_regions <- function(anchor1, anchor2, regions) {
   if (is.unsorted(regions)) {
@@ -124,7 +175,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
 
 
 .new_LK <- function(anchor1, anchor2, nameBait, regions, metadata) {
-  elementMetadata <- make_zero_col_DFrame(length(anchor1))
+  elementMetadata <- make_zero_col_DFrame(length(nameBait))
 
   # Checking odds and ends.
   anchor1 <- as.integer(anchor1)
@@ -135,13 +186,13 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
   msg <- .check_inputs(anchor1, anchor2, nameBait, regions)
   if (is.character(msg)) { stop(msg) }
 
-  #out <- .resort_regions(anchor1, anchor2, regions)
+  # out <- .resort_regions(anchor1, anchor2, regions)
   # anchor1 <- out$anchor1
   # anchor2 <- out$anchor2
   # regions <- out$regions
 
   cls <- "linkSet"
-
+  #browser()
   new(cls,
       anchor1=anchor1,
       anchor2=anchor2,
@@ -163,9 +214,12 @@ setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
             }
             mcolBind <- cbind(extraCols, mcol2)
             nameBait <- anchor1
-            anchor1 <- seq_along(nameBait)
-            regions <- anchor2
-            anchor2 <- seq_along(regions)
+            anchor1 <- NULL
+
+            collated <- .collate_GRanges(anchor2)
+            regions <- collated$ranges
+            anchor2 <- collated$indices[[1]]
+
             out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
                            nameBait=nameBait,regions=regions,
                            metadata=metadata)
@@ -216,6 +270,7 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
               specificColName <- paste0("anchor1.",specificCol)
               if (specificColName %in% colnames(mcolBind)){
                 nameBait <- mcolBind[specificColName]
+                nameBait <- unlist(nameBait)
               } else{
                 warning(paste0("Can't find ", specificCol, "in metadata............"))
                 nameBait <- paste(anchor1)

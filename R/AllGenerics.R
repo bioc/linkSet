@@ -26,3 +26,13 @@ setGeneric("annotatePromoter", function(x, ...) standardGeneric("annotatePromote
 
 #' @export
 setGeneric("linkSet", function(anchor1, anchor2, specificCol, ...) standardGeneric("linkSet"))
+
+#' @export
+setGeneric("regionsBait", function(x) standardGeneric("regionsBait"))
+
+# distance.R
+#' @export
+setGeneric("annotateInter", function(x) standardGeneric("annotateInter"))
+
+#' @export
+setGeneric("pairdist", function(x, type="mid") standardGeneric("pairdist"))

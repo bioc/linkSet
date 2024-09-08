@@ -18,14 +18,17 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of linkSet is to ...
+The goal of linkSet is to provide tools for working with genomic link sets, which represent 
+connections between different genomic regions. This package is designed for bioinformatics and 
+genomic data analysis, offering various methods to manipulate and analyze linkSet objects.
 
 ## Installation
 
-You can install the development version of linkSet like so:
+You can install the development version of linkSet from [GitHub](https://github.com/GilbertHan1011/linkSet) with:
+
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+devtools::install_github("GilbertHan1011/linkSet")
 ```
 
 ## Example

@@ -9,7 +9,10 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: GenomicRanges, SummarizedExperiment
+Depends: 
+    GenomicRanges,
+    R (>= 2.10),
+    SummarizedExperiment
 Imports: 
     methods,
     Matrix,
@@ -18,7 +21,12 @@ Imports:
     GenomeInfoDb,
     BiocGenerics,
     Organism.dplyr
+Suggests: 
+    testthat
 Collate: class.R AllGenerics.R getset.R
-        methods.R annotate.R
+        methods.R annotate.R distance.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
+URL: https://github.com/GilbertHan1011/linkSet
+BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
+LazyData: true
