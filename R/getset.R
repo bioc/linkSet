@@ -99,3 +99,32 @@ setMethod("regionsBait", "linkSet", function(x) {
   }
   regions(x)[anchor1(x)]
 })
+
+
+###############################################################
+# Defining some other getters and setters.
+#' @export
+setMethod("$", "linkSet", function(x, name) {
+    return(mcols(x)[[name]])
+})
+
+#' @export
+setReplaceMethod("$", "linkSet", function(x, name, value) {
+    mcols(x)[[name]] <- value
+    return(x)
+})
+
+
+###############################################################
+# Name getting and setting.
+
+setMethod("names", "GInteractions", function(x) { 
+    x@NAMES 
+})
+
+setReplaceMethod("names", "GInteractions", function(x, value) {
+    if (!is.null(value) && !is.character(value)) { value <- as.character(value) }                
+    x@NAMES <- value
+    validObject(x)
+    return(x)
+})

@@ -36,3 +36,21 @@ setGeneric("annotateInter", function(x) standardGeneric("annotateInter"))
 
 #' @export
 setGeneric("pairdist", function(x, type="mid") standardGeneric("pairdist"))
+
+
+# convert.R
+#' Convert different object types to linkSet
+#'
+#' @param x Object to be converted
+#' @param ... Additional arguments passed to methods
+#'
+#' @return A linkSet object
+#' @export
+setGeneric("Convert", function(x, ...) {
+  standardGeneric("Convert")
+})
+
+#' @export
+setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
+  standardGeneric("baitGInteractions")
+})

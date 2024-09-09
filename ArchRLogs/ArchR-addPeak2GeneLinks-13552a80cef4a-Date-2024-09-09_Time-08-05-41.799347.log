@@ -1,0 +1,155 @@
+
+           ___      .______        ______  __    __  .______      
+          /   \     |   _  \      /      ||  |  |  | |   _  \     
+         /  ^  \    |  |_)  |    |  ,----'|  |__|  | |  |_)  |    
+        /  /_\  \   |      /     |  |     |   __   | |      /     
+       /  _____  \  |  |\  \\___ |  `----.|  |  |  | |  |\  \\___.
+      /__/     \__\ | _| `._____| \______||__|  |__| | _| `._____|
+    
+Logging With ArchR!
+
+Start Time : 2024-09-09 08:05:41.810957
+
+------- ArchR Info
+
+ArchRThreads = 24
+
+------- System Info
+
+Computer OS = unix
+
+------- Session Info
+
+R version 4.4.1 (2024-06-14)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 20.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+Random number generation:
+ RNG:     L'Ecuyer-CMRG 
+ Normal:  Inversion 
+ Sample:  Rejection 
+ 
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8   
+ [6] LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] rhdf5_2.48.0                Rcpp_1.0.13                 Matrix_1.6-5                stringr_1.5.1               plyr_1.8.9                 
+ [6] magrittr_2.0.3              ggplot2_3.5.1               gtable_0.3.5                gtools_3.9.5                gridExtra_2.3              
+[11] ArchR_1.0.2                 Chicago_1.32.0              data.table_1.15.4           linkSet_0.0.0.1             InteractionSet_1.32.0      
+[16] testthat_3.2.1.1            SummarizedExperiment_1.34.0 Biobase_2.64.0              MatrixGenerics_1.16.0       matrixStats_1.3.0          
+[21] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1         IRanges_2.38.1              S4Vectors_0.42.1            BiocGenerics_0.50.0        
+[26] devtools_2.4.5              usethis_3.0.0              
+
+loaded via a namespace (and not attached):
+  [1] rstudioapi_0.16.0        jsonlite_1.8.8           GenomicFeatures_1.56.0   rmarkdown_2.28           fs_1.6.4                 BiocIO_1.14.0           
+  [7] zlibbioc_1.50.0          vctrs_0.6.5              Cairo_1.6-2              memoise_2.0.1            Rsamtools_2.20.0         RCurl_1.98-1.16         
+ [13] base64enc_0.1-3          htmltools_0.5.8.1        S4Arrays_1.4.1           curl_5.2.1               Rhdf5lib_1.26.0          SparseArray_1.4.8       
+ [19] Formula_1.2-5            htmlwidgets_1.6.4        desc_1.4.3               cachem_1.1.0             GenomicAlignments_1.40.0 mime_0.12               
+ [25] lifecycle_1.0.4          pkgconfig_2.0.3          R6_2.5.1                 fastmap_1.2.0            GenomeInfoDbData_1.2.12  shiny_1.9.1             
+ [31] digest_0.6.37            colorspace_2.1-1         AnnotationDbi_1.66.0     rprojroot_2.0.4          Organism.dplyr_1.32.0    pkgload_1.4.0           
+ [37] Hmisc_5.1-3              RSQLite_2.3.7            filelock_1.0.3           fansi_1.0.6              httr_1.4.7               abind_1.4-5             
+ [43] compiler_4.4.1           remotes_2.5.0            bit64_4.0.5              withr_3.0.1              backports_1.5.0          htmlTable_2.4.3         
+ [49] BiocParallel_1.38.0      DBI_1.2.3                pkgbuild_1.4.4           MASS_7.3-61              DelayedArray_0.30.1      sessioninfo_1.2.2       
+ [55] rjson_0.2.22             tools_4.4.1              foreign_0.8-86           httpuv_1.6.15            nnet_7.3-19              glue_1.7.0              
+ [61] restfulr_0.0.15          rhdf5filters_1.16.0      promises_1.3.0           checkmate_2.3.2          cluster_2.1.6            generics_0.1.3          
+ [67] utf8_1.2.4               XVector_0.44.0           pillar_1.9.0             later_1.3.2              dplyr_1.1.4              BiocFileCache_2.12.0    
+ [73] lattice_0.22-5           rtracklayer_1.64.0       bit_4.0.5                tidyselect_1.2.1         Biostrings_2.72.1        miniUI_0.1.1.1          
+ [79] knitr_1.48               xfun_0.47                brio_1.1.5               stringi_1.8.4            UCSC.utils_1.0.0         lazyeval_0.2.2          
+ [85] yaml_2.3.10              evaluate_0.24.0          codetools_0.2-19         tibble_3.2.1             cli_3.6.3                rpart_4.1.23            
+ [91] xtable_1.8-4             munsell_0.5.1            dbplyr_2.5.0             png_0.1-8                XML_3.99-0.17            parallel_4.4.1          
+ [97] ellipsis_0.3.2           blob_1.2.4               Delaporte_8.4.1          profvis_0.3.8            AnnotationFilter_1.28.0  urlchecker_1.0.1        
+[103] bitops_1.0-8             scales_1.3.0             purrr_1.0.2              crayon_1.5.3             rlang_1.1.4              KEGGREST_1.44.1         
+
+
+------- Log Info
+
+
+2024-09-09 08:05:43.774643 : addPeak2GeneLinks Input-Parameters, Class = list
+
+addPeak2GeneLinks Input-Parameters$ArchRProj: length = 1
+
+addPeak2GeneLinks Input-Parameters$reducedDims: length = 1
+[1] "IterativeLSI"
+
+
+addPeak2GeneLinks Input-Parameters$useMatrix: length = 1
+[1] "GeneIntegrationMatrix"
+
+
+addPeak2GeneLinks Input-Parameters$dimsToUse: length = 30
+[1] 1 2 3 4 5 6
+
+
+addPeak2GeneLinks Input-Parameters$scaleDims: length = 0
+NULL
+
+
+addPeak2GeneLinks Input-Parameters$corCutOff: length = 1
+[1] 0.75
+
+
+addPeak2GeneLinks Input-Parameters$cellsToUse: length = 0
+NULL
+
+
+addPeak2GeneLinks Input-Parameters$k: length = 1
+[1] 100
+
+
+addPeak2GeneLinks Input-Parameters$knnIteration: length = 1
+[1] 500
+
+
+addPeak2GeneLinks Input-Parameters$overlapCutoff: length = 1
+[1] 0.8
+
+
+addPeak2GeneLinks Input-Parameters$maxDist: length = 1
+[1] 250000
+
+
+addPeak2GeneLinks Input-Parameters$scaleTo: length = 1
+[1] 10000
+
+
+addPeak2GeneLinks Input-Parameters$log2Norm: length = 1
+[1] TRUE
+
+
+addPeak2GeneLinks Input-Parameters$predictionCutoff: length = 1
+[1] 0.4
+
+
+addPeak2GeneLinks Input-Parameters$addEmpiricalPval: length = 1
+[1] FALSE
+
+
+addPeak2GeneLinks Input-Parameters$seed: length = 1
+[1] 1
+
+
+addPeak2GeneLinks Input-Parameters$threads: length = 1
+[1] 12
+
+
+addPeak2GeneLinks Input-Parameters$verbose: length = 1
+[1] TRUE
+
+
+addPeak2GeneLinks Input-Parameters$logFile: length = 1
+[1] "ArchRLogs/ArchR-addPeak2GeneLinks-13552a80cef4a-Date-2024-09-09_Time-08-05-41.799347.log"
+
+
+2024-09-09 08:05:43.839045 : Getting Available Matrices, 0.034 mins elapsed.

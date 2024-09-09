@@ -20,13 +20,17 @@ Imports:
     IRanges,
     GenomeInfoDb,
     BiocGenerics,
-    Organism.dplyr
+    Organism.dplyr,
+    InteractionSet
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat
 Collate: class.R AllGenerics.R getset.R
-        methods.R annotate.R distance.R
+        methods.R annotate.R distance.R formatConverter.R linkSet-package.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
 URL: https://github.com/GilbertHan1011/linkSet
 BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
 LazyData: true
+VignetteBuilder: knitr

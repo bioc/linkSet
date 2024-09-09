@@ -7,6 +7,8 @@
 \alias{anchor2}
 \alias{regions,linkSet-method}
 \alias{regions}
+\alias{seqinfo,linkSet-method}
+\alias{seqinfo}
 \title{linkSet-accessors}
 \usage{
 \S4method{anchor1}{linkSet}(x)
@@ -14,21 +16,21 @@
 \S4method{anchor2}{linkSet}(x)
 
 \S4method{regions}{linkSet}(x)
+
+\S4method{seqinfo}{linkSet}(x)
 }
 \arguments{
 \item{x}{A linkSet object}
 }
 \value{
-A vector of the first anchor
-
-A vector of the second anchor
+For the getters, values in various slots of x are returned,
+while for the setters, the slots of x are modified accordingly – see Details.
 
 A vector of the regions
 }
 \description{
-Get the first anchor of a linkSet object
-
-Get the second anchor of a linkSet object
-
-Get the regions of a linkSet object
+Methods to get and set fields in an linkSet object.
+}
+\author{
+Gilbert Han
 }

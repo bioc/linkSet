@@ -1,0 +1,141 @@
+---
+title: "linkSet"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{linkSet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+With techniche like HiC, PCHiC, scATAC-seq, and other high-throughput omics techniques, 
+we are able to predict the interactions between genes and enhancers. The linkSet package provides classes to
+represent the interactions between genes and enhancers, and provides functions to analyze and visualize the interactions.
+
+## The linkSet class
+The linkSet class is a specialized data structure designed to represent and analyze genomic interactions, 
+particularly focusing on gene-enhancer relationships. It's part of the linkSet package, 
+which provides tools for managing and analyzing genomic link data in bioinformatics and genomic research.
+
+Key features of the linkSet class: 
+
+1. Representation of genomic interactions:
+- It stores two types of genomic anchors: "bait" (typically genes) and "other end" (oe, typically enhancers or other regulatory elements).
+- These anchors are represented as genomic ranges, allowing for precise localization on chromosomes.
+2. Flexible input:
+Can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
+Supports conversion from other common genomic data structures like GInteractions and data frames.
+3. Metadata storage:
+Allows for additional information to be stored alongside the genomic interactions, such as interaction scores or experimental conditions.
+4. Biological context:
+Designed to work with data from various high-throughput genomic techniques like Hi-C, Promoter Capture Hi-C (PCHi-C), and scATAC-seq.
+Facilitates the analysis of long-range chromatin interactions, which are crucial for understanding gene regulation and 3D genome organization.
+5. Annotation capabilities:
+Includes methods for annotating promoters and distinguishing between inter- and intra-chromosomal interactions.
+This feature is particularly useful for identifying potential regulatory relationships between distal genomic elements.
+6. Integration with Bioconductor:
+Built on top of established Bioconductor classes, ensuring compatibility with a wide range of genomic analysis tools.
+7. Visualization and analysis:
+The class is designed to support functions for analyzing and visualizing genomic interactions.
+
+```{r out.width = '70%', echo = FALSE}
+knitr::include_graphics("img/overview.png")
+```
+
+## Construction
+The linkSet class can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
+
+### Construction from GRanges objects
+
+To construct a `linkSet` object from GRanges objects:
+```{r setup}
+suppressPackageStartupMessages(library(linkSet))
+```
+```{r}
+library(GenomicRanges)
+gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
+              ranges = IRanges(start = c(1, 100, 200), width = 10),
+              strand = "+", symbol = c("Gene1", "Gene2", "Gene3"))
+gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr2"),
+              ranges = IRanges(start = c(50, 150, 250), width = 10),
+              strand = "+")
+## construct linkSet
+ls <- linkSet(gr1, gr2, specificCol = "symbol")
+ls
+
+```
+
+### Construction from GInteractions
+You can also create a `linkSet` object from a `GInteractions` object using the `Convert` function:
+
+```{r}
+library(InteractionSet)
+gi <- GInteractions(
+  anchor1 = c(1, 3, 5),
+  anchor2 = c(2, 4, 6),
+  regions = GRanges(
+    seqnames = c("chr1", "chr1", "chr2", "chr2", "chr3", "chr3"),
+    ranges = IRanges(start = c(1, 50, 100, 150, 200, 250), width = 10)
+    )
+  )
+mcols(gi)$score <- c(0.1, 0.2, 0.3)
+mcols(gi)$gene <- c("Sox2", "Sox9", "Sox10")
+##Convert to linkSet
+ls_from_gi <- Convert(gi, baitCol = "gene")
+ls_from_gi
+```
+
+Some times, you need to use gene and enhancer information to construct a `linkSet` object from GInteractions.
+
+```{r}
+geneGr <- GRanges(
+  seqnames = c("chr1", "chr2", "chr3"),
+  ranges = IRanges(start = c(5, 105, 205), width = 20),
+  symbol = c("Gene1", "Gene2", "Gene3")
+)
+
+peakGr <- GRanges(
+  seqnames = c("chr1", "chr2", "chr3"),
+  ranges = IRanges(start = c(45, 145, 245), width = 10)
+)
+
+# Run baitGInteractions
+ls_from_gi_2 <- baitGInteractions(gi, geneGr, peakGr, geneSymbol = "symbol")
+
+ls_from_gi_2
+
+```
+
+### Other construction methods
+You can also construct a `linkSet` object from a data frame.
+```{r}
+test_df <- data.frame(
+  gene = c("gene1", "gene2", "gene3"),
+  peak = c("chr1:1000-2000", "chr2:3000-4000", "chr3:5000-6000"),
+  score = c(0.5, 0.7, 0.9),
+  stringsAsFactors = FALSE
+)
+
+# Test successful conversion
+ls_from_df <- Convert(test_df)
+ls_from_df
+```
+
+
+## Accessors
+### Getters
+
+
+
+## Subsetting
+
+## Distance calculation
+
+## Annotations

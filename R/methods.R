@@ -267,18 +267,26 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
             mcolBind <- cbind(extraCols, mcol1, mcol2)
 
             if (!missing(specificCol)){
-              specificColName <- paste0("anchor1.",specificCol)
-              if (specificColName %in% colnames(mcolBind)){
-                nameBait <- mcolBind[specificColName]
-                nameBait <- unlist(nameBait)
-              } else{
-                warning(paste0("Can't find ", specificCol, "in metadata............"))
-                nameBait <- paste(anchor1)
+              if (length(specificCol) > 1) {
+                if (length(specificCol) == nrow(mcolBind)) {
+                  nameBait <- specificCol
+                } else {
+                  warning("Length of specificCol does not match the number of rows in mcolBind. Using default naming.")
+                  nameBait <- paste(anchor1)
+                }
+              } else {
+                specificColName <- paste0("anchor1.",specificCol)
+                if (specificColName %in% colnames(mcolBind)){
+                  nameBait <- mcolBind[specificColName]
+                  nameBait <- unlist(nameBait)
+                } else{
+                  warning(paste0("Can't find ", specificCol, "in metadata............"))
+                  nameBait <- paste(anchor1)
+                }
               }
             } else{
               nameBait <- paste(anchor1)
             }
-
 
             collated <- .collate_GRanges(anchor1, anchor2)
             regions <- collated$ranges
