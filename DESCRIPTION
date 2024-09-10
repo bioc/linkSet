@@ -30,7 +30,7 @@ Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R linkSet-package.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
-URL: https://github.com/GilbertHan1011/linkSet
+URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet, https://gilberthan1011.github.io/linkSet/
 BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
 LazyData: true
 VignetteBuilder: knitr

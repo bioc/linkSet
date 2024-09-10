@@ -118,11 +118,11 @@ setReplaceMethod("$", "linkSet", function(x, name, value) {
 ###############################################################
 # Name getting and setting.
 
-setMethod("names", "GInteractions", function(x) { 
+setMethod("names", "linkSet", function(x) { 
     x@NAMES 
 })
 
-setReplaceMethod("names", "GInteractions", function(x, value) {
+setReplaceMethod("names", "linkSet", function(x, value) {
     if (!is.null(value) && !is.character(value)) { value <- as.character(value) }                
     x@NAMES <- value
     validObject(x)

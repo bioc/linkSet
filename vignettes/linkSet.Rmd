@@ -45,7 +45,7 @@ Built on top of established Bioconductor classes, ensuring compatibility with a 
 7. Visualization and analysis:
 The class is designed to support functions for analyzing and visualizing genomic interactions.
 
-```{r out.width = '70%', echo = FALSE}
+```{r out.width = '70%', echo = FALSE, fig.alt="Overview diagram of the linkSet class structure and its components"}
 knitr::include_graphics("img/overview.png")
 ```
 

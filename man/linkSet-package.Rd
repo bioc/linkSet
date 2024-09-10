@@ -5,12 +5,15 @@
 \alias{linkSet-package}
 \title{linkSet: Base Classes for Storing Genomic Link Data}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 This package is created to manage gene-peak links
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/GilbertHan1011/linkSet}
+  \item \url{https://gilberthan1011.github.io/linkSet}
   \item Report bugs at \url{https://github.com/GilbertHan1011/linkSet/issues/new}
 }
 
