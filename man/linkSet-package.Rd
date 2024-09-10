@@ -7,13 +7,14 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-This package is created to manage gene-peak links
+The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/GilbertHan1011/linkSet}
   \item \url{https://gilberthan1011.github.io/linkSet}
+  \item \url{https://gilberthan1011.github.io/linkSet/}
   \item Report bugs at \url{https://github.com/GilbertHan1011/linkSet/issues/new}
 }
 

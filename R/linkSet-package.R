@@ -1,30 +1,31 @@
 #' @keywords internal
 "_PACKAGE"
+
 #' @name linkSet
-#' 
+#'
 #' @aliases linkSet
-#' 
+#'
 #' @title linkSet: Base Classes for Storing Genomic Link Data
 #'
 #' @description
-#' The linkSet package provides tools for working with genomic link sets, 
-#' which represent connections between different genomic regions. This package 
-#' is designed for bioinformatics and genomic data analysis, offering various 
+#' The linkSet package provides tools for working with genomic link sets,
+#' which represent connections between different genomic regions. This package
+#' is designed for bioinformatics and genomic data analysis, offering various
 #' methods to manipulate and analyze linkSet objects.
 #'
 #' @details
-#' The main class provided by this package is the `linkSet` class, which is 
-#' designed to represent and analyze genomic interactions, particularly 
+#' The main class provided by this package is the `linkSet` class, which is
+#' designed to represent and analyze genomic interactions, particularly
 #' focusing on gene-enhancer relationships. Key features include:
 #'
 #' \itemize{
-#'   \item Representation of genomic interactions with two types of anchors: 
-#'         "bait" (typically genes) and "other end" (typically enhancers or 
+#'   \item Representation of genomic interactions with two types of anchors:
+#'         "bait" (typically genes) and "other end" (typically enhancers or
 #'         other regulatory elements).
 #'   \item Flexible input methods, supporting construction from various data types.
 #'   \item Metadata storage for additional information about interactions.
 #'   \item Integration with Bioconductor classes and tools.
-#'   \item Methods for annotating promoters and distinguishing between inter- 
+#'   \item Methods for annotating promoters and distinguishing between inter-
 #'         and intra-chromosomal interactions.
 #' }
 #'

@@ -58,7 +58,9 @@ setMethod("show", "linkSet", function(object) {
   showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE, baitRegion=FALSE)
 })
 
-showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE, baitRegion=FALSE) {
+#' @export
+setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE, 
+                                          print.classinfo=FALSE, baitRegion=FALSE) {
   lx <- length(x)
   nr <- lx
   nc <- .safeNMcols(x)
@@ -105,7 +107,7 @@ showLinkSet <- function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE
     cat(margin, "regions: ", nr, " ranges and ", ncr, " metadata ", ifelse(ncr==1L, "column", "columns"), "\n", sep="")
     cat(margin, "seqinfo: ", summary(seqinfo(x)), "\n", sep="")
   }
-}
+})
 
 
 .safeNMcols <- function(x) {
@@ -307,3 +309,24 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
           }
 )
 
+#== clean unused regions ==#
+#' @export
+setMethod("clean_unused_regions", "linkSet", function(x) {
+    used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
+    new_regions <- regions(x)[used_regions]
+    
+    # Create a mapping from old indices to new indices
+    index_map <- integer(length(regions(x)))
+    index_map[used_regions] <- seq_along(used_regions)
+    
+    # Update anchor indices
+    new_anchor1 <- index_map[anchor1(x)]
+    new_anchor2 <- index_map[anchor2(x)]
+    
+    # Update the linkSet object
+    unchecked_regions(x) <- new_regions
+    unchecked_anchor1(x) <- new_anchor1
+    unchecked_anchor2(x) <- new_anchor2
+    
+    return(x)
+})

@@ -121,10 +121,9 @@ functions for analyzing and visualizing genomic interactions.</li>
 </h2>
 <p>The linkSet class can be constructed from various data types,
 including GRanges objects for both anchors, or character vectors for
-bait and GRanges for other ends.</p>
-<div class="section level3">
-<h3 id="construction-from-granges-objects">Construction from GRanges objects<a class="anchor" aria-label="anchor" href="#construction-from-granges-objects"></a>
-</h3>
+bait and GRanges for other ends.
+<img src="img/9.10_data_structure.png" alt="data structure of the linkSet class" width="70%">
+### Construction from GRanges objects</p>
 <p>To construct a <code>linkSet</code> object from GRanges objects:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/GilbertHan1011/linkSet" class="external-link">linkSet</a></span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -137,7 +136,7 @@ bait and GRanges for other ends.</p>
 <span>              ranges <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/IRanges-constructor.html" class="external-link">IRanges</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">150</span>, <span class="fl">250</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>              strand <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span></span>
 <span><span class="co">## construct linkSet</span></span>
-<span><span class="va">ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/linkSet.html">linkSet</a></span><span class="op">(</span><span class="va">gr1</span>, <span class="va">gr2</span>, specificCol <span class="op">=</span> <span class="st">"symbol"</span><span class="op">)</span></span>
+<span><span class="va">ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/linkSet/man/linkSet-class.html" class="external-link">linkSet</a></span><span class="op">(</span><span class="va">gr1</span>, <span class="va">gr2</span>, specificCol <span class="op">=</span> <span class="st">"symbol"</span><span class="op">)</span></span>
 <span><span class="va">ls</span></span>
 <span><span class="co">#&gt; linkSet object with 3 interactions and 1 metadata column:</span></span>
 <span><span class="co">#&gt;              bait     seqnames_oe ranges_oe | anchor1.symbol</span></span>
@@ -148,7 +147,6 @@ bait and GRanges for other ends.</p>
 <span><span class="co">#&gt;   -------</span></span>
 <span><span class="co">#&gt;   regions: 3 ranges and 0 metadata columns</span></span>
 <span><span class="co">#&gt;   seqinfo: 2 sequences from an unspecified genome; no seqlengths</span></span></code></pre></div>
-</div>
 <div class="section level3">
 <h3 id="construction-from-ginteractions">Construction from GInteractions<a class="anchor" aria-label="anchor" href="#construction-from-ginteractions"></a>
 </h3>
@@ -161,7 +159,7 @@ function:</p>
 <span><span class="co">#&gt; Attaching package: 'InteractionSet'</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:linkSet':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anchorIds, anchors, pairdist, regions</span></span>
+<span><span class="co">#&gt;     anchorIds, anchors, pairdist, regions, regions&lt;-</span></span>
 <span><span class="va">gi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/InteractionSet/man/GInteractions-class.html" class="external-link">GInteractions</a></span><span class="op">(</span></span>
 <span>  anchor1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  anchor2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>,</span>

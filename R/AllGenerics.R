@@ -20,15 +20,41 @@ setGeneric("oe", function(x) standardGeneric("oe"))
 #' @export
 setGeneric("anchorIds", function(x, ...) standardGeneric("anchorIds"))
 
+
+
+## set functions for linkSet
+#' @export
+setGeneric("bait<-", function(x, value) standardGeneric("bait<-"))
+
+#' @export
+setGeneric("regions<-", function(x, value) standardGeneric("regions<-"))
+
+#' @export
+setGeneric("anchor1<-", function(x, value) standardGeneric("anchor1<-"))
+
+#' @export
+setGeneric("anchor2<-", function(x, value) standardGeneric("anchor2<-"))
+
+setGeneric("unchecked_regions<-", function(x, value) standardGeneric("unchecked_regions<-"))
+setGeneric("unchecked_anchor1<-", function(x, value) standardGeneric("unchecked_anchor1<-"))
+setGeneric("unchecked_anchor2<-", function(x, value) standardGeneric("unchecked_anchor2<-"))
 # annotate.R
 #' @export
 setGeneric("annotatePromoter", function(x, ...) standardGeneric("annotatePromoter"))
 
+
+# method.R
 #' @export
 setGeneric("linkSet", function(anchor1, anchor2, specificCol, ...) standardGeneric("linkSet"))
 
 #' @export
+setGeneric("showLinkSet", function(x, margin="", print.seqinfo=FALSE, print.classinfo=FALSE, baitRegion=FALSE,...) standardGeneric("showLinkSet"))
+
+#' @export
 setGeneric("regionsBait", function(x) standardGeneric("regionsBait"))
+
+#' @export
+setGeneric("clean_unused_regions", function(x) standardGeneric("clean_unused_regions"))
 
 # distance.R
 #' @export
@@ -40,7 +66,7 @@ setGeneric("pairdist", function(x, type="mid") standardGeneric("pairdist"))
 
 # convert.R
 #' Convert different object types to linkSet
-#'
+#' @aliases Convert
 #' @param x Object to be converted
 #' @param ... Additional arguments passed to methods
 #'
@@ -54,3 +80,24 @@ setGeneric("Convert", function(x, ...) {
 setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
   standardGeneric("baitGInteractions")
 })
+
+
+# grange_method.R
+
+#' @export
+setGeneric("resizeRegions", function(x,width = 1000, fix = "center", use.names = TRUE,region="both", ...) standardGeneric("resizeRegions"))
+
+#' @export
+setGeneric("narrowRegions", function(x,  start = 1L, end = 1000L, width = 1000L, use.names = TRUE,region="both",...) standardGeneric("narrowRegions"))
+
+#' @export
+setGeneric("shiftRegions", function(x, width = 1000, shift = 0L, use.names = TRUE,region="both",...) standardGeneric("shiftRegions"))
+
+#' @export
+setGeneric("flankRegions", function(x,width = 1000,start=TRUE, both=FALSE, use.names=TRUE,ignore.strand=FALSE,region="both", ...) standardGeneric("flankRegions"))
+
+#' @export
+setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.names=TRUE,region="both", ...) standardGeneric("promoterRegions"))
+
+
+

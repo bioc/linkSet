@@ -51,7 +51,9 @@ knitr::include_graphics("img/overview.png")
 
 ## Construction
 The linkSet class can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
-
+```{r out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
+knitr::include_graphics("img/9.10_data_structure.png")
+```
 ### Construction from GRanges objects
 
 To construct a `linkSet` object from GRanges objects:
@@ -134,8 +136,33 @@ ls_from_df
 
 
 
-## Subsetting
+## Subsetting and concatenation
+
+
+
+## GRanges method
+The features of linkSet is inherited from GRanges, which means you can use all the functions in GRanges to manipulate the linkSet object.
+The most wonderful things is that you can change the bait region and oe region separately.
+
+```{r}
+data(linkExample)
+linkExample
+
+## resize the bait region
+resize_bait <- resizeRegions(linkExample, width = 75, fix = "start", region = "bait")
+resize_bait
+
+## resize the oe region
+resize_oe <- resizeRegions(linkExample, width = 75, fix = "start", region = "oe")
+resize_oe
+```
+
 
 ## Distance calculation
 
+Of course, you can also calculate the distance between the bait and oe region.
+```{r}
+linkExample = linkSet::pairdist(linkExample)
+```
+The annotated distance is shown in distance column.
 ## Annotations

@@ -105,6 +105,30 @@ test_that("regionsBait works correctly", {
   expect_null(regionsBait(x_without_anchor1))
 })
 
+test_that("setter functions work correctly", {
+  # Create a sample linkSet object for testing
+  gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
+                ranges = IRanges(start = c(1, 100, 200), width = 10),
+                strand = "+", symbol = c("Gene1", "Gene2", "Gene3"))
+
+  gr2 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
+                ranges = IRanges(start = c(11, 110, 210), width = 10),
+                strand = "+", symbol = c("Enh1", "Enh2", "Enh3"))
+
+  ls <- linkSet(gr1, gr2, specificCol = "symbol")
+  # Test setting bait
+  new_bait <- c("NewGene1", "NewGene2", "NewGene3")
+  bait(ls) <- new_bait
+  expect_equal(bait(ls), new_bait)
+  # Test setting names
+  new_names <- c("Interaction1", "Interaction2", "Interaction3")
+  names(ls) <- new_names
+  expect_equal(names(ls), new_names)
+  
+  # Test setting metadata columns
+  ls$new_score <- runif(length(ls))
+  expect_true("new_score" %in% colnames(mcols(ls)))
+})
 ######################################
 
 test_that("parallel_slot_names works correctly", {

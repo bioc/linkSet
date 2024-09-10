@@ -100,6 +100,46 @@ setMethod("regionsBait", "linkSet", function(x) {
   regions(x)[anchor1(x)]
 })
 
+#' @export
+# replace method for bait
+setReplaceMethod("bait", "linkSet", function(x, value) {
+  x@nameBait <- value
+  return(x)
+})
+
+#' @export
+setReplaceMethod("unchecked_regions", "linkSet", function(x, value) {
+    x@regions <- value
+    return(x)        
+})
+
+#' @export
+setReplaceMethod("unchecked_anchor1", "linkSet", function(x, value) {
+    x@anchor1 <- value 
+    return(x)        
+})
+
+#' @export
+setReplaceMethod("unchecked_anchor2", "linkSet", function(x, value) {
+    x@anchor2 <- value 
+    return(x)        
+})
+
+#' @export
+setReplaceMethod("regions", "linkSet", function(x, value) {
+  if (length(value)!=length(regions(x))) { 
+      stop("assigned value must be of the same length as 'regions(x)'")
+  }
+  out <- .resort_regions(anchor1(x), anchor2(x), value)
+  unchecked_anchor1(x) <- out$anchor1
+  unchecked_anchor2(x) <- out$anchor2
+  unchecked_regions(x) <- out$regions
+  validObject(x)
+  return(x)
+})
+
+
+#' @export
 
 ###############################################################
 # Defining some other getters and setters.

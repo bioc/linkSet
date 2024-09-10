@@ -4,7 +4,7 @@ Version: 0.0.0.1
 Authors@R: 
     person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467"))
-Description: This package is created to manage gene-peak links
+Description: The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -27,7 +27,7 @@ Suggests:
     rmarkdown,
     testthat
 Collate: class.R AllGenerics.R getset.R
-        methods.R annotate.R distance.R formatConverter.R linkSet-package.R
+        methods.R annotate.R distance.R formatConverter.R linkSet-package.R GRange_method.R test_helper.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
 URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet, https://gilberthan1011.github.io/linkSet/
