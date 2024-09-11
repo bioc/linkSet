@@ -38,10 +38,32 @@ setGeneric("anchor2<-", function(x, value) standardGeneric("anchor2<-"))
 setGeneric("unchecked_regions<-", function(x, value) standardGeneric("unchecked_regions<-"))
 setGeneric("unchecked_anchor1<-", function(x, value) standardGeneric("unchecked_anchor1<-"))
 setGeneric("unchecked_anchor2<-", function(x, value) standardGeneric("unchecked_anchor2<-"))
+
+#' @export
+setGeneric("subsetBait", function(x, ...) {
+  standardGeneric("subsetBait")
+})
+
+#' @export
+setGeneric("subsetBaitRegion", function(x, ...) {
+  standardGeneric("subsetBaitRegion")
+})
+
+#' @export
+setGeneric("subsetOE", function(x, ...) {
+  standardGeneric("subsetOE")
+})
+
+
 # annotate.R
 #' @export
 setGeneric("annotatePromoter", function(x, ...) standardGeneric("annotatePromoter"))
 
+#' @export
+setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
+
+#' @export
+setGeneric("regionsBait<-", function(x, value) standardGeneric("regionsBait<-"))
 
 # method.R
 #' @export
@@ -101,3 +123,11 @@ setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.name
 
 
 
+# count.R
+#' @export
+setGeneric("countInteractions", function(x, baitRegions = TRUE) standardGeneric("countInteractions"))
+
+#' @export
+setGeneric("reduceRegions", function(x, region = "both", countInteractions = TRUE, ...) {
+  standardGeneric("reduceRegions")
+})

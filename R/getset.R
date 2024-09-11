@@ -139,7 +139,30 @@ setReplaceMethod("regions", "linkSet", function(x, value) {
 })
 
 
+
 #' @export
+setReplaceMethod("regionsBait", "linkSet", function(x, value) {
+  if (!is(value, "GRanges")) {
+    stop("The 'value' must be a GRanges object")
+  }
+  if (length(value) != length(regions(x)[anchor1(x)])) {
+    stop("The length of 'value' must be equal to the number of bait regions")
+  }
+  regions(x)[anchor1(x)] <- value
+  return(x)
+})
+
+#' @export
+setReplaceMethod("oe", "linkSet", function(x, value) {
+  if (!is(value, "GRanges")) {
+    stop("The 'value' must be a GRanges object")
+  }
+  if (length(value) != length(regions(x)[anchor2(x)])) {
+    stop("The length of 'value' must be equal to the number of other end regions")
+  }
+  regions(x)[anchor2(x)] <- value
+  return(x)
+})
 
 ###############################################################
 # Defining some other getters and setters.

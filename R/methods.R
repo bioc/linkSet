@@ -330,3 +330,50 @@ setMethod("clean_unused_regions", "linkSet", function(x) {
     
     return(x)
 })
+
+#== subset ==#
+#' Subset linkSet object based on bait names
+#' @rdname linkSet-subset-methods
+#' @aliases subsetBait
+#' @param x A linkSet object
+#' @param subset A vector of bait names to keep
+#'
+#' @return A new linkSet object containing only the specified bait interactions
+#' @export
+setMethod("subsetBait", "linkSet", function(x, subset) {
+  idx <- bait(x) %in% subset
+  x[idx]
+})
+
+#' Subset linkSet object based on bait regions
+#' @rdname linkSet-subset-methods
+#' @aliases subsetBaitRegion
+#' @param x A linkSet object
+#' @param subset A GRanges object specifying the regions to keep
+#'
+#' @return A new linkSet object containing only the interactions with bait regions overlapping the subset
+#' @export
+setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
+  bait_regions <- regionsBait(x)
+  if (is.null(bait_regions)) {
+    stop("Bait regions are not available. Please annotate bait first.")
+  }
+  overlaps <- findOverlaps(bait_regions, subset)
+  idx <- queryHits(overlaps)
+  x[idx]
+})
+
+#' Subset linkSet object based on other end (oe) regions
+#' @rdname linkSet-subset-methods
+#' @aliases subsetOE
+#' @param x A linkSet object
+#' @param subset A GRanges object specifying the regions to keep
+#'
+#' @return A new linkSet object containing only the interactions with oe regions overlapping the subset
+#' @export
+setMethod("subsetOE", "linkSet", function(x, subset) {
+  oe_regions <- oe(x)
+  overlaps <- findOverlaps(oe_regions, subset)
+  idx <- queryHits(overlaps)
+  x[idx]
+})

@@ -94,3 +94,53 @@ test_that("promoterRegions works correctly", {
   expect_equal(start(oe(result_oe)), c(-150, -50, 50))
   expect_equal(regionsBait(result_oe), regionsBait(ls))
 })
+
+test_that("reduceRegions works correctly", {
+  # Create a sample linkSet object
+  gr1 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr1", "chr2"),
+    ranges = IRanges(start = c(1, 10, 20, 100), width = 15),
+    strand = "+",
+    symbol = c("Gene1", "Gene1", "Gene2", "Gene3")
+  )
+  gr2 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2", "chr2"),
+    ranges = IRanges(start = c(30, 40, 110, 120), width = 15),
+    strand = "+"
+  )
+  ls <- linkSet(gr1, gr2, specificCol = "symbol")
+
+  # Test reducing both regions
+  result_both <- reduceRegions(ls, region = "both", countInteractions = FALSE)
+
+  expect_equal(length(result_both), 4)
+  expect_equal(length(unique(regionsBait(result_both))), 2)
+  expect_equal(length(unique(oe(result_both))), 2)
+
+  # Test reducing only bait regions
+  result_bait <- reduceRegions(ls, region = "bait", countInteractions = FALSE)
+
+  expect_equal(length(result_bait), 4)
+  expect_equal(length(unique(regionsBait(result_bait))), 2)
+  expect_equal(length(unique(oe(result_bait))), 4)
+
+  # Test reducing only oe regions
+  result_oe <- reduceRegions(ls, region = "oe", countInteractions = FALSE)
+
+  expect_equal(length(result_oe), 4)
+  expect_equal(length(unique(regionsBait(result_oe))), 4)
+  expect_equal(length(unique(oe(result_oe))), 2)
+
+  # Test with countInteractions = TRUE
+  result_count <- reduceRegions(ls, region = "both", countInteractions = TRUE)
+
+  expect_true("count" %in% colnames(mcols(result_count)))
+  expect_equal(sum(mcols(result_count)$count), 4)
+
+  # Test with additional arguments
+  result_args <- reduceRegions(ls, region = "both", countInteractions = FALSE, ignore.strand = TRUE)
+
+  expect_equal(length(result_args), 4)
+  expect_equal(length(unique(regionsBait(result_args))), 2)
+  expect_equal(length(unique(oe(result_args))), 2)
+})

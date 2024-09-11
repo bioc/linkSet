@@ -124,10 +124,56 @@ test_that("setter functions work correctly", {
   new_names <- c("Interaction1", "Interaction2", "Interaction3")
   names(ls) <- new_names
   expect_equal(names(ls), new_names)
-  
+
   # Test setting metadata columns
   ls$new_score <- runif(length(ls))
   expect_true("new_score" %in% colnames(mcols(ls)))
+})
+
+test_that("regionsBait replacement method works correctly", {
+  # Create a sample linkSet object
+  ls <- create_sample_linkSet()
+
+  # Create a new GRanges object for replacement
+  new_bait <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2"),
+    ranges = IRanges(start = c(10, 110, 210), width = 60),
+    strand = "+"
+  )
+  new_oe <- GRanges(
+    seqnames = c("chr1", "chr2", "chr2"),
+    ranges = IRanges(start = c(60, 160, 260), width = 70),
+    strand = "+"
+  )
+
+  # Replace regionsBait
+  regionsBait(ls) <- new_bait
+
+  # Check if the replacement was successful
+  expect_equal(start(regionsBait(ls)), c(10, 110, 210))
+  expect_equal(width(regionsBait(ls)), c(60, 60, 60))
+
+  # Test error when trying to replace with non-GRanges object
+  expect_error(regionsBait(ls) <- c(1, 2, 3), "The 'value' must be a GRanges object")
+
+  # Test error when trying to replace with GRanges of incorrect length
+  incorrect_length <- GRanges(seqnames = "chr1", ranges = IRanges(start = 1, width = 10))
+  expect_error(regionsBait(ls) <- incorrect_length, "The length of 'value' must be equal to the number of bait regions")
+
+  ls <- create_sample_linkSet()
+  # Replace oe
+  oe(ls) <- new_oe
+
+  # Check if the replacement was successful
+  expect_equal(start(oe(ls)), c(60, 160, 260))
+  expect_equal(width(oe(ls)), c(70, 70, 70))
+
+  # Test error when trying to replace with non-GRanges object
+  expect_error(oe(ls) <- c(1, 2, 3), "The 'value' must be a GRanges object")
+
+  # Test error when trying to replace with GRanges of incorrect length
+  incorrect_length <- GRanges(seqnames = "chr1", ranges = IRanges(start = 1, width = 10))
+  expect_error(oe(ls) <- incorrect_length, "The length of 'value' must be equal to the number of other end regions")
 })
 ######################################
 
@@ -154,3 +200,60 @@ test_that("parallel_slot_names works correctly", {
 
 ######################################
 
+test_that("subsetBait works correctly", {
+  ls <- create_sample_linkSet()
+
+  # Test subsetting with existing bait names
+  subset_result <- subsetBait(ls, c("Gene1", "Gene3"))
+  expect_s4_class(subset_result, "linkSet")
+  expect_equal(length(subset_result), 2)
+  expect_equal(bait(subset_result), c("Gene1", "Gene3"))
+
+  # Test subsetting with non-existing bait name
+  subset_result_empty <- subsetBait(ls, "NonExistingGene")
+  expect_s4_class(subset_result_empty, "linkSet")
+  expect_equal(length(subset_result_empty), 0)
+
+  # Test subsetting with all bait names
+  subset_result_all <- subsetBait(ls, bait(ls))
+  expect_equal(length(subset_result_all), length(ls))
+})
+
+test_that("subsetBaitRegion works correctly", {
+  ls <- create_sample_linkSet()
+
+  # Test subsetting with overlapping region
+  subset_region <- GRanges("chr1", IRanges(1, 200))
+  subset_result <- subsetBaitRegion(ls, subset_region)
+  expect_s4_class(subset_result, "linkSet")
+  expect_equal(length(subset_result), 2)
+  expect_true(all(overlapsAny(regionsBait(subset_result), subset_region)))
+
+  # Test subsetting with non-overlapping region
+  subset_region_empty <- GRanges("chr3", IRanges(1, 100))
+  subset_result_empty <- suppressWarnings(subsetBaitRegion(ls, subset_region_empty))
+  expect_s4_class(subset_result_empty, "linkSet")
+  expect_equal(length(subset_result_empty), 0)
+
+  # Test error when bait regions are not available
+  ls_no_bait <- linkSet(paste(gr1), gr2)
+  expect_error(subsetBaitRegion(ls_no_bait, subset_region),
+               "Bait regions are not available. Please annotate bait first.")
+})
+
+test_that("subsetOE works correctly", {
+  ls <- create_sample_linkSet()
+
+  # Test subsetting with overlapping region
+  subset_region <- GRanges("chr1", IRanges(1, 200))
+  subset_result <- subsetOE(ls, subset_region)
+  expect_s4_class(subset_result, "linkSet")
+  expect_equal(length(subset_result), 1)
+  expect_true(all(overlapsAny(oe(subset_result), subset_region)))
+
+  # Test subsetting with non-overlapping region
+  subset_region_empty <- GRanges("chr3", IRanges(1, 100))
+  subset_result_empty <- suppressWarnings(subsetOE(ls, subset_region_empty))
+  expect_s4_class(subset_result_empty, "linkSet")
+  expect_equal(length(subset_result_empty), 0)
+})

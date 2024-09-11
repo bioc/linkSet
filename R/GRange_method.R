@@ -192,3 +192,55 @@ setMethod("width", "linkSet", function(x) {
     w <- width(regions(x))          
     list(bait=w[anchor1(x)], oe=w[anchor2(x)])
 })
+
+## reduce
+#' Reduce a linkSet object
+#'
+#' This function reduces the bait and/or oe regions of a linkSet object and optionally counts interactions,
+#' while maintaining the original length of the linkSet.
+#'
+#' @param x A linkSet object
+#' @param reduceBait Logical, whether to reduce bait regions (default: TRUE)
+#' @param reduceOE Logical, whether to reduce other end (oe) regions (default: TRUE)
+#' @param countInteractions Logical, whether to count interactions after reducing (default: TRUE)
+#' @param ... Additional arguments passed to GenomicRanges::reduce
+#'
+#' @return A reduced linkSet object with the same length as the input
+#' @export
+#'
+#' @importFrom GenomicRanges reduce findOverlaps
+#' @importFrom IRanges IRanges
+#'
+#' 
+
+setMethod("reduceRegions", "linkSet", function(x, region = "both", countInteractions = TRUE, ...) {
+
+  original_bait <- regionsBait(x)
+  original_oe <- oe(x)
+
+  if (region == "bait" || region == "both") {
+    bait_reduced <- GenomicRanges::reduce(original_bait, ...)
+    bait_overlaps <- findOverlaps(original_bait, bait_reduced)
+    new_bait_regions <- bait_reduced[subjectHits(bait_overlaps)]
+    regionsBait(x) <- new_bait_regions
+  }
+  if (region == "oe" || region == "both") {
+    oe_reduced <- GenomicRanges::reduce(original_oe, ...)
+    oe_overlaps <- findOverlaps(original_oe, oe_reduced)
+    new_oe <- oe_reduced[subjectHits(oe_overlaps)]
+    oe(x) <- new_oe
+  }
+
+
+  if (countInteractions) {
+    x <- countInteractions(x)
+  }
+  return(x)
+})
+
+#' @export
+#' @rdname linkSet-GRange-Methods
+#' @aliases reduce
+setMethod("reduce", "linkSet", function(x, ...) {
+    reduceRegions(x, region = "both", countInteractions = TRUE, ...)
+})
