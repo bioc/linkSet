@@ -8,7 +8,7 @@
 #' @param ... Additional arguments (not used)
 #' 
 #' @rdname Convert
-#'
+#' 
 #' @return A linkSet object
 #' @export
 setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL, ...) {
@@ -43,6 +43,7 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
 #' 
 #' @rdname Convert
 #'
+#' @importFrom GenomicInteractions GenomicInteractions
 #' @return A linkSet object
 #' @export
 setMethod("Convert", signature(x = "GenomicInteractions"), function(x, baitCol = NULL, ...) {

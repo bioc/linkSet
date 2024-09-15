@@ -273,6 +273,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #'   `ggplot2::ggplot()` call.
 #'
 #' @export
+
 geom_range <- function(mapping = NULL, data = NULL,
                        stat = "identity", position = "identity",
                        bait_col = "red",
@@ -379,7 +380,7 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
 
 # plot genomic ranges
 #' @export
-plot_genomic_ranges <- function(linkset, x.range = NULL, show.rect = TRUE,extend.base = 10000,
+setMethod("plot_genomic_ranges", "linkSet", function(linkset, x.range = NULL, show.rect = TRUE,extend.base = 10000,
                                 ...,
                                 bait_col = "red",
                                 oe_col = "DeepSkyBlue3",
@@ -414,7 +415,7 @@ plot_genomic_ranges <- function(linkset, x.range = NULL, show.rect = TRUE,extend
     p <- p + ggplot2::labs(y = "Ranges") +theme_range(x.range, show.rect)
 
     return(p)
-}
+})
 
 #' Extract data from linkSet object
 #' @keywords internal

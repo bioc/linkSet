@@ -10,9 +10,12 @@
   score.threshold = NULL,
   score.color = c("grey70", "#56B1F7", "#132B43"),
   scale.range = 10,
-  plot.curve = "curve",
   plot.space = 0.1,
   plot.height = 0.2,
+  arrow.size = 0.2,
+  remove_x_axis = FALSE,
+  link_plot_on_top = FALSE,
+  extend.base = 10000,
   show.rect = FALSE
 )
 }
@@ -25,8 +28,6 @@
 
 \item{scale.range}{Scale the height of links according to width, should be greater than or equal to 1 (not scale). Default: 10.}
 
-\item{plot.curve}{One of 'curve' or 'bezier', for the latter it is required to install package \code{ggforce}. Default: 'curve'.}
-
 \item{plot.space}{Top and bottom margin. Default: 0.1.}
 
 \item{plot.height}{The relative height of link to coverage plot. Default: 0.2.}
@@ -36,6 +37,8 @@
 \item{link.file}{File contains region link information.}
 
 \item{file.type}{The type of \code{link.file}, choose from bedpe, pairs. Default: bedpe.}
+
+\item{plot.curve}{One of 'curve' or 'bezier', for the latter it is required to install package \code{ggforce}. Default: 'curve'.}
 }
 \value{
 Plot.

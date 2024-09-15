@@ -4,7 +4,13 @@
 \alias{annotatePromoter,linkSet-method}
 \title{Annotate the link set with txDb. Give a gene list, and return a}
 \usage{
-\S4method{annotatePromoter}{linkSet}(x, genome = "hg38", keyType = "symbol", upstream = 500)
+\S4method{annotatePromoter}{linkSet}(
+  x,
+  genome = "hg38",
+  keyType = "symbol",
+  upstream = 500,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{x}{linkSet}

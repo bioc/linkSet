@@ -26,7 +26,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    GenomicInteractions
 Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R 
         linkSet-package.R GRange_method.R test_helper.R

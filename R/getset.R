@@ -148,7 +148,10 @@ setReplaceMethod("regionsBait", "linkSet", function(x, value) {
   if (length(value) != length(regions(x)[anchor1(x)])) {
     stop("The length of 'value' must be equal to the number of bait regions")
   }
+  metadata <- mcols(value)
+  mcols(value) <- NULL
   regions(x)[anchor1(x)] <- value
+  mcols(x) <- cbind(mcols(x),metadata)
   return(x)
 })
 

@@ -57,7 +57,7 @@ setGeneric("subsetOE", function(x, ...) {
 
 # annotate.R
 #' @export
-setGeneric("annotatePromoter", function(x, ...) standardGeneric("annotatePromoter"))
+setGeneric("annotatePromoter", function(x, genome = "hg38", keyType = "symbol",upstream = 500,overwrite = FALSE,...) standardGeneric("annotatePromoter"))
 
 #' @export
 setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
@@ -132,10 +132,30 @@ setGeneric("reduceRegions", function(x, region = "both", countInteractions = TRU
   standardGeneric("reduceRegions")
 })
 
+setGeneric("filterLinks", function(x, filter_intra = TRUE, filter_unannotate = TRUE, distance = NULL) {
+  standardGeneric("filterLinks")
+})
+
 # plot.R
 #' @export
 setGeneric("geom_linkset", function(linkSet, score.col = "count", score.threshold = NULL, score.color = c("grey70", "#56B1F7", "#132B43"),
  scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.2,  remove_x_axis = FALSE, 
  link_plot_on_top = FALSE,extend.base = 10000,show.rect = FALSE) {
   standardGeneric("geom_linkset")
+})
+
+#' @export
+setGeneric("plot_genomic_ranges", function(linkset, x.range = NULL, show.rect = TRUE,
+                                            extend.base = 10000,
+                                            ...,
+                                            bait_col = "red",
+                                            oe_col = "DeepSkyBlue3",
+                                            default_col = "grey",
+                                            vjust = NULL,
+                                            linejoin = "mitre",
+                                            na.rm = FALSE,
+                                            minimal_width = 0.02,
+                                            show.legend = NA,
+                                            inherit.aes = TRUE) {
+  standardGeneric("plot_genomic_ranges")
 })

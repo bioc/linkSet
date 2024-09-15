@@ -47,3 +47,44 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
   # Return the results
   return(unique_linkSet)
 })
+
+
+#' Filter links for further analysis
+#' @export
+setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE, 
+                                            filter_unannotate = TRUE,
+                                            distance = NULL) {
+  # Ensure inter_type is annotated
+  if (!.exist_inter(x)) {
+    x <- annotateInter(x)
+  }
+  
+  # Ensure distance is calculated
+  if (is.null(x$distance)) {
+    x <- pairdist(x)
+  }
+  
+  # Initialize a logical vector for filtering
+  keep <- rep(TRUE, length(x))
+  
+  if (filter_intra) {
+    keep <- keep & (x$inter_type == "inter")
+  }
+  
+  if (filter_unannotate) {
+    bait_regions <- regionsBait(x)
+    keep <- keep & (as.character(seqnames(bait_regions)) != "chrNULL")
+  }
+  
+  if (!is.null(distance)) {
+    keep <- keep & (!is.na(x$distance) & x$distance <= distance)
+  }
+  
+  # Apply the filter
+  filtered_x <- x[keep]
+  
+  # Clean unused regions
+  filtered_x <- clean_unused_regions(filtered_x)
+  
+  return(filtered_x)
+})

@@ -9,10 +9,14 @@ geom_range(
   data = NULL,
   stat = "identity",
   position = "identity",
+  bait_col = "red",
+  oe_col = "DeepSkyBlue3",
+  default_col = "grey",
   ...,
   vjust = NULL,
   linejoin = "mitre",
   na.rm = FALSE,
+  minimal_width = 0.02,
   show.legend = NA,
   inherit.aes = TRUE
 )
