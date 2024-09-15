@@ -97,8 +97,8 @@ setMethod("trim", "linkSet", function(x, use.names=TRUE) {
 #' @rdname linkSet-GRange-Methods
 #' @aliases resize
 #' 
-setMethod("resize", "linkSet", function(x, width, fix="start", use.names=TRUE, ...) {
-    .generate_regions(x, FUN=resize, args=list(width=width, fix=fix), other.args=list(use.names=use.names, ...), region=region)
+setMethod("resize", "linkSet", function(x, width, fix="start", use.names=TRUE,...) {
+    .generate_regions(x, FUN=resize, args=list(width=width, fix=fix), other.args=list(use.names=use.names, ...), region="both")
 })
 
 #' @export

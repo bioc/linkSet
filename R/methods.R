@@ -62,7 +62,7 @@ setMethod("show", "linkSet", function(object) {
 setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE, 
                                           print.classinfo=FALSE, baitRegion=FALSE) {
   lx <- length(x)
-  nr <- lx
+  nr <- length(regions(x))
   nc <- .safeNMcols(x)
   cat(class(x), " object with ",
       lx, " ", ifelse(lx == 1L, "interaction", "interactions"), " and ",

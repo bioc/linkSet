@@ -25,6 +25,8 @@
 \alias{promoterRegions}
 \alias{width,linkSet-method}
 \alias{width}
+\alias{reduce,linkSet-method}
+\alias{reduce}
 \title{linkSet-GRange-Methods}
 \usage{
 \S4method{trim}{linkSet}(x, use.names = TRUE)
@@ -85,6 +87,8 @@
 )
 
 \S4method{width}{linkSet}(x)
+
+\S4method{reduce}{linkSet}(x, drop.empty.ranges = FALSE, ...)
 }
 \arguments{
 \item{x}{A linkSet object}

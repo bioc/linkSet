@@ -21,13 +21,16 @@ Imports:
     GenomeInfoDb,
     BiocGenerics,
     Organism.dplyr,
-    InteractionSet
+    InteractionSet,
+    ggplot2
 Suggests: 
     knitr,
     rmarkdown,
     testthat
 Collate: class.R AllGenerics.R getset.R
-        methods.R annotate.R distance.R formatConverter.R linkSet-package.R GRange_method.R test_helper.R
+        methods.R annotate.R distance.R formatConverter.R 
+        linkSet-package.R GRange_method.R test_helper.R
+        visualization.R count.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
 URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet, https://gilberthan1011.github.io/linkSet/

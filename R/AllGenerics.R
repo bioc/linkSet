@@ -131,3 +131,11 @@ setGeneric("countInteractions", function(x, baitRegions = TRUE) standardGeneric(
 setGeneric("reduceRegions", function(x, region = "both", countInteractions = TRUE, ...) {
   standardGeneric("reduceRegions")
 })
+
+# plot.R
+#' @export
+setGeneric("geom_linkset", function(linkSet, score.col = "count", score.threshold = NULL, score.color = c("grey70", "#56B1F7", "#132B43"),
+ scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.2,  remove_x_axis = FALSE, 
+ link_plot_on_top = FALSE,extend.base = 10000,show.rect = FALSE) {
+  standardGeneric("geom_linkset")
+})

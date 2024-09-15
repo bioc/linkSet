@@ -3,7 +3,9 @@
 \name{Convert}
 \alias{Convert}
 \alias{Convert,GInteractions-method}
+\alias{Convert,GenomicInteractions-method}
 \alias{Convert,data.frame-method}
+\alias{Convert,Pairs-method}
 \alias{Convert,ANY-method}
 \title{Convert different object types to linkSet}
 \usage{
@@ -11,7 +13,11 @@ Convert(x, ...)
 
 \S4method{Convert}{GInteractions}(x, baitCol = NULL, ...)
 
+\S4method{Convert}{GenomicInteractions}(x, baitCol = NULL, ...)
+
 \S4method{Convert}{data.frame}(x, baitCol = "gene", oeCol = "peak", ...)
+
+\S4method{Convert}{Pairs}(x, baitCol = NULL, ...)
 
 \S4method{Convert}{ANY}(x, ...)
 }
@@ -20,9 +26,15 @@ Convert(x, ...)
 
 \item{...}{Additional arguments (not used)}
 
+\item{baitCol}{A character string specifying the column to use for bait naming}
+
 \item{specificCol}{A character string specifying the column to use for bait naming}
 }
 \value{
+A linkSet object
+
+A linkSet object
+
 A linkSet object
 
 A linkSet object

@@ -37,6 +37,50 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
   return(ls)
 })
 
+#' Convert GenomicInteractions to linkSet
+#' @param x A GenomicInteractions object
+#' @param baitCol A character string specifying the column to use for bait naming (optional)
+#' 
+#' @rdname Convert
+#'
+#' @return A linkSet object
+#' @export
+setMethod("Convert", signature(x = "GenomicInteractions"), function(x, baitCol = NULL, ...) {
+  # Extract anchor1 and anchor2 GRanges
+  anchor1 <- x@regions[x@anchor1]
+  anchor2 <- x@regions[x@anchor2]
+  
+  # Extract metadata
+  metadata <- as.data.frame(x@elementMetadata)
+  
+  # Create specificCol (using 'InteractionID' if available, otherwise use ranges)
+  if ("InteractionID" %in% colnames(metadata)) {
+    specificCol <- metadata$InteractionID
+  } else {
+    specificCol <- paste0(anchor1)
+  }
+
+  if (is.null(baitCol)) {
+    nameBait <- paste0(anchor1)
+  } else if (baitCol %in% colnames(metadata)) {
+    nameBait <- metadata[[baitCol]]
+  } else {
+    warning("baitCol not found in metadata, using first regions as bait")
+    nameBait <- paste0(anchor1)
+  }
+
+  # Create linkSet object
+  ls <- linkSet(
+    anchor1 = anchor1,
+    anchor2 = anchor2,
+    specificCol = nameBait
+  )
+  
+  # Add metadata to linkSet
+  mcols(ls) <- metadata
+  
+  return(ls)
+})
 
 .convert_to_grange <- function(intervals) {
   # convert "chr1.816066.816566" or "chr1:816066-816566" to grange format
@@ -82,6 +126,50 @@ setMethod("Convert", signature(x = "data.frame"), function(x, baitCol = "gene", 
     anchor2 = oeGrange
   )
   mcols(ls) <- metadata
+  return(ls)
+})
+
+
+
+
+#' Convert Pairs to linkSet
+#' @param x A Pairs object
+#' @param baitCol A character string specifying the column to use for bait naming
+#' 
+#' @rdname Convert
+#'
+#' @return A linkSet object
+#' @export
+setMethod("Convert", signature(x = "Pairs"), function(x,baitCol = NULL, ...) {
+  # Extract first and second GRanges
+  anchor1 <- x@first
+  anchor2 <- x@second
+  
+  # Extract metadata
+  metadata <- as.data.frame(x@elementMetadata)
+  
+  # Create specificCol (using 'symbol' if available, otherwise use ranges)
+  if ("symbol" %in% colnames(metadata)) {
+    specificCol <- metadata$symbol
+  } else {
+    specificCol <- paste0(anchor1)
+  }
+
+  if (is.null(baitCol)) {
+    nameBait <- paste0(anchor1)
+  } else {
+    nameBait <- metadata[[baitCol]]
+  }
+  # Create linkSet object
+  ls <- linkSet(
+    anchor1 = anchor1,
+    anchor2 = anchor2,
+    specificCol = nameBait
+  )
+  
+  # Add metadata to linkSet
+  mcols(ls) <- metadata
+  
   return(ls)
 })
 
