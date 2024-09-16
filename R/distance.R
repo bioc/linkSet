@@ -32,8 +32,9 @@ setMethod("annotateInter", "linkSet", function(x) {
   !is.null(mcols(x)$inter_type)
   }
 
-
-
+.exist_distance <- function(x){
+  !is.null(mcols(x)$distance)
+  }
 
 .get_dist_output <- function(regs, ai1, ai2, type, inter_type) {
   type <- match.arg(type, c("mid", "gap", "span"))
@@ -103,11 +104,7 @@ setMethod("annotateInter", "linkSet", function(x) {
 #' data(linkExample)
 #' linkExample <- pairdist(linkExample, type="mid")
 #'
-setMethod("pairdist", "linkSet", function(x, type="mid")
-
-
-
-{
+setMethod("pairdist", "linkSet", function(x, type="mid"){
     if (!is.null(regionsBait(x))) {
         ai1 <- anchor1(x)
         ai2 <- anchor2(x)
@@ -120,4 +117,33 @@ setMethod("pairdist", "linkSet", function(x, type="mid")
     inter_type <- mcols(x)$inter_type
     mcols(x)$distance <- .get_dist_output(regions(x), ai1, ai2, type, inter_type)
     return(x)
+})
+
+#' Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
+setMethod("diagnoseLinkSet", "linkSet", function(x){
+  if (!.exist_inter(x)){
+    x <- annotateInter(x)
+  }
+  if (!.exist_distance(x)){
+    x <- pairdist(x)
+  }
+  inter_type <- mcols(x)$inter_type
+  distance <- mcols(x)$distance
+  inter_distance <- log10(distance[!is.na(distance)])
+  df <- data.frame(distance = inter_distance)
+  p1 <- ggplot2::ggplot(df, ggplot2::aes(x = distance)) +
+    ggplot2::geom_histogram() +
+    ggplot2::labs(title = "Distance Distribution", x = "log10 Distance(bp)", y = "Count")+ggplot2::theme_bw()
+  df2 <- data.frame(inter_type = inter_type)
+  # Ensure we have both 'inter' and 'intra' types
+  df2$inter_type <- factor(df2$inter_type, levels = c("inter", "intra"))
+  
+  p2 <- ggplot2::ggplot(df2, ggplot2::aes(x = inter_type, y = ggplot2::after_stat(prop), group = 1)) +
+    ggplot2::geom_bar(fill = "steelblue") +
+    ggplot2::labs(title = "Inter/Intra Interaction", x = "Interaction Type", y = "Percentage") +
+    ggplot2::scale_x_discrete(drop = FALSE) +  # This ensures both levels are shown
+    ggplot2::scale_y_continuous(labels = scales::percent_format()) +
+    ggplot2::theme_bw()
+  p <- p1|p2
+  return(p)
 })

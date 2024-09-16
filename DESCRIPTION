@@ -22,7 +22,9 @@ Imports:
     BiocGenerics,
     Organism.dplyr,
     InteractionSet,
-    ggplot2
+    ggplot2,
+    patchwork,
+    scales
 Suggests: 
     knitr,
     rmarkdown,

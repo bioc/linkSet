@@ -10,7 +10,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: GenomicRanges, SummarizedExperiment
-Imports: methods, Matrix, S4Vectors, IRanges, GenomeInfoDb,
+Imports: methods, S4Vectors, IRanges, GenomeInfoDb,
         BiocGenerics, Organism.dplyr
 Collate: class.R AllGenerics.R getset.R methods.R annotate.R
 Author: Gilbert Han [aut]

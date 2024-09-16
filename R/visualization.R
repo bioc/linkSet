@@ -13,7 +13,6 @@
 #' @param show.rect Logical value, whether to add rect border to the plot. Default: FALSE.
 #'
 #' @return Plot.
-#' @importFrom dplyr %>%
 #' @importFrom GenomicRanges GRanges makeGRangesFromDataFrame start end
 #' @importFrom IRanges IRanges subsetByOverlaps
 #' @importFrom utils read.table
@@ -56,15 +55,17 @@
 setMethod("geom_linkset", "linkSet", function(linkSet,
                       score.col = "count",
                       score.threshold = NULL,
-                      score.color = c("grey70", "#56B1F7", "#132B43"),
+                      score.color = c("grey70", "#56B1F7" , "#132B43"),
                       scale.range = 10,
                       plot.space = 0.1,
                       plot.height = 0.2,
                       arrow.size = 0.2,
                       remove_x_axis = FALSE,
                       link_plot_on_top = FALSE,
-                      extend.base = 10000,
-                      show.rect = FALSE) {
+                      extend.base = 1000000,
+                      show.rect = FALSE,
+                      x.range = NULL,
+                      log.scale = TRUE) {
   structure(
     list(
       linkSet = linkSet,
@@ -78,7 +79,9 @@ setMethod("geom_linkset", "linkSet", function(linkSet,
       arrow.size = arrow.size,
       remove_x_axis = remove_x_axis,
       link_plot_on_top = link_plot_on_top,
-      extend.base = extend.base
+      extend.base = extend.base,
+      x.range = x.range,
+      log.scale = log.scale
     ),
     class = "interSet"
   )
@@ -94,8 +97,6 @@ ggplot_add.interSet <- function(object, plot, object_name) {
   } else {
     track.data <- plot$layers[[1]]$data
   }
-
-
 
   # get parameters
   linkSet <- object$linkSet
@@ -113,13 +114,17 @@ ggplot_add.interSet <- function(object, plot, object_name) {
   flip_arrow <- link_plot_on_top
   top_margin <- bottom_margin <- plot.space
   extend.base <- object$extend.base
+  x.range <- object$x.range
+  log.scale <- object$log.scale
 
 
   # prepare plot range
   plot.range.chr <- as.character(seqnames(regionsBait(object$linkSet))[1])
   plot.range.start <- min(start(regions(object$linkSet))) - extend.base
   plot.range.end <- max(end(regions(object$linkSet))) + extend.base
-
+  if (is.null(x.range)) {
+    x.range <- c(plot.range.start, plot.range.end)
+  }
   # prepare dataframe
   link.point.df <- data.frame(
     chr = as.character(seqnames(regionsBait(linkSet))),
@@ -133,13 +138,20 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     if (!is.null(score.threshold)) {
       link.point.df <- link.point.df[link.point.df$score > score.threshold, ]
     }
+    if (log.scale) {
+      link.point.df$score <- log1p(link.point.df$score)
+    }
   }
-
   # filter link gr
-  link.point.df <- link.point.df[link.point.df$start >= plot.range.start &
-                                   link.point.df$end <= plot.range.end, ]
+  link.point.df <- link.point.df[link.point.df$start >= x.range[1] &
+                                link.point.df$end >= x.range[1] &
+                                link.point.df$end <= x.range[2]&
+                                link.point.df$start <= x.range[2], ]
+  if(nrow(link.point.df) == 0){
+    warning("There are no valid links in the given region!")
+    return(NULL)
+  }
   rownames(link.point.df) <- 1:nrow(link.point.df)
-
   # check dataframe
   if (nrow(link.point.df) < 1) {
     warning("There are no valid links in the given region!")
@@ -150,6 +162,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     link.point.df$group <- seq_len(length.out = nrow(link.point.df))
     link.point.plot <- link.point.df
     link.point.plot$width <- link.point.df$end - link.point.df$start
+    #browser()
     # scale width to range
     link.point.plot$rw <- scales::rescale(link.point.plot$width, to = c(1, scale.range))
 
@@ -163,12 +176,16 @@ ggplot_add.interSet <- function(object, plot, object_name) {
       group_color <- NULL
       scale_color <- ggplot2::scale_color_manual()
     }
-
+    #browser()
     #scale_y_limit <- ifelse(flip_arrow, c(0,1), c(0,0))
-    y_limit <- ifelse(flip_arrow, 0,1)
+    
+    y_limit <- ifelse(flip_arrow, 0, 1)
+    link.point.plot.pos = link.point.plot[link.point.plot$width > 0,]
+    link.point.plot.neg = link.point.plot[link.point.plot$width < 0,]
     link.basic.plot <-
       ggplot2::ggplot(data = link.point.plot) +
       ggplot2::geom_curve(
+        data = link.point.plot.pos,
         ggplot2::aes_string(
           x = "start",
           xend = "end",
@@ -181,15 +198,30 @@ ggplot_add.interSet <- function(object, plot, object_name) {
         ncp = 15,
         arrow = ggplot2::arrow(length = ggplot2::unit(arrow.size, "npc"))
       ) +
-      scale_color+
+      ggplot2::geom_curve(
+        data = link.point.plot.neg,
+        ggplot2::aes_string(
+          x = "start",
+          xend = "end",
+          y = y_limit,
+          yend = y_limit,
+          color = group_color
+        ),
+        curvature = ifelse(flip_arrow, 0.2, -0.2),
+        angle = 90,
+        ncp = 15,
+        arrow = ggplot2::arrow(length = ggplot2::unit(arrow.size, "npc"))
+      ) +
+      scale_color +
       ggplot2::scale_y_continuous(limits = c(0,1)) 
   }
+
   # create plot
   link.plot <-
     link.basic.plot +
     ggplot2::labs(y = "Links") +
     theme_linkset(
-      x.range = c(plot.range.start, plot.range.end),
+      x.range = x.range,
       margin.len = plot.space,
       show.rect = show.rect
     )
@@ -238,9 +270,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     ncol = 1,
     heights = heights
   ) +
-    patchwork::plot_layout(guides = "collect") &
-    ggplot2::theme(legend.position = "bottom")
-
+    patchwork::plot_layout(guides = "collect")   
   return(combined_plot)
 }
 
@@ -283,7 +313,7 @@ geom_range <- function(mapping = NULL, data = NULL,
                        vjust = NULL,
                        linejoin = "mitre",
                        na.rm = FALSE,
-                       minimal_width = 0.02,
+                       minimal_width = 0.01,
                        show.legend = NA,
                        inherit.aes = TRUE) {
     ggplot2::layer(
@@ -345,7 +375,7 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
                           panel_params,
                           coord,
                           vjust = NULL,
-                          minimal_width = 0.02,
+                          minimal_width = 0.01,
                           bait_col = "red",
                           oe_col = "DeepSkyBlue3",
                           default_col = "grey",
@@ -380,7 +410,10 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
 
 # plot genomic ranges
 #' @export
-setMethod("plot_genomic_ranges", "linkSet", function(linkset, x.range = NULL, show.rect = TRUE,extend.base = 10000,
+#' 
+setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL, 
+                                showOE = NULL, x.range = NULL, 
+                                show.rect = TRUE, extend.base = 1000000,
                                 ...,
                                 bait_col = "red",
                                 oe_col = "DeepSkyBlue3",
@@ -388,9 +421,31 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, x.range = NULL, sh
                                 vjust = NULL,
                                 linejoin = "mitre",
                                 na.rm = FALSE,
-                                minimal_width = 0.02,
+                                minimal_width = 0.01,
                                 show.legend = NA,
-                                inherit.aes = TRUE) {
+                                inherit.aes = TRUE,
+                                link_plot_on_top = FALSE,
+                                arrow.size = 0.2, 
+                                remove_x_axis = TRUE,
+                                plot.height = 0.4, 
+                                plot.space = 0.1,
+                                log.scale = TRUE) {
+
+    # Subset linkset if bait or oe is provided
+    if (!is.null(showBait)) {
+        if (!is.character(showBait)) {
+            stop("bait should be a character vector")
+        }
+        linkset <- subsetBait(linkset, showBait)
+    }
+    
+    if (!is.null(showOE)) {
+        if (!is(showOE, "GRanges")) {
+            stop("oe should be a GRanges object")
+        }
+        linkset <- subsetOE(linkset, showOE)
+    }
+
     # Extract data from linkset object
     if (is.null(x.range)) {
         plot.range.start <- min(start(regions(linkset))) - extend.base
@@ -399,21 +454,27 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, x.range = NULL, sh
     }
     data <- extract_data_from_linkset(linkset)
     
-    
     # Create the base plot
-    p <- ggplot2::ggplot(data, aes(xstart =  xstart, xend = xend, region = region)) +
+    p <- ggplot2::ggplot(data, ggplot2::aes(xstart =  xstart, xend = xend, region = region)) +
         geom_range(
             minimal_width = minimal_width,
             bait_col = bait_col,
             oe_col = oe_col,
             default_col = default_col,
+            vjust = vjust,
+            linejoin = linejoin,
+            na.rm = na.rm,
+            show.legend = show.legend,
+            inherit.aes = inherit.aes,
             ...
         )
 
     # Apply the theme_linkset
-
-    p <- p + ggplot2::labs(y = "Ranges") +theme_range(x.range, show.rect)
-
+    p <- p + ggplot2::labs(y = "Ranges") + theme_range(x.range, show.rect)
+    p  <- p + geom_linkset(linkset, x.range = x.range, link_plot_on_top = link_plot_on_top, 
+                            show.rect = show.rect, extend.base = extend.base,
+                            arrow.size = arrow.size, remove_x_axis = remove_x_axis,
+                            plot.height = plot.height, plot.space = plot.space, log.scale = log.scale)
     return(p)
 })
 
@@ -423,8 +484,8 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, x.range = NULL, sh
 extract_data_from_linkset <- function(linkset) {
     # Extract data from linkset object
 
-    region_bait <- regionsBait(linkset)  %>% as.data.frame()
-    region_oe <- oe(linkset) %>% as.data.frame()
+    region_bait <- as.data.frame(regionsBait(linkset))
+    region_oe <- as.data.frame(oe(linkset))
 
     region_bait$region <- "bait"
     region_oe$region <- "oe"

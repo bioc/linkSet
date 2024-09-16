@@ -342,7 +342,7 @@ setMethod("clean_unused_regions", "linkSet", function(x) {
 #' @export
 setMethod("subsetBait", "linkSet", function(x, subset) {
   idx <- bait(x) %in% subset
-  x[idx]
+  clean_unused_regions(x[idx])
 })
 
 #' Subset linkSet object based on bait regions
@@ -360,7 +360,7 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
   }
   overlaps <- findOverlaps(bait_regions, subset)
   idx <- queryHits(overlaps)
-  x[idx]
+  clean_unused_regions(x[idx])
 })
 
 #' Subset linkSet object based on other end (oe) regions
@@ -375,5 +375,7 @@ setMethod("subsetOE", "linkSet", function(x, subset) {
   oe_regions <- oe(x)
   overlaps <- findOverlaps(oe_regions, subset)
   idx <- queryHits(overlaps)
-  x[idx]
+  ls = x[idx]
+  ls = clean_unused_regions(ls)
 })
+

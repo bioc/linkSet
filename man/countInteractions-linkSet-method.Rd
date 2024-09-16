@@ -22,7 +22,7 @@ counts the number of repetitions for each unique interaction.
 \examples{
 ls = data(linkExample)
 ls = c(ls,ls)
-result <- make_interactions_unique(ls)
+result <- countInteractions(ls)
 result
 
 }

@@ -36,7 +36,7 @@ test_that("show methods work for linkSet objects", {
   [19]        XBP1 ---        chrB     33-45 |           XBP1
   [20]        XBP1 ---        chrB    96-114 |           XBP1
   -------
-  regions: 20 ranges and 0 metadata columns
+  regions: 40 ranges and 0 metadata columns
   seqinfo: 2 sequences from an unspecified genome; no seqlengths", fixed=TRUE)
 
   expect_output(sub("[0-9]", " ", show(x2)), "linkSet object with 20 interactions and 0 metadata columns:

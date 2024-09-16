@@ -37,52 +37,6 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
   return(ls)
 })
 
-#' Convert GenomicInteractions to linkSet
-#' @param x A GenomicInteractions object
-#' @param baitCol A character string specifying the column to use for bait naming (optional)
-#' 
-#' @rdname Convert
-#'
-#' @importFrom GenomicInteractions GenomicInteractions
-#' @return A linkSet object
-#' @export
-setMethod("Convert", signature(x = "GenomicInteractions"), function(x, baitCol = NULL, ...) {
-  # Extract anchor1 and anchor2 GRanges
-  anchor1 <- x@regions[x@anchor1]
-  anchor2 <- x@regions[x@anchor2]
-  
-  # Extract metadata
-  metadata <- as.data.frame(x@elementMetadata)
-  
-  # Create specificCol (using 'InteractionID' if available, otherwise use ranges)
-  if ("InteractionID" %in% colnames(metadata)) {
-    specificCol <- metadata$InteractionID
-  } else {
-    specificCol <- paste0(anchor1)
-  }
-
-  if (is.null(baitCol)) {
-    nameBait <- paste0(anchor1)
-  } else if (baitCol %in% colnames(metadata)) {
-    nameBait <- metadata[[baitCol]]
-  } else {
-    warning("baitCol not found in metadata, using first regions as bait")
-    nameBait <- paste0(anchor1)
-  }
-
-  # Create linkSet object
-  ls <- linkSet(
-    anchor1 = anchor1,
-    anchor2 = anchor2,
-    specificCol = nameBait
-  )
-  
-  # Add metadata to linkSet
-  mcols(ls) <- metadata
-  
-  return(ls)
-})
-
 .convert_to_grange <- function(intervals) {
   # convert "chr1.816066.816566" or "chr1:816066-816566" to grange format
   parts <- strsplit(intervals, "[.:\\-]")
@@ -183,8 +137,50 @@ setMethod("Convert", signature(x = "Pairs"), function(x,baitCol = NULL, ...) {
 #' @return Nothing, throws an error
 #' @export
 setMethod("Convert", signature(x = "ANY"), function(x, ...) {
-  stop(paste("Conversion from", class(x), "to linkSet is not supported"))
+  if (inherits(x, "GenomicInteractions")) {
+    if (!requireNamespace("GenomicInteractions", quietly = TRUE)) {
+      stop("Package 'GenomicInteractions' is needed for this function to work. Please install it.",
+         call. = FALSE)
+    }
+    # Extract anchor1 and anchor2 GRanges
+    anchor1 <- x@regions[x@anchor1]
+    anchor2 <- x@regions[x@anchor2]
+  
+    # Extract metadata
+    metadata <- as.data.frame(x@elementMetadata)
+    
+    # Create specificCol (using 'InteractionID' if available, otherwise use ranges)
+    if ("InteractionID" %in% colnames(metadata)) {
+      specificCol <- metadata$InteractionID
+    } else {
+      specificCol <- paste0(anchor1)
+    }
+
+    if (is.null(baitCol)) {
+      nameBait <- paste0(anchor1)
+    } else if (baitCol %in% colnames(metadata)) {
+      nameBait <- metadata[[baitCol]]
+    } else {
+      warning("baitCol not found in metadata, using first regions as bait")
+      nameBait <- paste0(anchor1)
+    }
+
+    # Create linkSet object
+    ls <- linkSet(
+      anchor1 = anchor1,
+      anchor2 = anchor2,
+      specificCol = nameBait
+    )
+    
+    # Add metadata to linkSet
+    mcols(ls) <- metadata
+    
+    return(ls)
+  } else {
+    stop(paste("Conversion from", class(x), "to linkSet is not supported"))
+  }
 })
+
 
 
 
@@ -233,3 +229,79 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
   return(linkSetObj)
 })
 
+###############################################################
+#' Read validPairs file to GInteractions
+#' @param file A character string specifying the path to the validPairs file
+#' @return A GInteractions object
+#' @export
+#' 
+#' 
+readvalidPairs <- function(file){
+  localFUN = function(buf){
+    # Remove lines starting with ##
+    buf <- buf[!grepl("^##", buf)]
+    # Remove lines starting with #columns:
+    buf <- buf[!grepl("^#columns:", buf)]
+    
+    buf <- do.call(rbind, strsplit(buf, "\\s"))
+    dat <- GRanges(buf[, 2], IRanges(as.numeric(buf[, 3]), 
+                                     width = 1),
+                   strand = buf[, 4])
+    dat2 <- GRanges(buf[, 5], IRanges(as.numeric(buf[, 6]), 
+                                      width = 1),
+                    strand = buf[, 7])
+    gi <- GInteractions(anchor1=dat, anchor2 = dat2)
+  }
+  .readFile(file, localFUN);
+}
+
+.readFile <- function(file, FUN){
+  if (!file.exists(file)) {
+    stop("File does not exist: ", file)
+  }
+  file_info <- file.info(file)
+  if (is.na(file_info$size)) {
+    stop("Unable to determine file size for: ", file)
+  }
+  s <- file_info$size
+
+  if(s<100000000){
+    buf <- readChar(file, s, useBytes=TRUE)
+    buf <- strsplit(buf, "\n", fixed=TRUE, useBytes=TRUE)[[1]]
+    res <- FUN(buf)
+  }else{
+    message("file is too huge. Please consider to subset the data before import.")
+    res <- NULL
+    con <- file(file, open="r")
+    while(length(buf <- readLines(con, n=1000000, warn=FALSE))>0){
+      buf <- FUN(buf)
+      if(length(res)<1) {
+        res <- buf
+      }else{
+        suppressWarnings(res <- c(res, buf))
+      }
+    }
+    close(con)
+  }
+  res <- unique(res)
+  return(res)
+}
+
+#' coerce linkSet to DataFrame
+#' @param x A linkSet object
+#' @return A DataFrame object
+#' @export
+setMethod("as.data.frame", "linkSet", function(x) {
+  df <- data.frame(
+    bait = bait(x),
+    bait_region = paste0(regionsBait(x)),
+    oe_region = paste0(oe(x)),
+    stringsAsFactors = FALSE
+  )
+  
+  if (!is.null(mcols(x))) {
+    df <- cbind(df, as.data.frame(mcols(x)))
+  }
+  
+  return(df)
+})
