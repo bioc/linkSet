@@ -2,13 +2,14 @@
 % Please edit documentation in R/annotate.R
 \name{annotatePromoter,linkSet-method}
 \alias{annotatePromoter,linkSet-method}
+\alias{annotatePromoter}
 \title{Annotate the link set with txDb. Give a gene list, and return a}
 \usage{
 \S4method{annotatePromoter}{linkSet}(
   x,
   genome = "hg38",
   keyType = "symbol",
-  upstream = 500,
+  upstream = 5000,
   overwrite = FALSE
 )
 }
@@ -20,10 +21,26 @@
 \item{keyType}{the key type. You can check with AnnotationDbi::keytypes}
 
 \item{upstream}{The upstream base from the gene}
+
+\item{overwrite}{Whether to overwrite the regionsBait if it already exists}
 }
 \value{
 linkSet object
 }
 \description{
 Annotate the link set with txDb. Give a gene list, and return a
+}
+\examples{
+  gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+  gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+                strand = "+")
+  ls <- linkSet(gr1, gr2, specificCol = "symbol")
+
+  # Test annotatePromoter
+  annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
+
+
 }

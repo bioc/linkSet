@@ -145,5 +145,6 @@ setMethod("diagnoseLinkSet", "linkSet", function(x){
     ggplot2::scale_y_continuous(labels = scales::percent_format()) +
     ggplot2::theme_bw()
   p <- p1|p2
-  return(p)
+  print(p)
+  return(x)
 })

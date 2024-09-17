@@ -2,10 +2,27 @@
 % Please edit documentation in R/count.R
 \name{filterLinks,linkSet-method}
 \alias{filterLinks,linkSet-method}
+\alias{filterLinks}
 \title{Filter links for further analysis}
 \usage{
 \S4method{filterLinks}{linkSet}(x, filter_intra = TRUE, filter_unannotate = TRUE, distance = NULL)
 }
+\arguments{
+\item{filter_intra}{Whether to filter intra-chromosomal interactions}
+
+\item{filter_unannotate}{Whether to filter unannotated interactions}
+
+\item{distance}{The maximum distance between bait and other end}
+}
+\value{
+A linkSet object with filtered interactions
+}
 \description{
 Filter links for further analysis
+}
+\examples{
+ls = data(linkExample)
+ls = c(ls,ls)
+ls = countInteractions(ls)
+ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 }

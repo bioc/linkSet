@@ -11,6 +11,12 @@
 #' @param plot.space Top and bottom margin. Default: 0.1.
 #' @param plot.height The relative height of link to coverage plot. Default: 0.2.
 #' @param show.rect Logical value, whether to add rect border to the plot. Default: FALSE.
+#' @param extend.base Extend the base pair range to show more information. Default: 1000000.
+#' @param x.range The range of x-axis to show. Default: NULL.
+#' @param log.scale Logical value, whether to log1p the score. Default: TRUE.
+#' @param arrow.size The size of the arrow head. Default: 0.02.
+#' @param remove_x_axis Logical value, whether to remove the x-axis. Default: FALSE.
+#' @param link_plot_on_top Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.
 #'
 #' @return Plot.
 #' @importFrom GenomicRanges GRanges makeGRangesFromDataFrame start end
@@ -25,33 +31,7 @@
 #' @references \url{https://stuartlab.org/signac/articles/cicero.html}
 #' @export
 #'
-#' @examples
-#' library(ggcoverage)
-#' # create random test data
-#' # use seed to obtain same result every time
-#' set.seed(123)
 #'
-#' df <- data.frame(
-#'   seqnames = "chr2L",
-#'   start = seq(from = 8000000, to = 8300000, by = 1000),
-#'   end = seq(from = 8001000, to = 8301000, by = 1000),
-#'   score = sample(1:100, 301, replace = TRUE),
-#'   Type = "Example", Group = "Example"
-#' )
-#' # get links
-#' link.file <- system.file(
-#'   "extdata", "HiC", "HiC_link.bedpe",
-#'   package = "ggcoverage"
-#' )
-#'
-#' # create plot
-#' ggcoverage(
-#'   data = df, color = "grey",
-#'   mark.region = NULL, range.position = "out"
-#' ) +
-#'   geom_link(link.file = link.file, file.type = "bedpe", show.rect = TRUE)
-#'
-#' 
 setMethod("geom_linkset", "linkSet", function(linkSet,
                       score.col = "count",
                       score.threshold = NULL,
@@ -59,7 +39,7 @@ setMethod("geom_linkset", "linkSet", function(linkSet,
                       scale.range = 10,
                       plot.space = 0.1,
                       plot.height = 0.2,
-                      arrow.size = 0.2,
+                      arrow.size = 0.05,
                       remove_x_axis = FALSE,
                       link_plot_on_top = FALSE,
                       extend.base = 1000000,
@@ -128,8 +108,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
   # prepare dataframe
   link.point.df <- data.frame(
     chr = as.character(seqnames(regionsBait(linkSet))),
-    start = start(regionsBait(linkSet)),
-    end = start(oe(linkSet))
+    start = start(oe(linkSet)),
+    end = start(regionsBait(linkSet))
   )
 
   # add score
@@ -170,15 +150,13 @@ ggplot_add.interSet <- function(object, plot, object_name) {
       group_color <- "score"
       scale_color <- ggplot2::scale_color_gradientn(
         colors = score.color,
-        limits = range(link.point.plot$score)
+        limits = c(0, max(link.point.plot$score))
       )
     } else {
       group_color <- NULL
       scale_color <- ggplot2::scale_color_manual()
     }
-    #browser()
-    #scale_y_limit <- ifelse(flip_arrow, c(0,1), c(0,0))
-    
+
     y_limit <- ifelse(flip_arrow, 0, 1)
     link.point.plot.pos = link.point.plot[link.point.plot$width > 0,]
     link.point.plot.neg = link.point.plot[link.point.plot$width < 0,]
@@ -191,7 +169,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
           xend = "end",
           y = y_limit,
           yend = y_limit,
-          color = group_color
+          color = group_color,
+          size = "score"
         ),
         curvature = ifelse(flip_arrow, -0.2, 0.2),
         angle = 90,
@@ -205,7 +184,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
           xend = "end",
           y = y_limit,
           yend = y_limit,
-          color = group_color
+          color = group_color,
+          size = "score"
         ),
         curvature = ifelse(flip_arrow, 0.2, -0.2),
         angle = 90,
@@ -213,7 +193,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
         arrow = ggplot2::arrow(length = ggplot2::unit(arrow.size, "npc"))
       ) +
       scale_color +
-      ggplot2::scale_y_continuous(limits = c(0,1)) 
+      ggplot2::scale_y_continuous(limits = c(0,1)) +
+      ggplot2::scale_size_continuous(range = c(0.5, 2))
   }
 
   # create plot
@@ -224,7 +205,14 @@ ggplot_add.interSet <- function(object, plot, object_name) {
       x.range = x.range,
       margin.len = plot.space,
       show.rect = show.rect
-    )
+    ) +
+    ggplot2::guides(size = "none")  # Remove legend for arrow size
+
+  # Add chromosome name to the side
+  link.plot <- link.plot +
+    ggplot2::annotate("text", x = min(x.range), y = 1,
+                      label = plot.range.chr, hjust = 0, vjust = 1)
+
   # assemble plot
   patchwork::wrap_plots(
     plot + ggplot2::theme(plot.margin = ggplot2::margin(t = plot.space, b = plot.space)),
@@ -270,11 +258,9 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     ncol = 1,
     heights = heights
   ) +
-    patchwork::plot_layout(guides = "collect")   
+    patchwork::plot_layout(guides = "collect")
   return(combined_plot)
 }
-
-
 
 
 #' Plot genomic ranges
@@ -355,7 +341,7 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
         # modified from ggplot2::GeomTile
 
         data$height <- data$height %||% params$height %||% 0.5
-        data$fill <- with(data, case_when(
+        data$fill <- with(data, dplyr::case_when(
             region == "bait" ~ params$bait_col,
             region == "oe" ~ params$oe_col,
             TRUE ~ params$default_col  # Default color if not bait or oe
@@ -408,11 +394,42 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
     }
 )
 
-# plot genomic ranges
+#' plot genomic ranges and links
+#' @export
+#' @aliases plot_genomic_ranges,linkSet-method
+#' @aliases plot_genomic_ranges
+#' @param linkset A `linkSet` object.
+#' @param showBait A character vector specifying the bait region to be shown. Default: NULL.
+#' @param showOE A `GRanges` object specifying the oe region to be shown. Default: NULL.
+#' @param x.range A numeric vector of length 2 specifying the x-axis range. Default: NULL.
+#' @param score.col A character string specifying the column name of the score. Default: "count".
+#' @param show.rect Logical value, whether to show the rectangle. Default: TRUE.
+#' @param extend.base A numeric value specifying the extension base. Default: 1000000.
+#' @param ... Additional arguments.
+#' @param bait_col A character string specifying the color of the bait region. Default: "red".
+#' @param oe_col A character string specifying the color of the oe region. Default: "DeepSkyBlue3".
+#' @param default_col A character string specifying the color of the default region. Default: "grey".
+#' @param vjust A numeric value specifying the vertical justification. Default: NULL.
+#' @param linejoin A character string specifying the line join. Default: "mitre".
+#' @param na.rm Logical value, whether to remove NA values. Default: FALSE.
+#' @param minimal_width A numeric value specifying the minimal width. Default: 0.01.
+#' @param show.legend Logical value, whether to show the legend. Default: NA.
+#' @param inherit.aes Logical value, whether to inherit the aesthetics. Default: TRUE.
+#' @param link_plot_on_top Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.
+#' @param arrow.size A numeric value specifying the size of the arrow head. Default: 0.05.
+#' @param remove_x_axis Logical value, whether to remove the x-axis. Default: FALSE.
+#' @param plot.height A numeric value specifying the height of the plot. Default: 0.4.
+#' @param plot.space A numeric value specifying the space between the plot and the link plot. Default: 0.1.
+#' @param log.scale Logical value, whether to log scale the score. Default: TRUE.
+#' @return A `ggplot` object.
+#' @examples
+#' data(linkExample)
+#' plot_genomic_ranges(linkExample, extend.base = 10)
 #' @export
 #' 
-setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL, 
-                                showOE = NULL, x.range = NULL, 
+setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
+                                showOE = NULL, x.range = NULL,
+                                score.col = "count",
                                 show.rect = TRUE, extend.base = 1000000,
                                 ...,
                                 bait_col = "red",
@@ -425,9 +442,9 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
                                 show.legend = NA,
                                 inherit.aes = TRUE,
                                 link_plot_on_top = FALSE,
-                                arrow.size = 0.2, 
-                                remove_x_axis = TRUE,
-                                plot.height = 0.4, 
+                                arrow.size = 0.05,
+                                remove_x_axis = FALSE,
+                                plot.height = 0.4,
                                 plot.space = 0.1,
                                 log.scale = TRUE) {
 
@@ -438,7 +455,7 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
         }
         linkset <- subsetBait(linkset, showBait)
     }
-    
+
     if (!is.null(showOE)) {
         if (!is(showOE, "GRanges")) {
             stop("oe should be a GRanges object")
@@ -452,8 +469,19 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
         plot.range.end <- max(end(regions(linkset))) + extend.base
         x.range <- c(plot.range.start, plot.range.end)
     }
+
+    if (is.null(regionsBait(linkset))) {
+        stop("No bait region found, please annotate the bait region first")
+    }
+
+    if (!score.col %in% colnames(mcols(linkset))) {
+      warning("score.col not found, using count as default")
+      score.col <- "count"
+      linkset <- countInteractions(linkset)
+    }
+
     data <- extract_data_from_linkset(linkset)
-    
+
     # Create the base plot
     p <- ggplot2::ggplot(data, ggplot2::aes(xstart =  xstart, xend = xend, region = region)) +
         geom_range(
@@ -471,7 +499,7 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
 
     # Apply the theme_linkset
     p <- p + ggplot2::labs(y = "Ranges") + theme_range(x.range, show.rect)
-    p  <- p + geom_linkset(linkset, x.range = x.range, link_plot_on_top = link_plot_on_top, 
+    p  <- p + geom_linkset(linkset, score.col = score.col, x.range = x.range, link_plot_on_top = link_plot_on_top,
                             show.rect = show.rect, extend.base = extend.base,
                             arrow.size = arrow.size, remove_x_axis = remove_x_axis,
                             plot.height = plot.height, plot.space = plot.space, log.scale = log.scale)
@@ -495,7 +523,7 @@ extract_data_from_linkset <- function(linkset) {
     colnames(regionDf) <- c("xstart","xend","region")
 
     return(regionDf)
-} 
+}
 
 
 

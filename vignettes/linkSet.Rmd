@@ -54,6 +54,8 @@ The linkSet class can be constructed from various data types, including GRanges 
 ```{r out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
 knitr::include_graphics("img/9.10_data_structure.png")
 ```
+
+
 ### Construction from GRanges objects
 
 To construct a `linkSet` object from GRanges objects:
@@ -133,12 +135,71 @@ ls_from_df
 
 ## Accessors
 ### Getters
+The important elements of the `linkSet` object can be easily accessed by the following accessors:
 
+- `regions(x)`: Get the regions of the `linkSet` object.
+- `bait(x)`: Get the bait of the `linkSet` object.
+- `oe(x)`: Get the other end of the `linkSet` object.
+- `regionsBait(x)`: Get the bait regions of the `linkSet` object.
+- `regionsOe(x)`: Get the other end regions of the `linkSet` object.
+- `mcols(x)`: Get the metadata of the `linkSet` object.
+
+```{r}
+linkSet::regions(ls)
+```
+
+```{r}
+regionsBait(ls)
+```
+
+```{r}
+oe(ls)
+```
+
+```{r}
+bait(ls)
+```
+```{r}
+mcols(ls)
+```
+
+
+### Setters
+Wait... You set wrong bait or oe region? You can also change it easily:
+
+```{r}
+new_bait <- c("Gene40","Gene41","Gene42")
+new_oe <- GRanges(
+  seqnames = c("chr1", "chr2", "chr3"),
+  ranges = IRanges(start = c(5, 105, 205), width = 20),
+  symbol = c("Gene1", "Gene2", "Gene3")
+)
+bait(ls) <- new_bait
+oe(ls) <- new_oe
+ls
+```
 
 
 ## Subsetting and concatenation
+LinkSet object can be easily subsetted by index.
+```{r}
+ls_sub <- ls[1:2]
+ls_sub
+```
 
+If you are interested in a specific gene or region, you can subset the `linkSet` object by the bait or oe region.
+```{r}
+ls_sub_2 <- subsetBait(ls, "Gene1")
+ls_sub_2
+ls_sub_3 <- subsetBaitRegion(ls, "chr1:100-200")
+ls_sub_3
+```
 
+You can also concatenate two `linkSet` objects.
+```{r}
+ls_concat <- c(ls, ls)
+ls_concat
+```
 
 ## GRanges method
 The features of linkSet is inherited from GRanges, which means you can use all the functions in GRanges to manipulate the linkSet object.
@@ -157,12 +218,80 @@ resize_oe <- resizeRegions(linkExample, width = 75, fix = "start", region = "oe"
 resize_oe
 ```
 
+The `reduce` method allows the `linkSet` objects to be collapsed across the whole of the `linkSet` object. 
 
-## Distance calculation
-
-Of course, you can also calculate the distance between the bait and oe region.
 ```{r}
-linkExample = linkSet::pairdist(linkExample)
+reduce_ls <- reduce(ls_concat)
+reduce_ls
 ```
-The annotated distance is shown in distance column.
+By default, we will collapse the duplicate interactions, and count the interactions and store in the metadata columns.
+You can also choose not to count the interactions by set `countInteractions = FALSE`.
+
+```{r}
+reduce_ls_2 <- linkSet::reduceRegions(ls_concat, countInteractions = FALSE)
+reduce_ls_2
+```
+
+## Diagnose
+There are two metrics to diagnose the quality of the `linkSet` object:
+1. The intra/inter-chromosomal interactions.
+2. The distance between the bait and oe region.
+
+The `diagnose` function can help you to diagnose the `linkSet` object.
+
+```{r}
+diagnoseLinkSet(linkExample)
+```
+
+```{r}
+ls_concat
+```
+The annotated distance and interaction type is shown in the `distance` and `inter_type` column.
+
+You can remove the intrachromosomal interactions by:
+```{r}
+ls_concat <- filterLinks(ls_concat, filter_intra = TRUE)
+ls_concat
+```
+
+
 ## Annotations
+It might be common that you only have the bait name, but don't have the exact bait region.
+The annotation function can help you to annotate the bait region from a gene annotation.
+
+```{r}
+bait <- c("BRCA1", "TP53", "NONEXISTENT")
+gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+                strand = "+")
+ls <- linkSet(bait, gr2)
+
+# Test annotatePromoter
+annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
+annotated_ls
+```
+
+## Statistical analysis
+Functional enhancers usually regulate multiple genes, we can use cross gene analysis to identify the cross gene enhancers.
+
+```{r}
+ls <- crossGeneEnhancer(ls)
+ls <- orderLinks(ls,by = "crossFreq",decreasing = T)
+ls
+```
+
+
+
+## Visualization
+
+With `plot_genomic_ranges` function, you can visualize the link between bait and oe region.
+
+You can choose the oe-centric views to visualize the functional enhancer which regulate multiple genes.
+```{r}
+plot_genomic_ranges(linkExample,extend.base = 10)
+```
+
+You can adjust the range of the views.
+```{r}
+plot_genomic_ranges(linkExample,extend.base = 10,x.range = c(50,200))
+```

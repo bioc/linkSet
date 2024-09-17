@@ -16,7 +16,7 @@ geom_range(
   vjust = NULL,
   linejoin = "mitre",
   na.rm = FALSE,
-  minimal_width = 0.02,
+  minimal_width = 0.01,
   show.legend = NA,
   inherit.aes = TRUE
 )

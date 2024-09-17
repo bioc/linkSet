@@ -50,6 +50,16 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
 
 
 #' Filter links for further analysis
+#' @aliases filterLinks
+#' @param filter_intra Whether to filter intra-chromosomal interactions
+#' @param filter_unannotate Whether to filter unannotated interactions
+#' @param distance The maximum distance between bait and other end
+#' @return A linkSet object with filtered interactions
+#' @examples
+#' ls = data(linkExample)
+#' ls = c(ls,ls)
+#' ls = countInteractions(ls)
+#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' @export
 setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
                                             filter_unannotate = TRUE,
@@ -90,6 +100,15 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 })
 
 #' Cross gene enhancer
+#' @aliases crossGeneEnhancer
+#' @param score_threshold The minimum score to filter interactions
+#' @return A linkSet object with filtered interactions
+#' @examples
+#' ls = data(linkExample)
+#' ls = c(ls,ls)
+#' ls = countInteractions(ls)
+#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' ls = crossGeneEnhancer(ls, score_threshold = 10)
 #' @export
 setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
   if (!is.null(score_threshold) & !"score" %in% colnames(mcols(x))) {
@@ -116,6 +135,16 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 
 
 #' Order linkSet by mcols
+#' @aliases orderLinks
+#' @param by The column name to order by
+#' @param decreasing Whether to sort in decreasing order
+#' @return A linkSet object with ordered interactions
+#' @examples
+#' ls = data(linkExample)
+#' ls = c(ls,ls)
+#' ls = countInteractions(ls)
+#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' ls = orderLinks(ls, by = "count", decreasing = TRUE)
 #' @export
 setMethod("orderLinks", "linkSet", function(x, by = "count", decreasing = TRUE) {
   if (!by %in% colnames(mcols(x))) {

@@ -12,11 +12,13 @@
   scale.range = 10,
   plot.space = 0.1,
   plot.height = 0.2,
-  arrow.size = 0.2,
+  arrow.size = 0.05,
   remove_x_axis = FALSE,
   link_plot_on_top = FALSE,
-  extend.base = 10000,
-  show.rect = FALSE
+  extend.base = 1e+06,
+  show.rect = FALSE,
+  x.range = NULL,
+  log.scale = TRUE
 )
 }
 \arguments{
@@ -32,7 +34,19 @@
 
 \item{plot.height}{The relative height of link to coverage plot. Default: 0.2.}
 
+\item{arrow.size}{The size of the arrow head. Default: 0.02.}
+
+\item{remove_x_axis}{Logical value, whether to remove the x-axis. Default: FALSE.}
+
+\item{link_plot_on_top}{Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.}
+
+\item{extend.base}{Extend the base pair range to show more information. Default: 1000000.}
+
 \item{show.rect}{Logical value, whether to add rect border to the plot. Default: FALSE.}
+
+\item{x.range}{The range of x-axis to show. Default: NULL.}
+
+\item{log.scale}{Logical value, whether to log1p the score. Default: TRUE.}
 
 \item{link.file}{File contains region link information.}
 
@@ -45,34 +59,6 @@ Plot.
 }
 \description{
 Add Genome Links to Coverage Plot.
-}
-\examples{
-library(ggcoverage)
-# create random test data
-# use seed to obtain same result every time
-set.seed(123)
-
-df <- data.frame(
-  seqnames = "chr2L",
-  start = seq(from = 8000000, to = 8300000, by = 1000),
-  end = seq(from = 8001000, to = 8301000, by = 1000),
-  score = sample(1:100, 301, replace = TRUE),
-  Type = "Example", Group = "Example"
-)
-# get links
-link.file <- system.file(
-  "extdata", "HiC", "HiC_link.bedpe",
-  package = "ggcoverage"
-)
-
-# create plot
-ggcoverage(
-  data = df, color = "grey",
-  mark.region = NULL, range.position = "out"
-) +
-  geom_link(link.file = link.file, file.type = "bedpe", show.rect = TRUE)
-
-
 }
 \references{
 \url{https://stuartlab.org/signac/articles/cicero.html}

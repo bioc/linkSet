@@ -76,7 +76,7 @@ diagnoseLinkSet(ls)
 
 Intrachromosomal interaction and long distance interaction are likely be noise, so we filter them.
 ```{r}
-ls <- filterLinks(ls,filter_intra = TRUE, filter_unannotate = TRUE, distance = 500000)
+ls <- filterLinks(ls,filter_intra = TRUE, filter_unannotate = TRUE, distance = 50000000)
 ```
 
 Duplicated links are associated with contact frequency, so it's a good idea to count duplicated links.
@@ -88,13 +88,23 @@ orderLinks(ls,by = "count",decreasing = T)
 We can notice that there is a significant link strength between `Sulf1` and `chr1:12785091-12785750`.
 
 
-## Cross gene links
+## Cross gene links and visualization
 Enhancers that regulate multiple genes are biologically meaningful.
 ```{r}
 ls <- crossGeneEnhancer(ls)
-orderLinks(ls,by = "crossFreq",decreasing = T)
+ls <- orderLinks(ls,by = "crossFreq",decreasing = T)
+ls
+```
+We can use `plot_genomic_ranges` to visualize the cross gene links.
+```{r}
+plot_genomic_ranges(ls,showOE = oe(ls)[1])
 ```
 
+We can also choose to visualze the bait center region.
 ```{r}
-plot_genomic_ranges(ls,showBait = "Ncoa2",minimal_width = 0.005)
+plot_genomic_ranges(ls,showBait = "Ncoa2")
+```
+```{r}
+plot_genomic_ranges(ls,showBait = "Sulf1")
+
 ```

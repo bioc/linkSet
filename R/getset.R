@@ -93,6 +93,11 @@ setMethod("bait", "linkSet", function(x) { anchors(x, type="bait") })
 setMethod("oe", "linkSet", function(x) { anchors(x, type="oe") })
 
 #' @export
+setMethod("regions","linkSet",function(x){
+  return(x@regions)
+})
+
+#' @export
 setMethod("regionsBait", "linkSet", function(x) {
   if (length(x@anchor1) == 0) {
     return(NULL)
@@ -145,7 +150,7 @@ setReplaceMethod("regionsBait", "linkSet", function(x, value) {
   if (!is(value, "GRanges")) {
     stop("The 'value' must be a GRanges object")
   }
-  if (length(value) != length(regions(x)[anchor1(x)])) {
+  if (length(value) != length(oe(x))) {
     stop("The length of 'value' must be equal to the number of bait regions")
   }
   metadata <- mcols(value)
@@ -163,7 +168,10 @@ setReplaceMethod("oe", "linkSet", function(x, value) {
   if (length(value) != length(regions(x)[anchor2(x)])) {
     stop("The length of 'value' must be equal to the number of other end regions")
   }
+  metadata <- mcols(value)
+  mcols(value) <- NULL
   regions(x)[anchor2(x)] <- value
+  mcols(x) <- cbind(mcols(x),metadata)
   return(x)
 })
 

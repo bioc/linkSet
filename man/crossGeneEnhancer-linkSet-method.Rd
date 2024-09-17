@@ -2,10 +2,24 @@
 % Please edit documentation in R/count.R
 \name{crossGeneEnhancer,linkSet-method}
 \alias{crossGeneEnhancer,linkSet-method}
+\alias{crossGeneEnhancer}
 \title{Cross gene enhancer}
 \usage{
 \S4method{crossGeneEnhancer}{linkSet}(x, score_threshold = NULL)
 }
+\arguments{
+\item{score_threshold}{The minimum score to filter interactions}
+}
+\value{
+A linkSet object with filtered interactions
+}
 \description{
 Cross gene enhancer
+}
+\examples{
+ls = data(linkExample)
+ls = c(ls,ls)
+ls = countInteractions(ls)
+ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+ls = crossGeneEnhancer(ls, score_threshold = 10)
 }

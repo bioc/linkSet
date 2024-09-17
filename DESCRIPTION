@@ -24,7 +24,8 @@ Imports:
     InteractionSet,
     ggplot2,
     patchwork,
-    scales
+    scales,
+    dplyr
 Suggests: 
     knitr,
     rmarkdown,

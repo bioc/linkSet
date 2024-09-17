@@ -155,13 +155,15 @@ setGeneric("orderLinks", function(x, by = "count", decreasing = TRUE) {
 # plot.R
 #' @export
 setGeneric("geom_linkset", function(linkSet, score.col = "count", score.threshold = NULL, score.color = c("grey70", "#56B1F7", "#132B43"),
- scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.2,  remove_x_axis = FALSE, 
+ scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.05,  remove_x_axis = FALSE, 
  link_plot_on_top = FALSE,extend.base = 10000,show.rect = FALSE, x.range = NULL, log.scale = TRUE) {
   standardGeneric("geom_linkset")
 })
 
 #' @export
-setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL,x.range = NULL, show.rect = TRUE,
+setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL,x.range = NULL,
+                                            score.col = "count", 
+                                            show.rect = TRUE,
                                             extend.base = 10000,
                                             ...,
                                             bait_col = "red",
@@ -170,11 +172,11 @@ setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NU
                                             vjust = NULL,
                                             linejoin = "mitre",
                                             na.rm = FALSE,
-                                            minimal_width = 0.02,
+                                            minimal_width = 0.01,
                                             show.legend = NA,
                                             inherit.aes = TRUE,
                                             link_plot_on_top = FALSE,
-                                            arrow.size = 0.2, remove_x_axis = TRUE,
+                                            arrow.size = 0.05, remove_x_axis = FALSE,
                                             plot.height = 0.4, plot.space = 0.1, 
                                             log.scale = TRUE) {
   standardGeneric("plot_genomic_ranges")

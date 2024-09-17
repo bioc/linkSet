@@ -358,6 +358,9 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
   if (is.null(bait_regions)) {
     stop("Bait regions are not available. Please annotate bait first.")
   }
+  if (is.character(subset)) {
+    subset <- .convert_to_grange(subset)
+  }
   overlaps <- findOverlaps(bait_regions, subset)
   idx <- queryHits(overlaps)
   clean_unused_regions(x[idx])
@@ -373,6 +376,9 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
 #' @export
 setMethod("subsetOE", "linkSet", function(x, subset) {
   oe_regions <- oe(x)
+  if (is.character(subset)) {
+    subset <- .convert_to_grange(subset)
+  }
   overlaps <- findOverlaps(oe_regions, subset)
   idx <- queryHits(overlaps)
   ls = x[idx]
