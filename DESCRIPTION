@@ -29,7 +29,10 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    TxDb.Mmusculus.UCSC.mm10.knownGene,
+    org.Mm.eg.db,
+    GenomicFeatures
 Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R 
         linkSet-package.R GRange_method.R test_helper.R

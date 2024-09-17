@@ -30,11 +30,6 @@ We highly recommend you to use custom data instead of the example data provided 
 
 
 ```{r setup}
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-if (!require(c("TxDb.Mmusculus.UCSC.mm10.knownGene","org.Mm.eg.db"), quietly = TRUE))
-    BiocManager::install(c("TxDb.Mmusculus.UCSC.mm10.knownGene","org.Mm.eg.db"))
 suppressPackageStartupMessages({
   library(linkSet)
   library(TxDb.Mmusculus.UCSC.mm10.knownGene)
