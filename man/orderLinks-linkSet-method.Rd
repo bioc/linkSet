@@ -19,9 +19,9 @@ A linkSet object with ordered interactions
 Order linkSet by mcols
 }
 \examples{
-ls = data(linkExample)
-ls = c(ls,ls)
-ls = countInteractions(ls)
-ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
-ls = orderLinks(ls, by = "count", decreasing = TRUE)
+linkSet = data(linkExample)
+linkSet = c(linkSet,linkSet)
+linkSet = countInteractions(linkSet)
+linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)
 }

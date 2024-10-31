@@ -13,9 +13,9 @@
 #' @export
 #'
 #' @examples
-#' ls = data(linkExample)
-#' ls = c(ls,ls)
-#' result <- countInteractions(ls)
+#' linkSet = data(linkExample)
+#' linkSet = c(linkSet,linkSet)
+#' result <- countInteractions(linkSet)
 #' result
 #'
 setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
@@ -49,6 +49,70 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
 })
 
 
+#' Count bait and oe
+#' @aliases countBaitOe
+#' @param x A linkSet object
+#' @param baitRegions Whether to count bait regions
+#' @description This function calculate the number of trans interactions for each bait and oe. The word "interactibility" can refer to https://doi.org/10.1038%2Fnature11279.
+#' @return A linkSet object with counts for each unique interaction
+#' @examples
+#' linkSet = data(linkExample)
+#' linkSet = c(linkSet,linkSet)
+#' linkSet = countInteractions(linkSet)
+#' linkSet = countInteractibility(linkSet)
+#' @export
+#' 
+setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
+  # Ensure inter_type and count are present
+  if (!"inter_type" %in% colnames(mcols(x))) {
+    x <- annotateInter(x)
+  }
+  if (!"count" %in% colnames(mcols(x))) {
+    x <- countInteractions(x)
+  }
+
+  # Get bait and oe identifiers
+  bait_names <- bait(x)
+  bait_regions <- paste(regionsBait(x))
+  oe_regions <- paste(oe(x))
+  trans <- x[x$inter_type == "intra"]
+
+  if(length(trans) == 0){
+    warning("No intra-chromosomal interactions found. Please run this function before you filterLinks.")
+    return(x)
+  }
+
+  bait_names_trans <- bait(trans)
+  bait_regions_trans <- paste(regionsBait(trans))
+  oe_regions_trans <- paste(oe(trans))
+
+  if (baitRegions) {
+    bait_ids <- paste(bait_names, bait_regions, sep = "___")
+    bait_ids_trans <- paste(bait_names_trans, bait_regions_trans, sep = "___")
+  } else {
+    bait_ids <- bait_names
+    bait_ids_trans <- bait_names_trans
+  }
+
+  oe_ids <- oe_regions
+  oe_ids_trans <- oe_regions_trans
+  # Summarize counts
+  bait_counts <- tapply(trans$count, bait_ids_trans, sum, na.rm = TRUE)
+  oe_counts <- tapply(trans$count, oe_ids_trans, sum, na.rm = TRUE)
+
+  # Assign summarized counts, using 0 for missing interactions
+  x$bait.trans.count <- as.vector(bait_counts[match(bait_ids, names(bait_counts))])
+  x$bait.trans.count[is.na(x$bait.trans.count)] <- 0
+
+  x$target.trans.count <- as.vector(oe_counts[match(oe_ids, names(oe_counts))])
+  x$target.trans.count[is.na(x$target.trans.count)] <- 0
+
+  return(x)
+})
+
+
+
+
 #' Filter links for further analysis
 #' @aliases filterLinks
 #' @param filter_intra Whether to filter intra-chromosomal interactions
@@ -56,10 +120,10 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
 #' @param distance The maximum distance between bait and other end
 #' @return A linkSet object with filtered interactions
 #' @examples
-#' ls = data(linkExample)
-#' ls = c(ls,ls)
-#' ls = countInteractions(ls)
-#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet = data(linkExample)
+#' linkSet = c(linkSet, linkSet)
+#' linkSet = countInteractions(linkSet)
+#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' @export
 setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
                                             filter_unannotate = TRUE,
@@ -104,11 +168,11 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 #' @param score_threshold The minimum score to filter interactions
 #' @return A linkSet object with filtered interactions
 #' @examples
-#' ls = data(linkExample)
-#' ls = c(ls,ls)
-#' ls = countInteractions(ls)
-#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
-#' ls = crossGeneEnhancer(ls, score_threshold = 10)
+#' linkSet = data(linkExample)
+#' linkSet = c(linkSet, linkSet)
+#' linkSet = countInteractions(linkSet)
+#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)
 #' @export
 setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
   if (!is.null(score_threshold) & !"score" %in% colnames(mcols(x))) {
@@ -140,11 +204,11 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 #' @param decreasing Whether to sort in decreasing order
 #' @return A linkSet object with ordered interactions
 #' @examples
-#' ls = data(linkExample)
-#' ls = c(ls,ls)
-#' ls = countInteractions(ls)
-#' ls = filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
-#' ls = orderLinks(ls, by = "count", decreasing = TRUE)
+#' linkSet = data(linkExample)
+#' linkSet = c(linkSet,linkSet)
+#' linkSet = countInteractions(linkSet)
+#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)
 #' @export
 setMethod("orderLinks", "linkSet", function(x, by = "count", decreasing = TRUE) {
   if (!by %in% colnames(mcols(x))) {

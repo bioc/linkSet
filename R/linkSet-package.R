@@ -30,7 +30,6 @@
 #' }
 #'
 #' @importFrom GenomicRanges GRanges
-#' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom methods new setClass setGeneric setMethod
 #' @importFrom S4Vectors DataFrame
 #' @importFrom IRanges IRanges

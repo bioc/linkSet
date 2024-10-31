@@ -19,6 +19,12 @@ With techniche like HiC, PCHiC, scATAC-seq, and other high-throughput omics tech
 we are able to predict the interactions between genes and enhancers. The linkSet package provides classes to
 represent the interactions between genes and enhancers, and provides functions to analyze and visualize the interactions.
 
+## Application Situation
+linkSet can seamlessly apply to the following situation:
+1. Capture HiC workflow.
+2. Using HiC to identify gene-enhancer interactions.
+3. Using scRNA and scATAC to predict gene-enhancer interactions.
+
 ## The linkSet class
 The linkSet class is a specialized data structure designed to represent and analyze genomic interactions, 
 particularly focusing on gene-enhancer relationships. It's part of the linkSet package, 
@@ -49,12 +55,20 @@ The class is designed to support functions for analyzing and visualizing genomic
 knitr::include_graphics("img/overview.png")
 ```
 
+
+```{r out.width = '70%', echo = FALSE, fig.alt="Overview diagram of the linkSet class structure and its components"}
+knitr::include_graphics("img/linksetmethod.png")
+```
 ## Construction
 The linkSet class can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
 ```{r out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
 knitr::include_graphics("img/9.10_data_structure.png")
 ```
 
+
+```{r out.width = '70%', echo = FALSE, fig.alt="Import methods"}
+knitr::include_graphics("img/linkSetImport.png")
+```
 
 ### Construction from GRanges objects
 

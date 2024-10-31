@@ -9,7 +9,7 @@ test_that("annotatePromoter works correctly", {
   ls <- linkSet(gr1, gr2, specificCol = "symbol")
 
   # Test annotatePromoter
-  annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
+  annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
 
   # Check if regionsBait is not null after annotation
   expect_false(is.null(regionsBait(annotated_ls)))

@@ -1,4 +1,3 @@
-
 #' Add Genome Links to Coverage Plot.
 #'
 #' @param link.file File contains region link information.
@@ -604,4 +603,86 @@ theme_range <- function(x.range, show.rect) {
       ggplot2::coord_cartesian(xlim = x.range)
     )
   }
+}
+
+#' @export
+plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, baits = NULL, plotBaitNames = TRUE, 
+                      plevel1 = 5, plevel2 = 3, outfile = NULL,
+                      width = 20, height = 20, extend.base = 1e6, bgCol = "black", lev2Col = "blue", 
+                      lev1Col = "red", ...) {
+
+  if (!is(linkset, "linkSet")) {
+    stop("Input must be a linkSet object")
+  }
+  if (is.null(baits)) {
+    baits <- sample(bait(linkset), n)
+  } else {
+    n <- length(baits)
+  }
+  
+  # Pre-compute color vector
+  color_vector <- c(bgCol, lev2Col, lev1Col)
+  
+  plot_list <- vector("list", n)
+  
+  for (i in seq_len(n)) {
+    bait <- baits[i]
+    this <- subsetBait(linkset, bait)
+    
+    if (!is.null(extend.base)) {
+      baitGr <- regionsBait(this)
+      baitGr<- unique(baitGr)
+      new_start <- max(0, start(baitGr) - extend.base)
+      new_end <- end(baitGr) + extend.base
+      
+      expandGr <- GRanges(
+        seqnames = seqnames(baitGr),
+        ranges = IRanges(start = new_start, end = new_end),
+        strand = strand(baitGr)
+      )
+      this <- subsetOE(this, expandGr)
+    }
+    if (length(this) == 0) {
+      warning(paste0("No interactions found for bait ", bait))
+      next
+    }
+
+    plotDf <- as.data.frame(this)
+    plotDf$oe_middle <- start(oe(this)) + (end(oe(this)) - start(oe(this))) / 2
+    bait_middle <- start(baitGr) + (end(baitGr) - start(baitGr)) / 2
+    
+    # Compute color factor
+    plotDf$color_factor <- cut(plotDf[[scoreCol]], 
+                               breaks = c(-Inf, plevel2, plevel1, Inf), 
+                               labels = c(1, 2, 3))
+    
+    title <- if (plotBaitNames) {
+      baitName <- bait
+      if (grepl(",", baitName)) {
+        baitName <- sub("(\\S+,).+", "\\1...", baitName)
+      }
+      paste0(baitName, " (", as.character(bait), ")")
+    } else {
+      as.character(bait)
+    }
+    p <- ggplot2::ggplot(plotDf, 
+                         ggplot2::aes(x = oe_middle, y = .data[[countCol]], color = color_factor)) +
+      ggplot2::geom_point() +
+      ggplot2::geom_vline(xintercept = bait_middle, color = "grey", linetype = "dashed") +
+      ggplot2::labs(title = title, x = "Distance from viewpoint", y = countCol) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_y_continuous(limits = c(0, NA)) +
+      ggplot2::scale_color_manual(values = color_vector, guide = "none")
+    
+    plot_list[[i]] <- p
+  }
+
+  combined_plot <- patchwork::wrap_plots(plotlist = plot_list, ncol = n)
+
+  if (!is.null(outfile)) {
+    ggplot2::ggsave(outfile, combined_plot, width = width, height = height)
+  } else {
+    print(combined_plot)
+  }
+  invisible(baits)
 }

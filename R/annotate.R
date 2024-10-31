@@ -20,9 +20,9 @@
 #'                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
 #'                 strand = "+")
 #'   ls <- linkSet(gr1, gr2, specificCol = "symbol")
-#' 
+#'
 #'   # Test annotatePromoter
-#'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
+#'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
 #'
 #'
 setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
@@ -35,7 +35,7 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
   if (!is.null(regionsBait(x)) && overwrite) {
     warning("regionsBait is being overwritten")
   }
-  
+
   src <- NULL
   tryCatch({
     if (genome == "hg38") {
@@ -45,24 +45,24 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
     } else {
       stop("Unsupported genome. Please use 'hg38' or 'mm10'.")
     }
-    
+
     genes <- bait(x)
     geneGr <- Organism.dplyr::genes(src, filter = ~(symbol %in% genes))
     promoterGr <- IRanges::promoters(geneGr, upstream = upstream)
-    
+
     index <- match(genes, geneGr$symbol)
     if (any(is.na(index))) {
       warning("Some genes are not found in the txDb, they will be set to chrNULL")
       newIndex <- which(!is.na(index))
       grMatch <- promoterGr[index[newIndex]]
-      gr <- GRanges(seqnames = rep("chrNULL", length(genes)), 
+      gr <- GRanges(seqnames = rep("chrNULL", length(genes)),
                     ranges = IRanges(rep(0, length(genes)), rep(0, length(genes))))
       mcols(grMatch) <- NULL
       gr[newIndex] <- grMatch
     } else {
       gr <- promoterGr[index]
     }
-    
+
     regionsBait(x) <- gr
     return(x)
   }, error = function(e) {

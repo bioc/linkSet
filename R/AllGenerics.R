@@ -109,6 +109,20 @@ setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
   standardGeneric("baitGInteractions")
 })
 
+#' @export 
+setGeneric("as.GInteractions", function(x){
+  standardGeneric("as.GInteractions")
+})
+
+#' @export
+setGeneric("exportInterBed", function(x, outfile){
+  standardGeneric("exportInterBed")
+}) 
+
+#' @export
+setGeneric("exportWashU", function(x, outfile){
+  standardGeneric("exportWashU")
+})
 
 # grange_method.R
 
@@ -132,6 +146,9 @@ setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.name
 # count.R
 #' @export
 setGeneric("countInteractions", function(x, baitRegions = TRUE) standardGeneric("countInteractions"))
+
+#' @export
+setGeneric("countInteractibility", function(x, baitRegions = TRUE) standardGeneric("countInteractibility"))
 
 #' @export
 setGeneric("reduceRegions", function(x, region = "both", countInteractions = TRUE, ...) {
@@ -180,4 +197,11 @@ setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NU
                                             plot.height = 0.4, plot.space = 0.1, 
                                             log.scale = TRUE) {
   standardGeneric("plot_genomic_ranges")
+})
+
+
+# statical.R
+#' @export
+setGeneric("run_chicane", function(linkSet, ...) {
+  standardGeneric("run_chicane")
 })

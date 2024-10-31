@@ -12,7 +12,7 @@ Convert(x, ...)
 
 \S4method{Convert}{GInteractions}(x, baitCol = NULL, ...)
 
-\S4method{Convert}{data.frame}(x, baitCol = "gene", oeCol = "peak", ...)
+\S4method{Convert}{data.frame}(x, source = "data.frame", baitCol = "gene", oeCol = "peak", ...)
 
 \S4method{Convert}{Pairs}(x, baitCol = NULL, ...)
 

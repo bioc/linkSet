@@ -11,8 +11,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
     GenomicRanges,
-    R (>= 2.10),
-    SummarizedExperiment
+    R (>= 2.10)
 Imports: 
     methods,
     Matrix,
@@ -25,18 +24,25 @@ Imports:
     ggplot2,
     patchwork,
     scales,
-    dplyr
+    dplyr,
+    foreach,
+    iterators,
+    stats,
+    MASS,
+    data.table
 Suggests: 
     knitr,
     rmarkdown,
     testthat,
     TxDb.Mmusculus.UCSC.mm10.knownGene,
     org.Mm.eg.db,
-    GenomicFeatures
+    GenomicFeatures,
+    gamlss,
+    gamlss.tr
 Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R 
         linkSet-package.R GRange_method.R test_helper.R
-        visualization.R count.R
+        visualization.R count.R statical.R
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
 URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet, https://gilberthan1011.github.io/linkSet/

@@ -20,9 +20,9 @@ This function takes a linkSet object, identifies repeated interactions
 counts the number of repetitions for each unique interaction.
 }
 \examples{
-ls = data(linkExample)
-ls = c(ls,ls)
-result <- countInteractions(ls)
+linkSet = data(linkExample)
+linkSet = c(linkSet,linkSet)
+result <- countInteractions(linkSet)
 result
 
 }
