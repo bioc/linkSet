@@ -1,3 +1,80 @@
-annotatePromoter,linkSet-method
-                        Annotate the link set with txDb. Give a gene
+.check.model.numerical.fit
+                        check.model.identifiability
+.check.split.data.numerical.fit
+                        check.split.data.numerical.fit
+.dbCache                Annotate the link set with txDb. Give a gene
                         list, and return a
+.distance.split         .distance.split
+.filter.fragments       filter.fragments
+.is.glm.nb.maxiter.warning
+                        is.glm.nb.maxiter.warning
+.is.glm.nb.theta.error
+                        check.glm.nb.theta.error
+.is.glm.nb.theta.warning
+                        is.glm.nb.theta.warning
+.model.rows.sanity.check
+                        model.rows.sanity.check
+.model.try.catch        .model.try.catch
+.smart.split            smart.split
+.verify.interaction.data
+                        .verify.interaction.data
+.verify.linkSet         verify.linkSet
+Convert                 Convert different object types to linkSet
+anchor1,linkSet-method
+                        linkSet-accessors
+annotateInter,linkSet-method
+                        Annotate linkSet with inter/intra chromosome
+                        interactions
+as.GInteractions,linkSet-method
+                        export linkset to GInteractions
+as.data.frame,linkSet-method
+                        coerce linkSet to DataFrame
+baitGInteractions,GInteractions,GRanges,GRanges-method
+                        Convert GInteractions with bait range and oe
+                        ranges to linkSet
+countInteractibility,linkSet-method
+                        Count bait and oe
+countInteractions,linkSet-method
+                        Make Repeated Interactions Unique and Count
+                        Repetitions
+crossGeneEnhancer,linkSet-method
+                        Cross gene enhancer
+diagnoseLinkSet,linkSet-method
+                        Diagnose the linkSet object, return barplot of
+                        inter/intra interaction and distance
+                        distribution
+exportInterBed,linkSet-method
+                        Export linkSet to interBed format
+exportWashU,linkSet-method
+                        Export linkSet to WashU format
+filterLinks,linkSet-method
+                        Filter links for further analysis
+fit.glm                 fit.glm
+fit.model               fit.model
+geom_linkset,linkSet-method
+                        Add Genome Links to Coverage Plot.
+geom_range              Plot genomic ranges
+linkSet                 linkSet: Base Classes for Storing Genomic Link
+                        Data
+linkSet-class           LinkSet object
+multiple.testing.correct
+                        multiple.testing.correct
+orderLinks,linkSet-method
+                        Order linkSet by mcols
+pairdist,linkSet-method
+                        Calculate the distance between bait and the
+                        other end
+plot_genomic_ranges,linkSet-method
+                        plot genomic ranges and links
+readvalidPairs          Read validPairs file to GInteractions
+reduceRegions,linkSet-method
+                        Reduce a linkSet object
+run.model.fitting       run.model.fitting
+run_chicane,linkSet-method
+                        run_chicane
+subsetBait,linkSet-method
+                        Subset linkSet object based on bait names
+trim,linkSet-method     linkSet-GRange-Methods
+withTxDb,character,function-method
+                        Execute Database Operation with Automatic
+                        Connection Management

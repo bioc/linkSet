@@ -14,3 +14,9 @@
 \description{
 Export linkSet to interBed format
 }
+\examples{
+data(linkExample)
+tmpfile <- tempfile(fileext = ".txt")
+exportInterBed(linkExample, tmpfile)
+cat(readLines(tmpfile), sep = "\n")
+}

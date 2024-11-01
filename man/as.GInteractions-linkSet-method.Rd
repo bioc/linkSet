@@ -15,3 +15,8 @@ A GInteractions object
 \description{
 export linkset to GInteractions
 }
+\examples{
+data(linkExample)
+gi <- as.GInteractions(linkExample)
+gi
+}

@@ -1,30 +1,4 @@
 # Annotation--------------
-
-#' Annotate the link set with txDb. Give a gene list, and return a
-#'
-#' @aliases annotatePromoter
-#' @param x linkSet
-#' @param genome the genome you want to annotate
-#' @param keyType the key type. You can check with AnnotationDbi::keytypes
-#' @param upstream The upstream base from the gene
-#' @param overwrite Whether to overwrite the regionsBait if it already exists
-#'
-#' @return linkSet object
-#' @export
-#'
-#' @examples
-#'   gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                 ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-#'                 strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-#'   gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-#'                 strand = "+")
-#'   ls <- linkSet(gr1, gr2, specificCol = "symbol")
-#'
-#'   # Test annotatePromoter
-#'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
-#'
-#'
 # Create a new environment to store database connections
 .dbCache <- new.env(parent = emptyenv())
 
@@ -74,6 +48,32 @@
   rm(list = ls(.dbCache), envir = .dbCache)
 }
 
+
+#' Annotate the link set with txDb. Give a gene list, and return a
+#'
+#' @aliases annotatePromoter
+#' @param x linkSet
+#' @param genome the genome you want to annotate
+#' @param keyType the key type. You can check with AnnotationDbi::keytypes
+#' @param upstream The upstream base from the gene
+#' @param overwrite Whether to overwrite the regionsBait if it already exists
+#'
+#' @return linkSet object
+#' @export
+#'
+#' @examples
+#'   gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                 ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'                 strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+#'   gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'                 strand = "+")
+#'   ls <- linkSet(gr1, gr2, specificCol = "symbol")
+#'
+#'   # Test annotatePromoter
+#'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+#'
+#'
 # Modified annotatePromoter method
 setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
                                                   keyType = "symbol", upstream = 5000,
@@ -127,6 +127,12 @@ reg.finalizer(.dbCache, function(e) {
 #' @param ... Additional arguments
 #' @return Result of the database operation
 #' @export
+#' @examples
+#' result <- withTxDb("hg38", function(src) {
+#'   genes <- Organism.dplyr::genes(src)
+#'   return(genes)
+#' })
+#' print(result)
 setMethod("withTxDb", signature(x = "character", expr = "function"),
   function(x, expr, ...) {
     if (!x %in% c("mm10", "hg38")) {

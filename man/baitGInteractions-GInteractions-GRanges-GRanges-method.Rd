@@ -21,3 +21,21 @@ A linkSet object
 \description{
 Convert GInteractions with bait range and oe ranges to linkSet
 }
+\examples{
+# Example usage:
+library(GenomicRanges)
+library(InteractionSet)
+
+# Create example GRanges objects for genes and peaks
+geneGr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(100, 200), end = c(150, 250)), geneSymbol = c("Gene1", "Gene2"))
+peakGr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(300, 400), end = c(350, 450)))
+
+# Create example GInteractions object
+gi <- GInteractions(anchor1 = geneGr, anchor2 = peakGr)
+
+# Convert to linkSet
+linkSetObj <- baitGInteractions(gi, geneGr, peakGr, geneSymbol = "geneSymbol")
+
+# Print the linkSet object
+print(linkSetObj)
+}

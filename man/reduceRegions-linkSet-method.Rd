@@ -24,3 +24,9 @@ A reduced linkSet object with the same length as the input
 This function reduces the bait and/or oe regions of a linkSet object and optionally counts interactions,
 while maintaining the original length of the linkSet.
 }
+\examples{
+data(linkExample)
+reduced_ls <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
+reduced_ls
+
+}

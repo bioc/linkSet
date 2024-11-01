@@ -1,0 +1,462 @@
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "linkSet"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('linkSet')
+Loading required package: GenomicRanges
+Loading required package: stats4
+Loading required package: BiocGenerics
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, sd, var, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    Filter, Find, Map, Position, Reduce, anyDuplicated, aperm, append,
+    as.data.frame, basename, cbind, colnames, dirname, do.call,
+    duplicated, eval, evalq, get, grep, grepl, intersect, is.unsorted,
+    lapply, mapply, match, mget, order, paste, pmax, pmax.int, pmin,
+    pmin.int, rank, rbind, rownames, sapply, setdiff, table, tapply,
+    union, unique, unsplit, which.max, which.min
+
+Loading required package: S4Vectors
+
+Attaching package: ‘S4Vectors’
+
+The following object is masked from ‘package:utils’:
+
+    findMatches
+
+The following objects are masked from ‘package:base’:
+
+    I, expand.grid, unname
+
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("annotateInter-linkSet-method")
+> ### * annotateInter-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: annotateInter,linkSet-method
+> ### Title: Annotate linkSet with inter/intra chromosome interactions
+> ### Aliases: annotateInter,linkSet-method annotateInter
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkExample <- annotateInter(linkExample)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("countInteractibility-linkSet-method")
+> ### * countInteractibility-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: countInteractibility,linkSet-method
+> ### Title: Count bait and oe
+> ### Aliases: countInteractibility,linkSet-method countBaitOe
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkSet = c(linkExample,linkExample)
+> linkSet = countInteractions(linkSet)
+> linkSet = countInteractibility(linkSet)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("countInteractions-linkSet-method")
+> ### * countInteractions-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: countInteractions,linkSet-method
+> ### Title: Make Repeated Interactions Unique and Count Repetitions
+> ### Aliases: countInteractions,linkSet-method
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkSet = c(linkExample,linkExample)
+> result <- countInteractions(linkSet)
+> result
+linkSet object with 5 interactions and 2 metadata columns:
+             bait     seqnames_oe ranges_oe | anchor1.symbol     count
+      <character>           <Rle> <IRanges> |    <character> <integer>
+  [1]       Gene1 ---        chr1     50-59 |          Gene1         2
+  [2]       Gene1 ---        chr2   150-159 |          Gene1         2
+  [3]       Gene2 ---        chr2   250-259 |          Gene2         2
+  [4]       Gene3 ---        chr4   350-359 |          Gene3         2
+  [5]       Gene3 ---        chr4   450-459 |          Gene3         2
+  -------
+  regions: 10 ranges and 0 metadata columns
+  seqinfo: 4 sequences from an unspecified genome; no seqlengths
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("crossGeneEnhancer-linkSet-method")
+> ### * crossGeneEnhancer-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: crossGeneEnhancer,linkSet-method
+> ### Title: Cross gene enhancer
+> ### Aliases: crossGeneEnhancer,linkSet-method crossGeneEnhancer
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkSet = c(linkExample,linkExample)
+> linkSet = countInteractions(linkSet)
+> linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+> linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)
+Warning in crossGeneEnhancer(linkSet, score_threshold = 10) :
+  score column not found.
+> 
+> 
+> 
+> cleanEx()
+> nameEx("dot-dbCache")
+> ### * dot-dbCache
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: .dbCache
+> ### Title: Annotate the link set with txDb. Give a gene list, and return a
+> ### Aliases: .dbCache annotatePromoter
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+>   gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
++                 ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
++                 strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+>   gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
++                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
++                 strand = "+")
+>   ls <- linkSet(gr1, gr2, specificCol = "symbol")
+> 
+>   # Test annotatePromoter
+>   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+
+> 
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("filterLinks-linkSet-method")
+> ### * filterLinks-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: filterLinks,linkSet-method
+> ### Title: Filter links for further analysis
+> ### Aliases: filterLinks,linkSet-method filterLinks
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkSet = c(linkExample,linkExample)
+> linkSet = countInteractions(linkSet)
+> linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("linkSet-GRange-Methods")
+> ### * linkSet-GRange-Methods
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: trim,linkSet-method
+> ### Title: linkSet-GRange-Methods
+> ### Aliases: trim,linkSet-method trim resize,linkSet-method resize
+> ###   resizeRegions,linkSet-method resizeRegions narrow,linkSet-method
+> ###   narrow narrowRegions,linkSet-method narrowRegions
+> ###   shift,linkSet-method shift shiftRegions,linkSet-method shiftRegions
+> ###   flank,linkSet-method flank flankRegions,linkSet-method flankRegions
+> ###   promoters,linkSet-method promoters promoterRegions,linkSet-method
+> ###   promoterRegions width,linkSet-method width reduce,linkSet-method
+> ###   reduce
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> resize_bait <- resizeRegions(linkExample, width = 75, fix = "start", region = "bait")
+> resize_bait
+linkSet object with 5 interactions and 1 metadata column:
+             bait     seqnames_oe ranges_oe | anchor1.symbol
+      <character>           <Rle> <IRanges> |    <character>
+  [1]       Gene1 ---        chr1     50-59 |          Gene1
+  [2]       Gene1 ---        chr2   150-159 |          Gene1
+  [3]       Gene2 ---        chr2   250-259 |          Gene2
+  [4]       Gene3 ---        chr4   350-359 |          Gene3
+  [5]       Gene3 ---        chr4   450-459 |          Gene3
+  -------
+  regions: 10 ranges and 0 metadata columns
+  seqinfo: 4 sequences from an unspecified genome; no seqlengths
+> 
+> narrow_bait <- narrowRegions(linkExample, start = 1, width = 5, region = "bait")
+> narrow_bait
+linkSet object with 5 interactions and 1 metadata column:
+             bait     seqnames_oe ranges_oe | anchor1.symbol
+      <character>           <Rle> <IRanges> |    <character>
+  [1]       Gene1 ---        chr1     50-59 |          Gene1
+  [2]       Gene1 ---        chr2   150-159 |          Gene1
+  [3]       Gene2 ---        chr2   250-259 |          Gene2
+  [4]       Gene3 ---        chr4   350-359 |          Gene3
+  [5]       Gene3 ---        chr4   450-459 |          Gene3
+  -------
+  regions: 10 ranges and 0 metadata columns
+  seqinfo: 4 sequences from an unspecified genome; no seqlengths
+> 
+> shift_oe <- shiftRegions(linkExample, shift = 10, region = "oe")
+> shift_oe
+linkSet object with 5 interactions and 1 metadata column:
+             bait     seqnames_oe ranges_oe | anchor1.symbol
+      <character>           <Rle> <IRanges> |    <character>
+  [1]       Gene1 ---        chr1     60-69 |          Gene1
+  [2]       Gene1 ---        chr2   160-169 |          Gene1
+  [3]       Gene2 ---        chr2   260-269 |          Gene2
+  [4]       Gene3 ---        chr4   360-369 |          Gene3
+  [5]       Gene3 ---        chr4   460-469 |          Gene3
+  -------
+  regions: 10 ranges and 0 metadata columns
+  seqinfo: 4 sequences from an unspecified genome; no seqlengths
+> 
+> flank_bait <- flankRegions(linkExample, width = 100, start = TRUE, both = FALSE, use.names = TRUE, ignore.strand = FALSE, region = "bait")
+> flank_bait
+linkSet object with 5 interactions and 1 metadata column:
+             bait     seqnames_oe ranges_oe | anchor1.symbol
+      <character>           <Rle> <IRanges> |    <character>
+  [1]       Gene1 ---        chr1     50-59 |          Gene1
+  [2]       Gene1 ---        chr2   150-159 |          Gene1
+  [3]       Gene2 ---        chr2   250-259 |          Gene2
+  [4]       Gene3 ---        chr4   350-359 |          Gene3
+  [5]       Gene3 ---        chr4   450-459 |          Gene3
+  -------
+  regions: 10 ranges and 0 metadata columns
+  seqinfo: 4 sequences from an unspecified genome; no seqlengths
+> 
+> width(linkExample)
+$bait
+[1] 10 10 10 10 10
+
+$oe
+[1] 10 10 10 10 10
+
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("linkSet-class")
+> ### * linkSet-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: linkSet-class
+> ### Title: LinkSet object
+> ### Aliases: linkSet-class linkSet LinkSet
+> 
+> ### ** Examples
+> 
+> showClass("linkSet")  # shows the known subclasses
+Class "linkSet" [package "linkSet"]
+
+Slots:
+                                                        
+Name:                  nameBait                  anchor1
+Class:                character                  integer
+                                                        
+Name:                   anchor2                  regions
+Class:                  integer GenomicRanges_OR_missing
+                                                        
+Name:                     NAMES          elementMetadata
+Class:        character_OR_NULL                DataFrame
+                               
+Name:                  metadata
+Class:                     list
+
+Extends: 
+Class "Vector", directly
+Class "Annotated", by class "Vector", distance 2
+Class "vector_OR_Vector", by class "Vector", distance 2
+> 
+> set.seed(7000)
+> N <- 40
+> all.starts <- round(runif(N, 1, 100))
+> all.ends <- all.starts + round(runif(N, 5, 20))
+> all.regions <- GRanges(rep(c("chrA", "chrB"), c(N-10, 10)), IRanges(all.starts, all.ends))
+> genes = c(rep("SP7",4),rep("ASPN",10),rep("XBP1",6))
+> Np <- 20
+> all.anchor1 <- sample(N, Np)
+> gr1 <- all.regions[all.anchor1]
+> gr1$symbol <- genes
+> all.anchor2 <- setdiff(1:40,all.anchor1)
+> gr2 <- all.regions[all.anchor2]
+> x <- linkSet(gr1, gr2,specificCol = "symbol")
+> x
+linkSet object with 20 interactions and 1 metadata column:
+              bait     seqnames_oe ranges_oe | anchor1.symbol
+       <character>           <Rle> <IRanges> |    <character>
+   [1]         SP7 ---        chrA     47-58 |            SP7
+   [2]         SP7 ---        chrA     41-54 |            SP7
+   [3]         SP7 ---        chrA     20-33 |            SP7
+   [4]         SP7 ---        chrA    87-104 |            SP7
+   [5]        ASPN ---        chrA     59-76 |           ASPN
+   ...         ... ...         ...       ... .            ...
+  [16]        XBP1 ---        chrB     54-61 |           XBP1
+  [17]        XBP1 ---        chrB      1-18 |           XBP1
+  [18]        XBP1 ---        chrB     83-91 |           XBP1
+  [19]        XBP1 ---        chrB     33-45 |           XBP1
+  [20]        XBP1 ---        chrB    96-114 |           XBP1
+  -------
+  regions: 40 ranges and 0 metadata columns
+  seqinfo: 2 sequences from an unspecified genome; no seqlengths
+> x2 <- linkSet(genes, gr2)
+> x2
+linkSet object with 20 interactions and 0 metadata columns:
+              bait     seqnames_oe ranges_oe
+       <character>           <Rle> <IRanges>
+   [1]         SP7 ---        chrA     47-58
+   [2]         SP7 ---        chrA     41-54
+   [3]         SP7 ---        chrA     20-33
+   [4]         SP7 ---        chrA    87-104
+   [5]        ASPN ---        chrA     59-76
+   ...         ... ...         ...       ...
+  [16]        XBP1 ---        chrB     54-61
+  [17]        XBP1 ---        chrB      1-18
+  [18]        XBP1 ---        chrB     83-91
+  [19]        XBP1 ---        chrB     33-45
+  [20]        XBP1 ---        chrB    96-114
+  -------
+  regions: 20 ranges and 0 metadata columns
+  seqinfo: 2 sequences from an unspecified genome; no seqlengths
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("linkSet")
+> ### * linkSet
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: linkSet
+> ### Title: linkSet: Base Classes for Storing Genomic Link Data
+> ### Aliases: linkSet
+> 
+> ### ** Examples
+> 
+> # Basic usage example
+> library(linkSet)
+> # Add a simple example here
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("orderLinks-linkSet-method")
+> ### * orderLinks-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: orderLinks,linkSet-method
+> ### Title: Order linkSet by mcols
+> ### Aliases: orderLinks,linkSet-method orderLinks
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkSet = c(linkExample,linkExample)
+> linkSet = countInteractions(linkSet)
+> linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+> linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("pairdist-linkSet-method")
+> ### * pairdist-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: pairdist,linkSet-method
+> ### Title: Calculate the distance between bait and the other end
+> ### Aliases: pairdist,linkSet-method pairdist
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> linkExample <- pairdist(linkExample, type="mid")
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("plot_genomic_ranges-linkSet-method")
+> ### * plot_genomic_ranges-linkSet-method
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plot_genomic_ranges,linkSet-method
+> ### Title: plot genomic ranges and links
+> ### Aliases: plot_genomic_ranges,linkSet-method plot_genomic_ranges
+> 
+> ### ** Examples
+> 
+> data(linkExample)
+> plot_genomic_ranges(linkExample, extend.base = 10)
+Warning in plot_genomic_ranges(linkExample, extend.base = 10) :
+  score.col not found, using count as default
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  23.649 1.995 25.646 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

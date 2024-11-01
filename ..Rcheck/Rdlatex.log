@@ -1,5 +1,5 @@
 Hmm ... looks like a package
-Converting parsed Rd's to LaTeX 
+Converting parsed Rd's to LaTeX ....
 Creating pdf output from LaTeX ...
 Warning in texi2dvi(file = file, pdf = TRUE, clean = clean, quiet = quiet,  :
   texi2dvi script/program not available, using emulation
@@ -10,4 +10,4 @@ Warning in texi2dvi(file = file, pdf = TRUE, clean = clean, quiet = quiet,  :
 Error in texi2dvi(file = file, pdf = TRUE, clean = clean, quiet = quiet,  : 
   pdflatex is not available
 Error in running tools::texi2pdf()
-You may want to clean up by 'rm -Rf /tmp/RtmpftaUfq/Rd2pdf1161583dee1c7a'
+You may want to clean up by 'rm -Rf /tmp/RtmpsTeHqd/Rd2pdf16b18d580e59ee'

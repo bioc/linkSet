@@ -19,3 +19,10 @@ Result of the database operation
 \description{
 Execute Database Operation with Automatic Connection Management
 }
+\examples{
+result <- withTxDb("hg38", function(src) {
+  genes <- Organism.dplyr::genes(src)
+  return(genes)
+})
+print(result)
+}

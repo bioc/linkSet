@@ -1,6 +1,6 @@
 Package: linkSet
 Title: Base Classes for Storing Genomic Link Data
-Version: 0.0.0.1
+Version: 0.99.0
 Authors@R: 
     person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467"))
@@ -44,8 +44,7 @@ Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R 
         linkSet-package.R GRange_method.R test_helper.R
         visualization.R count.R statical.R
-Author: Gilbert Han [aut]
-Maintainer: Gilbert Han <gilberthan1011@gmail.com>
+biocViews: Software, HiC, DataRepresentation
 URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet, https://gilberthan1011.github.io/linkSet/
 BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
 LazyData: true

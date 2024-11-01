@@ -31,6 +31,14 @@ A vector of the regions
 \description{
 Methods to get and set fields in an linkSet object.
 }
+\examples{
+data(linkExample)
+anchor1(linkExample)
+data(linkExample)
+anchor2(linkExample)
+data(linkExample)
+regions(linkExample)
+}
 \author{
 Gilbert Han
 }

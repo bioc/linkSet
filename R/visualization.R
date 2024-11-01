@@ -527,7 +527,16 @@ extract_data_from_linkset <- function(linkset) {
 
 
 
+#' linkSet-theme
 #' @export
+#' @rdname linkSet-theme
+#' @examples
+#' data(linkExample)
+#' x.range <- c(0, 100)
+#' margin.len <- 0.5
+#' show.rect <- TRUE
+#' p <- ggplot2::ggplot() + theme_linkset(x.range, margin.len, show.rect)
+#' print(p)
 theme_linkset <- function(x.range, margin.len, show.rect) {
   if (show.rect) {
     list(
@@ -571,6 +580,14 @@ theme_linkset <- function(x.range, margin.len, show.rect) {
 }
 
 #' @export
+#' @rdname linkSet-theme
+#' @examples
+#' data(linkExample)
+#' x.range <- c(0, 100)
+#' show.rect <- TRUE
+#' p <- ggplot2::ggplot() + theme_range(x.range, show.rect)
+#' print(p)
+#' 
 theme_range <- function(x.range, show.rect) {
   if (show.rect) {
     list(
@@ -605,6 +622,7 @@ theme_range <- function(x.range, show.rect) {
     )
   }
 }
+
 
 #' @export
 plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, baits = NULL, plotBaitNames = TRUE, 

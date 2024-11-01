@@ -15,3 +15,10 @@ A DataFrame object
 \description{
 coerce linkSet to DataFrame
 }
+\examples{
+# Create a linkSet object
+data(linkExample)
+# Convert linkSet to DataFrame
+df <- as.data.frame(linkExample)
+print(df)
+}

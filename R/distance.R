@@ -120,6 +120,11 @@ setMethod("pairdist", "linkSet", function(x, type="mid"){
 })
 
 #' Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
+#' @export
+#' @aliases diagnoseLinkSet
+#' @examples
+#' data(linkExample)
+#' diagnoseLinkSet(linkExample)
 setMethod("diagnoseLinkSet", "linkSet", function(x){
   if (!.exist_inter(x)){
     x <- annotateInter(x)

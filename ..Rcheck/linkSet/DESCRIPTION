@@ -1,18 +1,32 @@
 Package: linkSet
 Title: Base Classes for Storing Genomic Link Data
-Version: 0.0.0.1
+Version: 0.99.0
 Authors@R: 
     person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467"))
-Description: This package is created to manage gene-peak links
+Description: The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: GenomicRanges, SummarizedExperiment
-Imports: methods, S4Vectors, IRanges, GenomeInfoDb,
-        BiocGenerics, Organism.dplyr
-Collate: class.R AllGenerics.R getset.R methods.R annotate.R
+Depends: GenomicRanges, R (>= 2.10)
+Imports: methods, Matrix, S4Vectors, IRanges, GenomeInfoDb,
+        BiocGenerics, Organism.dplyr, InteractionSet, ggplot2,
+        patchwork, scales, dplyr, foreach, iterators, stats, rlang,
+        MASS, data.table
+Suggests: knitr, rmarkdown, testthat,
+        TxDb.Mmusculus.UCSC.mm10.knownGene, org.Mm.eg.db,
+        GenomicFeatures, gamlss, gamlss.tr
+Collate: class.R AllGenerics.R getset.R methods.R annotate.R distance.R
+        formatConverter.R linkSet-package.R GRange_method.R
+        test_helper.R visualization.R count.R statical.R
+biocViews: Software, HiC, DataRepresentation
 Author: Gilbert Han [aut]
 Maintainer: Gilbert Han <gilberthan1011@gmail.com>
-Built: R 4.4.1; ; 2024-09-06 08:44:33 UTC; unix
+URL: https://github.com/GilbertHan1011/linkSet,
+        https://gilberthan1011.github.io/linkSet,
+        https://gilberthan1011.github.io/linkSet/
+BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
+LazyData: true
+VignetteBuilder: knitr
+Built: R 4.4.1; ; 2024-11-01 06:30:13 UTC; unix

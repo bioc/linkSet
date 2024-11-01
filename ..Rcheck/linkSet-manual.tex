@@ -16,21 +16,110 @@
 \begin{description}
 \raggedright{}
 \item[Title]\AsIs{Base Classes for Storing Genomic Link Data}
-\item[Version]\AsIs{0.0.0.1}
-\item[Description]\AsIs{This package is created to manage gene-peak links}
+\item[Version]\AsIs{0.99.0}
+\item[Description]\AsIs{The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis. }
 \item[License]\AsIs{MIT + file LICENSE}
 \item[Encoding]\AsIs{UTF-8}
 \item[Roxygen]\AsIs{list(markdown = TRUE)}
 \item[RoxygenNote]\AsIs{7.3.2}
-\item[Depends]\AsIs{GenomicRanges, SummarizedExperiment}
+\item[Depends]\AsIs{GenomicRanges, R (>= 2.10)}
 \item[Imports]\AsIs{methods, Matrix, S4Vectors, IRanges, GenomeInfoDb,
-BiocGenerics, Organism.dplyr}
-\item[Collate]\AsIs{class.R AllGenerics.R getset.R methods.R annotate.R}
+BiocGenerics, Organism.dplyr, InteractionSet, ggplot2,
+patchwork, scales, dplyr, foreach, iterators, stats, rlang,
+MASS, data.table}
+\item[Suggests]\AsIs{knitr, rmarkdown, testthat,
+TxDb.Mmusculus.UCSC.mm10.knownGene, org.Mm.eg.db,
+GenomicFeatures, gamlss, gamlss.tr}
+\item[Collate]\AsIs{class.R AllGenerics.R getset.R methods.R annotate.R distance.R
+formatConverter.R linkSet-package.R GRange_method.R
+test_helper.R visualization.R count.R statical.R}
+\item[biocViews]\AsIs{Software, HiC, DataRepresentation}
 \item[Author]\AsIs{Gilbert Han [aut]}
 \item[Maintainer]\AsIs{Gilbert Han }\email{gilberthan1011@gmail.com}\AsIs{}
+\item[URL]\AsIs{}\url{https://github.com/GilbertHan1011/linkSet}\AsIs{,
+}\url{https://gilberthan1011.github.io/linkSet}\AsIs{,
+}\url{https://gilberthan1011.github.io/linkSet/}\AsIs{}
+\item[BugReports]\AsIs{}\url{https://github.com/GilbertHan1011/linkSet/issues/new}\AsIs{}
+\item[LazyData]\AsIs{true}
+\item[VignetteBuilder]\AsIs{knitr}
 \end{description}
 \Rdcontents{Contents}
-\HeaderA{annotatePromoter,linkSet-method}{Annotate the link set with txDb. Give a gene list, and return a}{annotatePromoter,linkSet.Rdash.method}
+\HeaderA{linkSet-package}{linkSet: Base Classes for Storing Genomic Link Data}{linkSet.Rdash.package}
+\keyword{internal}{linkSet-package}
+%
+\begin{Description}
+
+
+The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis.
+\end{Description}
+%
+\begin{Author}
+\strong{Maintainer}: Gilbert Han \email{GilbertHan1011@gmail.com} (\Rhref{https://orcid.org/0009-0000-0293-2467}{ORCID})
+
+\end{Author}
+%
+\begin{SeeAlso}
+Useful links:
+\begin{itemize}
+
+\item{} \url{https://github.com/GilbertHan1011/linkSet}
+\item{} \url{https://gilberthan1011.github.io/linkSet}
+\item{} \url{https://gilberthan1011.github.io/linkSet/}
+\item{} Report bugs at \url{https://github.com/GilbertHan1011/linkSet/issues/new}
+
+\end{itemize}
+
+
+\end{SeeAlso}
+\HeaderA{.check.model.numerical.fit}{check.model.identifiability}{.check.model.numerical.fit}
+%
+\begin{Description}
+\begin{alltt}Check if chicane model can be fit on a given dataset. 
+\end{alltt}
+
+
+\code{glm.nb} does not work when all responses are constant, or there are only two unique values and a covariate is a perfect predictor.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.check.model.numerical.fit(interaction.data)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{interaction.data}] Data table of interaction data on which model is to be fit
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+boolean indicating if model can be fit
+\end{Value}
+\HeaderA{.check.split.data.numerical.fit}{check.split.data.numerical.fit}{.check.split.data.numerical.fit}
+%
+\begin{Description}
+Helper function to check if the chicane model can be fit on each element of a split data list.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.check.split.data.numerical.fit(split.data)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{split.data}] List of data.table objects with fragment interaction data
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Logical indicating if the model can be fit
+\end{Value}
+\HeaderA{.dbCache}{Annotate the link set with txDb. Give a gene list, and return a}{.dbCache}
+\aliasA{annotatePromoter}{.dbCache}{annotatePromoter}
+\keyword{datasets}{.dbCache}
 %
 \begin{Description}
 Annotate the link set with txDb. Give a gene list, and return a
@@ -38,8 +127,7 @@ Annotate the link set with txDb. Give a gene list, and return a
 %
 \begin{Usage}
 \begin{verbatim}
-## S4 method for signature 'linkSet'
-annotatePromoter(x, genome = "hg38", keyType = "symbol", upstream = 500)
+.dbCache
 \end{verbatim}
 \end{Usage}
 %
@@ -52,11 +140,1768 @@ annotatePromoter(x, genome = "hg38", keyType = "symbol", upstream = 500)
 \item[\code{keyType}] the key type. You can check with AnnotationDbi::keytypes
 
 \item[\code{upstream}] The upstream base from the gene
+
+\item[\code{overwrite}] Whether to overwrite the regionsBait if it already exists
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Format}
+An object of class \code{environment} of length 0.
+\end{Format}
+%
+\begin{Value}
+linkSet object
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+  gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+  gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+                strand = "+")
+  ls <- linkSet(gr1, gr2, specificCol = "symbol")
+
+  # Test annotatePromoter
+  annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{.distance.split}{.distance.split}{.distance.split}
+%
+\begin{Description}
+Split interaction data into subsets that are large enough for the chicane model to be fit (see Details),
+based on distance. This step allows the distance term in the model to be fit in a piecewise linear fashion.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.distance.split(
+  interaction.data,
+  distance.bins = NULL,
+  min.rows.bin = 50,
+  verbose = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{interaction.data}] Data table of interaction data, typically from \code{prepare.data}
+
+\item[\code{distance.bins}] Number of distance bins desired. If NULL, a number is chosen to ensure that the negative binomial can be fit in all bins.
+
+\item[\code{min.rows.bin}] The minimum number of expected rows in a distance bin. Ignored if distance.bins is set
+
+\item[\code{verbose}] Logical indicating whether to print progress reports
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+Fitting \code{glm.nb} fails when there is a lack of overdispersion in the data. The chicane method
+contains logic to catch these errors and instead fit a Poisson model. However, to avoid this happening
+more than necessary, an attempt is made to avoid distance splits that will clearly result in numerical errors.
+This includes bins of data where the count is the same for all rows,
+or a covariate is a perfect predictor of count.
+\end{Details}
+%
+\begin{Value}
+List where each element corresponds to a specified distance bin, and the final one corresponding to trans-interactions (if present)
+\end{Value}
+\HeaderA{.filter.fragments}{filter.fragments}{.filter.fragments}
+%
+\begin{Description}
+Filter low and high-interacting restriction fragments based on the total number of trans counts
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.filter.fragments(
+  linkSet,
+  bait.filters = c(0, 1),
+  target.filters = c(0, 1),
+  verbose = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{linkSet}] LinkSet object containing interactions
 \end{ldescription}
 \end{Arguments}
 %
 \begin{Value}
-linkSet object
+LinkSet object containing fragments that passed all filters
+\end{Value}
+\HeaderA{.is.glm.nb.maxiter.warning}{is.glm.nb.maxiter.warning}{.is.glm.nb.maxiter.warning}
+%
+\begin{Description}
+Check if a warning object is an iteration limit reached warning from \code{glm.nb}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.is.glm.nb.maxiter.warning(w)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{w}] Warning object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Logical indicating if warning matches iteration limit reached warning
+\end{Value}
+\HeaderA{.is.glm.nb.theta.error}{check.glm.nb.theta.error}{.is.glm.nb.theta.error}
+%
+\begin{Description}
+\begin{alltt}Check if an error matches the error raised by \bsl{}code\{glm.nb\} due to an inflated theta estimate.
+\end{alltt}
+
+
+This happens when the variance of the negative binomial does not exceed the mean (i.e. there is no overdispersion).
+In such cases, the Poisson distribution may be a suitable alternative.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.is.glm.nb.theta.error(e)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{e}] Error object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Boolean indicating if error matches
+\end{Value}
+\HeaderA{.is.glm.nb.theta.warning}{is.glm.nb.theta.warning}{.is.glm.nb.theta.warning}
+%
+\begin{Description}
+\begin{alltt}Check if a warning matches the square root warning raised by \bsl{}code\{glm.nb\} due to an inflated theta estimate.
+\end{alltt}
+
+
+This happens when the variance of the negative binomial does not exceed the mean (i.e. there is no overdispersion).
+In such cases, the Poisson distribution may be a suitable alternative.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.is.glm.nb.theta.warning(w)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{w}] Warning object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Boolean indicating if warning matches
+\end{Value}
+\HeaderA{.model.rows.sanity.check}{model.rows.sanity.check}{.model.rows.sanity.check}
+%
+\begin{Description}
+\begin{alltt}Check that the model fit contains the same number of rows as the data used to fit it, 
+\end{alltt}
+
+
+and throw an error if not
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.model.rows.sanity.check(model.data, model)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model.data}] Data used to fit model
+
+\item[\code{model}] Resulting negative binomial model object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+None
+\end{Value}
+\HeaderA{.model.try.catch}{.model.try.catch}{.model.try.catch}
+%
+\begin{Description}
+\begin{alltt}Internal function for fitting model within a tryCatch loop, handling numerical errors gracefully.
+\end{alltt}
+
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.model.try.catch(
+  model.formula,
+  data,
+  distribution = "negative-binomial",
+  maxit = 100,
+  epsilon = 1e-08,
+  init.theta = NULL,
+  start = NULL,
+  trace = FALSE,
+  verbose = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model.formula}] formula
+
+\item[\code{data}] model data
+
+\item[\code{distribution}] Name of distribution of the counts. Options are 'negative-binomial',
+'poisson', 'truncated-poisson', and 'truncated-negative-binomial'
+
+\item[\code{maxit}] Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})
+
+\item[\code{epsilon}] Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
+
+\item[\code{init.theta}] Initial value of theta in negative binomial model
+
+\item[\code{start}] starting values of coefficients in linear predictor
+
+\item[\code{trace}] Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+
+\item[\code{verbose}] Logical indicating whether to print progress reports.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+List with elements
+\begin{ldescription}
+\item[\code{model}] model object. Set to NULL if no model could be fit.
+\item[\code{expected.values}] vector of expected values for each element in original data, or vector of NAs if no model could be fit
+\item[\code{p.values}] vector of p-values for test of significantly higher response than expected, or vector of NAs if no model could be fit
+\end{ldescription}
+\end{Value}
+\HeaderA{.smart.split}{smart.split}{.smart.split}
+%
+\begin{Description}
+Split a data frame into a prespecified number of bins, using
+\code{split} and \code{cut}. Unlike the default R functions, this does not
+fail when asked to split the data into a single bin.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.smart.split(dat, bins)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dat}] Data frame or data table to be split
+
+\item[\code{bins}] Number of bins to split data into
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+List with \code{bins} elements. Each element corresponds to one portion
+of the data
+\end{Value}
+\HeaderA{.verify.interaction.data}{.verify.interaction.data}{.verify.interaction.data}
+%
+\begin{Description}
+Verify that interaction.data object is in expected format. Throws an error if object does not fit requirements.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.verify.interaction.data(interaction.data)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{interaction.data}] Object to be verified.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+None
+\end{Value}
+\HeaderA{.verify.linkSet}{verify.linkSet}{.verify.linkSet}
+%
+\begin{Description}
+Verify that linkSet object is in expected format. Throws an error if object does not fit requirements.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.verify.linkSet(linkSet)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{linkSet}] Object to be verified.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+None
+\end{Value}
+\HeaderA{anchor1,linkSet-method}{linkSet-accessors}{anchor1,linkSet.Rdash.method}
+\aliasA{anchor1}{anchor1,linkSet-method}{anchor1}
+\aliasA{anchor2}{anchor1,linkSet-method}{anchor2}
+\aliasA{anchor2,linkSet-method}{anchor1,linkSet-method}{anchor2,linkSet.Rdash.method}
+\aliasA{regions}{anchor1,linkSet-method}{regions}
+\aliasA{regions,linkSet-method}{anchor1,linkSet-method}{regions,linkSet.Rdash.method}
+\aliasA{seqinfo}{anchor1,linkSet-method}{seqinfo}
+\aliasA{seqinfo,linkSet-method}{anchor1,linkSet-method}{seqinfo,linkSet.Rdash.method}
+%
+\begin{Description}
+Methods to get and set fields in an linkSet object.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+anchor1(x)
+
+## S4 method for signature 'linkSet'
+anchor2(x)
+
+## S4 method for signature 'linkSet'
+regions(x)
+
+## S4 method for signature 'linkSet'
+seqinfo(x)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+For the getters, values in various slots of x are returned,
+while for the setters, the slots of x are modified accordingly – see Details.
+
+A vector of the regions
+\end{Value}
+%
+\begin{Author}
+Gilbert Han
+\end{Author}
+\HeaderA{annotateInter,linkSet-method}{Annotate linkSet with inter/intra chromosome interactions}{annotateInter,linkSet.Rdash.method}
+\aliasA{annotateInter}{annotateInter,linkSet-method}{annotateInter}
+%
+\begin{Description}
+Annotate linkSet with inter/intra chromosome interactions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+annotateInter(x)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with an additional metadata column 'inter\_type'
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkExample <- annotateInter(linkExample)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{as.data.frame,linkSet-method}{coerce linkSet to DataFrame}{as.data.frame,linkSet.Rdash.method}
+%
+\begin{Description}
+coerce linkSet to DataFrame
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+as.data.frame(x)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A DataFrame object
+\end{Value}
+\HeaderA{as.GInteractions,linkSet-method}{export linkset to GInteractions}{as.GInteractions,linkSet.Rdash.method}
+%
+\begin{Description}
+export linkset to GInteractions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+as.GInteractions(x)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkset object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A GInteractions object
+\end{Value}
+\HeaderA{baitGInteractions,GInteractions,GRanges,GRanges-method}{Convert GInteractions with bait range and oe ranges to linkSet}{baitGInteractions,GInteractions,GRanges,GRanges.Rdash.method}
+%
+\begin{Description}
+Convert GInteractions with bait range and oe ranges to linkSet
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'GInteractions,GRanges,GRanges'
+baitGInteractions(x, geneGr, peakGr, geneSymbol = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{geneGr}] A GRanges object representing genes
+
+\item[\code{peakGr}] A GRanges object representing peaks
+
+\item[\code{geneSymbol}] A character vector with same length as geneGr or column name in mcols(geneGr) for gene symbols
+
+\item[\code{gi}] A GInteractions object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object
+\end{Value}
+\HeaderA{Convert}{Convert different object types to linkSet}{Convert}
+\aliasA{Convert,ANY-method}{Convert}{Convert,ANY.Rdash.method}
+\aliasA{Convert,data.frame-method}{Convert}{Convert,data.frame.Rdash.method}
+\aliasA{Convert,GInteractions-method}{Convert}{Convert,GInteractions.Rdash.method}
+\aliasA{Convert,Pairs-method}{Convert}{Convert,Pairs.Rdash.method}
+%
+\begin{Description}
+Convert other data formats to linkSet. Currently supported: GInteractions, data.frame.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+Convert(x, ...)
+
+## S4 method for signature 'GInteractions'
+Convert(x, baitCol = NULL, ...)
+
+## S4 method for signature 'data.frame'
+Convert(x, source = "data.frame", baitCol = "gene", oeCol = "peak", ...)
+
+## S4 method for signature 'Pairs'
+Convert(x, baitCol = NULL, ...)
+
+## S4 method for signature 'ANY'
+Convert(x, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] An object of unsupported class
+
+\item[\code{...}] Additional arguments (not used)
+
+\item[\code{baitCol}] A character string specifying the column to use for bait naming
+
+\item[\code{specificCol}] A character string specifying the column to use for bait naming
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object
+
+A linkSet object
+
+A linkSet object
+
+A linkSet object
+
+Nothing, throws an error
+\end{Value}
+\HeaderA{countInteractibility,linkSet-method}{Count bait and oe}{countInteractibility,linkSet.Rdash.method}
+\aliasA{countBaitOe}{countInteractibility,linkSet-method}{countBaitOe}
+%
+\begin{Description}
+This function calculate the number of trans interactions for each bait and oe. The word "interactibility" can refer to https://doi.org/10.1038\%2Fnature11279.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+countInteractibility(x, baitRegions = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{baitRegions}] Whether to count bait regions
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with counts for each unique interaction
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkSet = c(linkExample,linkExample)
+linkSet = countInteractions(linkSet)
+linkSet = countInteractibility(linkSet)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{countInteractions,linkSet-method}{Make Repeated Interactions Unique and Count Repetitions}{countInteractions,linkSet.Rdash.method}
+%
+\begin{Description}
+This function takes a linkSet object, identifies repeated interactions
+(where both bait and other end are repeated), makes them unique, and
+counts the number of repetitions for each unique interaction.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+countInteractions(x, baitRegions = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A list containing:
+\begin{ldescription}
+\item[\code{unique\_linkSet}] A new linkSet object with unique interactions
+\item[\code{interaction\_counts}] A data frame with counts for each unique interaction
+\end{ldescription}
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkSet = c(linkExample,linkExample)
+result <- countInteractions(linkSet)
+result
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{crossGeneEnhancer,linkSet-method}{Cross gene enhancer}{crossGeneEnhancer,linkSet.Rdash.method}
+\aliasA{crossGeneEnhancer}{crossGeneEnhancer,linkSet-method}{crossGeneEnhancer}
+%
+\begin{Description}
+Cross gene enhancer
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+crossGeneEnhancer(x, score_threshold = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{score\_threshold}] The minimum score to filter interactions
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with filtered interactions
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkSet = c(linkExample,linkExample)
+linkSet = countInteractions(linkSet)
+linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{diagnoseLinkSet,linkSet-method}{Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution}{diagnoseLinkSet,linkSet.Rdash.method}
+%
+\begin{Description}
+Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+diagnoseLinkSet(x)
+\end{verbatim}
+\end{Usage}
+\HeaderA{exportInterBed,linkSet-method}{Export linkSet to interBed format}{exportInterBed,linkSet.Rdash.method}
+%
+\begin{Description}
+Export linkSet to interBed format
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+exportInterBed(x, outfile)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{outfile}] Output file name
+\end{ldescription}
+\end{Arguments}
+\HeaderA{exportWashU,linkSet-method}{Export linkSet to WashU format}{exportWashU,linkSet.Rdash.method}
+%
+\begin{Description}
+Export linkSet to WashU format
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+exportWashU(x, outfile)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{outfile}] Output file name
+\end{ldescription}
+\end{Arguments}
+\HeaderA{filterLinks,linkSet-method}{Filter links for further analysis}{filterLinks,linkSet.Rdash.method}
+\aliasA{filterLinks}{filterLinks,linkSet-method}{filterLinks}
+%
+\begin{Description}
+Filter links for further analysis
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+filterLinks(x, filter_intra = TRUE, filter_unannotate = TRUE, distance = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{filter\_intra}] Whether to filter intra-chromosomal interactions
+
+\item[\code{filter\_unannotate}] Whether to filter unannotated interactions
+
+\item[\code{distance}] The maximum distance between bait and other end
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with filtered interactions
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkSet = c(linkExample,linkExample)
+linkSet = countInteractions(linkSet)
+linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{fit.glm}{fit.glm}{fit.glm}
+%
+\begin{Description}
+Fit GLM according to a specified distribution. This needs to be done separately from \code{glm}
+in order to include negative binomial and truncated distributions as options.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fit.glm(
+  formula,
+  data,
+  distribution = c("negative-binomial", "poisson", "truncated-poisson",
+    "truncated-negative-binomial"),
+  start = NULL,
+  init.theta = NULL,
+  maxit = 100,
+  epsilon = 1e-08,
+  trace = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] Formula specifying model of interest
+
+\item[\code{data}] Data frame containing variables specified in formula
+
+\item[\code{distribution}] Name of distribution of the counts. Options are 'negative-binomial',
+'poisson', 'truncated-poisson', and 'truncated-negative-binomial'
+
+\item[\code{start}] Starting values for model coefficients
+
+\item[\code{init.theta}] Initial value of theta if fitting the negative binomial distribution
+
+\item[\code{maxit}] Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})
+
+\item[\code{epsilon}] Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
+
+\item[\code{trace}] Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+List with elements
+\begin{ldescription}
+\item[\code{model}] model object
+\item[\code{expected.values}] vector of expected values for each element in original data
+\item[\code{p.values}] vector of p-values for test of significantly higher response than expected
+\end{ldescription}
+\end{Value}
+\HeaderA{fit.model}{fit.model}{fit.model}
+%
+\begin{Description}
+Fit negative binomial model to obtain p-values for interactions.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fit.model(
+  linkSet,
+  distance.bins = NULL,
+  distribution = "negative-binomial",
+  adjustment.terms = NULL,
+  maxit = 100,
+  epsilon = 1e-08,
+  cores = 1,
+  trace = FALSE,
+  verbose = FALSE,
+  interim.data.dir = NULL
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{distribution}] Name of distribution of the counts. Options are 'negative-binomial',
+'poisson', 'truncated-poisson', and 'truncated-negative-binomial'
+
+\item[\code{adjustment.terms}] Character vector of extra terms to adjust for in the model fit.
+
+\item[\code{maxit}] Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})
+
+\item[\code{epsilon}] Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
+
+\item[\code{cores}] Integer value specifying how many cores to use to fit model for cis-interactions.
+
+\item[\code{trace}] Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+
+\item[\code{verbose}] Logical indicating whether to print progress reports.
+
+\item[\code{interim.data.dir}] Path to directory to store intermediate QC data and plots.
+
+\item[\code{interaction.data}] data.table object containing interaction counts. Must contain columns distance, count, and bait\_trans\_count.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+\begin{alltt}Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
+are fit separately in each quantile of the distance-sorted data.
+\end{alltt}
+
+\end{Details}
+%
+\begin{Value}
+Interactions data with expected number of interactions and p-values added.
+\end{Value}
+\HeaderA{geom\_linkset,linkSet-method}{Add Genome Links to Coverage Plot.}{geom.Rul.linkset,linkSet.Rdash.method}
+%
+\begin{Description}
+Add Genome Links to Coverage Plot.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+geom_linkset(
+  linkSet,
+  score.col = "count",
+  score.threshold = NULL,
+  score.color = c("grey70", "#56B1F7", "#132B43"),
+  scale.range = 10,
+  plot.space = 0.1,
+  plot.height = 0.2,
+  arrow.size = 0.05,
+  remove_x_axis = FALSE,
+  link_plot_on_top = FALSE,
+  extend.base = 1e+06,
+  show.rect = FALSE,
+  x.range = NULL,
+  log.scale = TRUE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{score.col}] Column index that contains score information, used when \code{file.type} is bedpe. Default: NULL.
+
+\item[\code{score.threshold}] The score threshold, used when \code{score.col} is not NULL. Default: NULL.
+
+\item[\code{score.color}] The score color vector. Default: c("grey70", "\#56B1F7", "\#132B43").
+
+\item[\code{scale.range}] Scale the height of links according to width, should be greater than or equal to 1 (not scale). Default: 10.
+
+\item[\code{plot.space}] Top and bottom margin. Default: 0.1.
+
+\item[\code{plot.height}] The relative height of link to coverage plot. Default: 0.2.
+
+\item[\code{arrow.size}] The size of the arrow head. Default: 0.02.
+
+\item[\code{remove\_x\_axis}] Logical value, whether to remove the x-axis. Default: FALSE.
+
+\item[\code{link\_plot\_on\_top}] Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.
+
+\item[\code{extend.base}] Extend the base pair range to show more information. Default: 1000000.
+
+\item[\code{show.rect}] Logical value, whether to add rect border to the plot. Default: FALSE.
+
+\item[\code{x.range}] The range of x-axis to show. Default: NULL.
+
+\item[\code{log.scale}] Logical value, whether to log1p the score. Default: TRUE.
+
+\item[\code{link.file}] File contains region link information.
+
+\item[\code{file.type}] The type of \code{link.file}, choose from bedpe, pairs. Default: bedpe.
+
+\item[\code{plot.curve}] One of 'curve' or 'bezier', for the latter it is required to install package \code{ggforce}. Default: 'curve'.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Plot.
+\end{Value}
+%
+\begin{References}
+\url{https://stuartlab.org/signac/articles/cicero.html}
+\end{References}
+\HeaderA{geom\_range}{Plot genomic ranges}{geom.Rul.range}
+%
+\begin{Description}
+\code{geom\_range()} and \code{geom\_half\_range()} draw tiles that are designed to
+represent range-based genomic features, such as exons. In combination with
+\code{geom\_intron()}, these geoms form the core components for visualizing
+transcript structures.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+geom_range(
+  mapping = NULL,
+  data = NULL,
+  stat = "identity",
+  position = "identity",
+  bait_col = "red",
+  oe_col = "DeepSkyBlue3",
+  default_col = "grey",
+  ...,
+  vjust = NULL,
+  linejoin = "mitre",
+  na.rm = FALSE,
+  minimal_width = 0.01,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mapping}] Set of aesthetic mappings created by \code{\LinkA{aes()}{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.
+
+\item[\code{data}] The data to be displayed in this layer. There are three
+options:
+
+If \code{NULL}, the default, the data is inherited from the plot
+data as specified in the call to \code{\LinkA{ggplot()}{ggplot()}}.
+
+A \code{data.frame}, or other object, will override the plot
+data. All objects will be fortified to produce a data frame. See
+\code{\LinkA{fortify()}{fortify()}} for which variables will be created.
+
+A \code{function} will be called with a single argument,
+the plot data. The return value must be a \code{data.frame}, and
+will be used as the layer data. A \code{function} can be created
+from a \code{formula} (e.g. \code{\textasciitilde{} head(.x, 10)}).
+
+\item[\code{stat}] The statistical transformation to use on the data for this layer.
+When using a \AsIs{\texttt{geom\_*()}} function to construct a layer, the \code{stat}
+argument can be used the override the default coupling between geoms and
+stats. The \code{stat} argument accepts the following:
+\begin{itemize}
+
+\item{} A \code{Stat} ggproto subclass, for example \code{StatCount}.
+\item{} A string naming the stat. To give the stat as a string, strip the
+function name of the \code{stat\_} prefix. For example, to use \code{stat\_count()},
+give the stat as \code{"count"}.
+\item{} For more information and other ways to specify the stat, see the
+\LinkA{layer stat}{layer stat} documentation.
+
+\end{itemize}
+
+
+\item[\code{position}] A position adjustment to use on the data for this layer. This
+can be used in various ways, including to prevent overplotting and
+improving the display. The \code{position} argument accepts the following:
+\begin{itemize}
+
+\item{} The result of calling a position function, such as \code{position\_jitter()}.
+This method allows for passing extra arguments to the position.
+\item{} A string naming the position adjustment. To give the position as a
+string, strip the function name of the \code{position\_} prefix. For example,
+to use \code{position\_jitter()}, give the position as \code{"jitter"}.
+\item{} For more information and other ways to specify the position, see the
+\LinkA{layer position}{layer position} documentation.
+
+\end{itemize}
+
+
+\item[\code{...}] Other arguments passed on to \code{\LinkA{layer()}{layer()}}'s \code{params} argument. These
+arguments broadly fall into one of 4 categories below. Notably, further
+arguments to the \code{position} argument, or aesthetics that are required
+can \emph{not} be passed through \code{...}. Unknown arguments that are not part
+of the 4 categories below are ignored.
+\begin{itemize}
+
+\item{} Static aesthetics that are not mapped to a scale, but are at a fixed
+value and apply to the layer as a whole. For example, \code{colour = "red"}
+or \code{linewidth = 3}. The geom's documentation has an \strong{Aesthetics}
+section that lists the available options. The 'required' aesthetics
+cannot be passed on to the \code{params}. Please note that while passing
+unmapped aesthetics as vectors is technically possible, the order and
+required length is not guaranteed to be parallel to the input data.
+\item{} When constructing a layer using
+a \AsIs{\texttt{stat\_*()}} function, the \code{...} argument can be used to pass on
+parameters to the \code{geom} part of the layer. An example of this is
+\code{stat\_density(geom = "area", outline.type = "both")}. The geom's
+documentation lists which parameters it can accept.
+\item{} Inversely, when constructing a layer using a
+\AsIs{\texttt{geom\_*()}} function, the \code{...} argument can be used to pass on parameters
+to the \code{stat} part of the layer. An example of this is
+\code{geom\_area(stat = "density", adjust = 0.5)}. The stat's documentation
+lists which parameters it can accept.
+\item{} The \code{key\_glyph} argument of \code{\LinkA{layer()}{layer()}} may also be passed on through
+\code{...}. This can be one of the functions described as
+\LinkA{key glyphs}{key glyphs}, to change the display of the layer in the legend.
+
+\end{itemize}
+
+
+\item[\code{vjust}] A numeric vector specifying vertical justification.
+If specified, overrides the \code{just} setting.
+
+\item[\code{linejoin}] Line join style (round, mitre, bevel).
+
+\item[\code{na.rm}] If \code{FALSE}, the default, missing values are removed with
+a warning. If \code{TRUE}, missing values are silently removed.
+
+\item[\code{show.legend}] logical. Should this layer be included in the legends?
+\code{NA}, the default, includes if any aesthetics are mapped.
+\code{FALSE} never includes, and \code{TRUE} always includes.
+It can also be a named logical vector to finely select the aesthetics to
+display.
+
+\item[\code{inherit.aes}] If \code{FALSE}, overrides the default aesthetics,
+rather than combining with them. This is most useful for helper functions
+that define both data and aesthetics and shouldn't inherit behaviour from
+the default plot specification, e.g. \code{\LinkA{borders()}{borders()}}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+\code{geom\_range()} and \code{geom\_half\_range()} require the following \code{aes()};
+\code{xstart}, \code{xend} and \code{y} (e.g. transcript name). \code{geom\_half\_range()} takes
+advantage of the vertical symmetry of transcript annotation by plotting only
+half of a range on the top or bottom of a transcript structure. This can be
+useful for comparing between two transcripts or free up plotting space for
+other transcript annotations (e.g. \code{geom\_junction()}).
+\end{Details}
+%
+\begin{Value}
+the return value of a \AsIs{\texttt{geom\_*}} function is not intended to be
+directly handled by users. Therefore, \AsIs{\texttt{geom\_*}} functions should never be
+executed in isolation, rather used in combination with a
+\code{ggplot2::ggplot()} call.
+\end{Value}
+\HeaderA{linkSet}{linkSet: Base Classes for Storing Genomic Link Data}{linkSet}
+%
+\begin{Description}
+The linkSet package provides tools for working with genomic link sets,
+which represent connections between different genomic regions. This package
+is designed for bioinformatics and genomic data analysis, offering various
+methods to manipulate and analyze linkSet objects.
+\end{Description}
+%
+\begin{Details}
+The main class provided by this package is the \code{linkSet} class, which is
+designed to represent and analyze genomic interactions, particularly
+focusing on gene-enhancer relationships. Key features include:
+
+\begin{itemize}
+
+\item{} Representation of genomic interactions with two types of anchors:
+"bait" (typically genes) and "other end" (typically enhancers or
+other regulatory elements).
+\item{} Flexible input methods, supporting construction from various data types.
+\item{} Metadata storage for additional information about interactions.
+\item{} Integration with Bioconductor classes and tools.
+\item{} Methods for annotating promoters and distinguishing between inter-
+and intra-chromosomal interactions.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{References}
+Add any relevant references here.
+\end{References}
+%
+\begin{SeeAlso}
+Useful links:
+\begin{itemize}
+
+\item{} \url{https://github.com/GilbertHan1011/linkSet}
+\item{} Report bugs at \url{https://github.com/GilbertHan1011/linkSet/issues/new}
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# Basic usage example
+library(linkSet)
+# Add a simple example here
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{linkSet-class}{LinkSet object}{linkSet.Rdash.class}
+\aliasA{LinkSet}{linkSet-class}{LinkSet}
+\aliasA{linkSet}{linkSet-class}{linkSet}
+%
+\begin{Description}
+The linkSet object is a container for storing gene-enhancer interactions.
+\end{Description}
+%
+\begin{Details}
+The linkSet object is a vectors of paired gene-enhancer interactions.
+\end{Details}
+%
+\begin{Section}{Slots}
+
+\begin{description}
+
+\item[\code{nameBait}] A character vector of the bait names.
+
+\item[\code{anchor1}] A integer vector of the first anchor indices.
+
+\item[\code{anchor2}] A integer vector of the second anchor indices.
+
+\item[\code{regions}] A GenomicRanges object of the regions.
+
+\item[\code{NAMES}] A character vector of the region names.
+
+\item[\code{elementMetadata}] A DataFrame of the element metadata.
+
+\end{description}
+\end{Section}
+%
+\begin{SeeAlso}
+\code{\LinkA{linkSet}{linkSet}}
+
+\code{\LinkA{linkSet-methods}{linkSet.Rdash.methods}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+showClass("linkSet")  # shows the known subclasses
+
+set.seed(7000)
+N <- 40
+all.starts <- round(runif(N, 1, 100))
+all.ends <- all.starts + round(runif(N, 5, 20))
+all.regions <- GRanges(rep(c("chrA", "chrB"), c(N-10, 10)), IRanges(all.starts, all.ends))
+genes = c(rep("SP7",4),rep("ASPN",10),rep("XBP1",6))
+Np <- 20
+all.anchor1 <- sample(N, Np)
+gr1 <- all.regions[all.anchor1]
+gr1$symbol <- genes
+all.anchor2 <- setdiff(1:40,all.anchor1)
+gr2 <- all.regions[all.anchor2]
+x <- linkSet(gr1, gr2,specificCol = "symbol")
+x
+x2 <- linkSet(genes, gr2)
+x2
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{multiple.testing.correct}{multiple.testing.correct}{multiple.testing.correct}
+%
+\begin{Description}
+Perform multiple testing correction on p-values from interaction test.
+By default, multiple testing correction is applied per bait. To change this
+to a global multiple testing correction, set \code{bait.level = FALSE}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+multiple.testing.correct(interaction.data, bait.level = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{interaction.data}] Data table of interaction calls. Must contain columns p.value and bait.id.
+
+\item[\code{bait.level}] Logical indicating whether multiple testing correction should be performed per bait.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Original data table with new column
+\begin{ldescription}
+\item[\code{q.value}] FDR-corrected p-value
+\end{ldescription}
+\end{Value}
+\HeaderA{orderLinks,linkSet-method}{Order linkSet by mcols}{orderLinks,linkSet.Rdash.method}
+\aliasA{orderLinks}{orderLinks,linkSet-method}{orderLinks}
+%
+\begin{Description}
+Order linkSet by mcols
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+orderLinks(x, by = "count", decreasing = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{by}] The column name to order by
+
+\item[\code{decreasing}] Whether to sort in decreasing order
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with ordered interactions
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkSet = c(linkExample,linkExample)
+linkSet = countInteractions(linkSet)
+linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{pairdist,linkSet-method}{Calculate the distance between bait and the other end}{pairdist,linkSet.Rdash.method}
+\aliasA{pairdist}{pairdist,linkSet-method}{pairdist}
+%
+\begin{Description}
+Outputs an integer vector specifying the distance between the interacting bins,
+depending on the type of distance specified.
+
+Example:
+
+\begin{alltt}   rangeA:  |---------|
+   rangeB:                |---------|
+   mid:           <----------->
+   gap:               <-->
+   span:    <----------------------->
+\end{alltt}
+
+\begin{itemize}
+
+\item{} mid: Half the distance between the end of first range and start of second range
+\item{} gap: Distance between the end of first range and start of second range
+\item{} span: Total span from start of first range to end of second range
+
+\end{itemize}
+
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+pairdist(x, type = "mid")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{type}] The type of distance to calculate, either "mid", "gap", or "span"
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with a new metadata column "distance"
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+linkExample <- pairdist(linkExample, type="mid")
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{plot\_genomic\_ranges,linkSet-method}{plot genomic ranges and links}{plot.Rul.genomic.Rul.ranges,linkSet.Rdash.method}
+\aliasA{plot\_genomic\_ranges}{plot\_genomic\_ranges,linkSet-method}{plot.Rul.genomic.Rul.ranges}
+%
+\begin{Description}
+plot genomic ranges and links
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+plot_genomic_ranges(
+  linkset,
+  showBait = NULL,
+  showOE = NULL,
+  x.range = NULL,
+  score.col = "count",
+  show.rect = TRUE,
+  extend.base = 1e+06,
+  ...,
+  bait_col = "red",
+  oe_col = "DeepSkyBlue3",
+  default_col = "grey",
+  vjust = NULL,
+  linejoin = "mitre",
+  na.rm = FALSE,
+  minimal_width = 0.01,
+  show.legend = NA,
+  inherit.aes = TRUE,
+  link_plot_on_top = FALSE,
+  arrow.size = 0.05,
+  remove_x_axis = FALSE,
+  plot.height = 0.4,
+  plot.space = 0.1,
+  log.scale = TRUE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{linkset}] A \code{linkSet} object.
+
+\item[\code{showBait}] A character vector specifying the bait region to be shown. Default: NULL.
+
+\item[\code{showOE}] A \code{GRanges} object specifying the oe region to be shown. Default: NULL.
+
+\item[\code{x.range}] A numeric vector of length 2 specifying the x-axis range. Default: NULL.
+
+\item[\code{score.col}] A character string specifying the column name of the score. Default: "count".
+
+\item[\code{show.rect}] Logical value, whether to show the rectangle. Default: TRUE.
+
+\item[\code{extend.base}] A numeric value specifying the extension base. Default: 1000000.
+
+\item[\code{...}] Additional arguments.
+
+\item[\code{bait\_col}] A character string specifying the color of the bait region. Default: "red".
+
+\item[\code{oe\_col}] A character string specifying the color of the oe region. Default: "DeepSkyBlue3".
+
+\item[\code{default\_col}] A character string specifying the color of the default region. Default: "grey".
+
+\item[\code{vjust}] A numeric value specifying the vertical justification. Default: NULL.
+
+\item[\code{linejoin}] A character string specifying the line join. Default: "mitre".
+
+\item[\code{na.rm}] Logical value, whether to remove NA values. Default: FALSE.
+
+\item[\code{minimal\_width}] A numeric value specifying the minimal width. Default: 0.01.
+
+\item[\code{show.legend}] Logical value, whether to show the legend. Default: NA.
+
+\item[\code{inherit.aes}] Logical value, whether to inherit the aesthetics. Default: TRUE.
+
+\item[\code{link\_plot\_on\_top}] Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.
+
+\item[\code{arrow.size}] A numeric value specifying the size of the arrow head. Default: 0.05.
+
+\item[\code{remove\_x\_axis}] Logical value, whether to remove the x-axis. Default: FALSE.
+
+\item[\code{plot.height}] A numeric value specifying the height of the plot. Default: 0.4.
+
+\item[\code{plot.space}] A numeric value specifying the space between the plot and the link plot. Default: 0.1.
+
+\item[\code{log.scale}] Logical value, whether to log scale the score. Default: TRUE.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A \code{ggplot} object.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+plot_genomic_ranges(linkExample, extend.base = 10)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{readvalidPairs}{Read validPairs file to GInteractions}{readvalidPairs}
+%
+\begin{Description}
+Read validPairs file to GInteractions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+readvalidPairs(file)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{file}] A character string specifying the path to the validPairs file
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A GInteractions object
+\end{Value}
+\HeaderA{reduceRegions,linkSet-method}{Reduce a linkSet object}{reduceRegions,linkSet.Rdash.method}
+%
+\begin{Description}
+This function reduces the bait and/or oe regions of a linkSet object and optionally counts interactions,
+while maintaining the original length of the linkSet.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+reduceRegions(x, region = "both", countInteractions = TRUE, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{countInteractions}] Logical, whether to count interactions after reducing (default: TRUE)
+
+\item[\code{...}] Additional arguments passed to GenomicRanges::reduce
+
+\item[\code{reduceBait}] Logical, whether to reduce bait regions (default: TRUE)
+
+\item[\code{reduceOE}] Logical, whether to reduce other end (oe) regions (default: TRUE)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A reduced linkSet object with the same length as the input
+\end{Value}
+\HeaderA{run.model.fitting}{run.model.fitting}{run.model.fitting}
+%
+\begin{Description}
+\begin{alltt}Run model fitting procedure for either bait-to-bait or other interactions.
+\end{alltt}
+
+
+Meant for internal use only.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+run.model.fitting(
+  interaction.data,
+  distance.bins = NULL,
+  distribution = "negative-binomial",
+  bait.to.bait = FALSE,
+  adjustment.terms = NULL,
+  maxit = 100,
+  epsilon = 1e-08,
+  cores = 1,
+  trace = FALSE,
+  verbose = FALSE,
+  interim.data.dir = NULL
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{interaction.data}] data.table object containing interaction counts. Must contain columns distance, count, and bait\_trans\_count.
+
+\item[\code{distribution}] Name of distribution of the counts. Options are 'negative-binomial',
+'poisson', 'truncated-poisson', and 'truncated-negative-binomial'
+
+\item[\code{bait.to.bait}] Logical indicating if model should be fit as bait-to-bait
+
+\item[\code{adjustment.terms}] Characted vector of extra terms to adjust for in the model fit
+
+\item[\code{maxit}] Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})
+
+\item[\code{epsilon}] Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
+
+\item[\code{cores}] Integer value specifying how many cores to use to fit model for cis-interactions.
+
+\item[\code{trace}] Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+
+\item[\code{verbose}] Logical indicating whether to print progress reports.
+
+\item[\code{interim.data.dir}] Path to directory to store intermediate QC data and plots.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Interactions data with expeceted number of interactions and p-values added.
+\end{Value}
+\HeaderA{run\_chicane,linkSet-method}{run\_chicane}{run.Rul.chicane,linkSet.Rdash.method}
+%
+\begin{Description}
+This function adapts the \code{chicane} function from the \code{ChICANE} package to work with the \code{linkSet} object format.
+Run full method for detecting significant interactions in capture Hi-C experiments, starting
+either from a linkSet object or preprocessed data from \code{prepare.data}
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+run_chicane(
+  linkSet,
+  replicate.merging.method = "sum",
+  distribution = "negative-binomial",
+  include.zeros = "none",
+  bait.filters = c(0, 1),
+  target.filters = c(0, 1),
+  distance.bins = NULL,
+  multiple.testing.correction = c("bait-level", "global"),
+  adjustment.terms = NULL,
+  remove.adjacent = FALSE,
+  temp.directory = NULL,
+  keep.files = FALSE,
+  maxit = 100,
+  epsilon = 1e-08,
+  cores = 1,
+  trace = FALSE,
+  verbose = FALSE,
+  interim.data.dir = NULL
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{linkSet}] A linkSet object containing interaction data. Can be used instead of interactions specification if the linkSet object has already been prepared.
+
+\item[\code{replicate.merging.method}] Method that should be used for merging replicates, if applicable
+
+\item[\code{distribution}] Name of distribution of the counts. Options are 'negative-binomial',
+'poisson', 'truncated-poisson', and 'truncated-negative-binomial'
+
+\item[\code{bait.filters}] Vector of length two, where the first element corresponds to the lower-end filter and the second to the upper-end filter.
+When global multiple testing correction is performed, altering the bait filtering settings may affect the number of significant results.
+
+\item[\code{target.filters}] Vector of length two, giving lower and higher filter, respectively.
+Changing this filtering setting may affect multiple testing correction by altering the number of tests performed.
+
+\item[\code{distance.bins}] Number of bins to split distance into. Models are fit separately in each bin.
+
+\item[\code{multiple.testing.correction}] String specifying how multiple testing correction should be performed, by bait or globally.
+
+\item[\code{adjustment.terms}] Character vector of extra terms to adjust for in the model fit.
+
+\item[\code{maxit}] Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})
+
+\item[\code{epsilon}] Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
+
+\item[\code{cores}] Integer value specifying how many cores to use to fit model for cis-interactions.
+
+\item[\code{trace}] Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+
+\item[\code{verbose}] Logical indicating whether to print progress reports.
+
+\item[\code{interim.data.dir}] Path to directory to store intermediate QC data and plots. NULL indicate skip intermediate results.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object with additional columns:
+\begin{ldescription}
+\item[\code{expected}] The expected number of reads linking the two fragments under the fitted model
+\item[\code{p.value}] P-value for test of the observed number of reads significantly exceeding the expected count
+\item[\code{q.value}] FDR-corrected p-value
+\end{ldescription}
+\end{Value}
+\HeaderA{subsetBait,linkSet-method}{Subset linkSet object based on bait names}{subsetBait,linkSet.Rdash.method}
+\aliasA{subsetBait}{subsetBait,linkSet-method}{subsetBait}
+\aliasA{subsetBaitRegion}{subsetBait,linkSet-method}{subsetBaitRegion}
+\aliasA{subsetBaitRegion,linkSet-method}{subsetBait,linkSet-method}{subsetBaitRegion,linkSet.Rdash.method}
+\aliasA{subsetOE}{subsetBait,linkSet-method}{subsetOE}
+\aliasA{subsetOE,linkSet-method}{subsetBait,linkSet-method}{subsetOE,linkSet.Rdash.method}
+%
+\begin{Description}
+Subset linkSet object based on bait names
+
+Subset linkSet object based on bait regions
+
+Subset linkSet object based on other end (oe) regions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+subsetBait(x, subset)
+
+## S4 method for signature 'linkSet'
+subsetBaitRegion(x, subset)
+
+## S4 method for signature 'linkSet'
+subsetOE(x, subset)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{subset}] A GRanges object specifying the regions to keep
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A new linkSet object containing only the specified bait interactions
+
+A new linkSet object containing only the interactions with bait regions overlapping the subset
+
+A new linkSet object containing only the interactions with oe regions overlapping the subset
+\end{Value}
+\HeaderA{trim,linkSet-method}{linkSet-GRange-Methods}{trim,linkSet.Rdash.method}
+\aliasA{flank}{trim,linkSet-method}{flank}
+\aliasA{flank,linkSet-method}{trim,linkSet-method}{flank,linkSet.Rdash.method}
+\aliasA{flankRegions}{trim,linkSet-method}{flankRegions}
+\aliasA{flankRegions,linkSet-method}{trim,linkSet-method}{flankRegions,linkSet.Rdash.method}
+\aliasA{narrow}{trim,linkSet-method}{narrow}
+\aliasA{narrow,linkSet-method}{trim,linkSet-method}{narrow,linkSet.Rdash.method}
+\aliasA{narrowRegions}{trim,linkSet-method}{narrowRegions}
+\aliasA{narrowRegions,linkSet-method}{trim,linkSet-method}{narrowRegions,linkSet.Rdash.method}
+\aliasA{promoterRegions}{trim,linkSet-method}{promoterRegions}
+\aliasA{promoterRegions,linkSet-method}{trim,linkSet-method}{promoterRegions,linkSet.Rdash.method}
+\aliasA{promoters}{trim,linkSet-method}{promoters}
+\aliasA{promoters,linkSet-method}{trim,linkSet-method}{promoters,linkSet.Rdash.method}
+\aliasA{reduce}{trim,linkSet-method}{reduce}
+\aliasA{reduce,linkSet-method}{trim,linkSet-method}{reduce,linkSet.Rdash.method}
+\aliasA{resize}{trim,linkSet-method}{resize}
+\aliasA{resize,linkSet-method}{trim,linkSet-method}{resize,linkSet.Rdash.method}
+\aliasA{resizeRegions}{trim,linkSet-method}{resizeRegions}
+\aliasA{resizeRegions,linkSet-method}{trim,linkSet-method}{resizeRegions,linkSet.Rdash.method}
+\aliasA{shift}{trim,linkSet-method}{shift}
+\aliasA{shift,linkSet-method}{trim,linkSet-method}{shift,linkSet.Rdash.method}
+\aliasA{shiftRegions}{trim,linkSet-method}{shiftRegions}
+\aliasA{shiftRegions,linkSet-method}{trim,linkSet-method}{shiftRegions,linkSet.Rdash.method}
+\aliasA{trim}{trim,linkSet-method}{trim}
+\aliasA{width}{trim,linkSet-method}{width}
+\aliasA{width,linkSet-method}{trim,linkSet-method}{width,linkSet.Rdash.method}
+%
+\begin{Description}
+This man page documents intra range transformations of a \LinkA{linkSet}{linkSet.Rdash.class} object.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'linkSet'
+trim(x, use.names = TRUE)
+
+## S4 method for signature 'linkSet'
+resize(x, width, fix = "start", use.names = TRUE, ...)
+
+## S4 method for signature 'linkSet'
+resizeRegions(
+  x,
+  width = 1000,
+  fix = "start",
+  use.names = TRUE,
+  region = "both",
+  ...
+)
+
+## S4 method for signature 'linkSet'
+narrow(x, start = NA, end = NA, width = NA, use.names = TRUE)
+
+## S4 method for signature 'linkSet'
+narrowRegions(
+  x,
+  start = NA,
+  end = NA,
+  width = NA,
+  use.names = TRUE,
+  region = "both"
+)
+
+## S4 method for signature 'linkSet'
+shift(x, shift = 0L, use.names = TRUE)
+
+## S4 method for signature 'linkSet'
+shiftRegions(x, shift = 0L, use.names = TRUE, region = "both")
+
+## S4 method for signature 'linkSet'
+flank(
+  x,
+  width,
+  start = TRUE,
+  both = FALSE,
+  use.names = TRUE,
+  ignore.strand = FALSE
+)
+
+## S4 method for signature 'linkSet'
+flankRegions(
+  x,
+  width,
+  start = TRUE,
+  both = FALSE,
+  use.names = TRUE,
+  ignore.strand = FALSE,
+  region = "both"
+)
+
+## S4 method for signature 'linkSet'
+promoters(x, upstream = 2000, downstream = 200, use.names = TRUE)
+
+## S4 method for signature 'linkSet'
+promoterRegions(
+  x,
+  upstream = 2000,
+  downstream = 200,
+  use.names = TRUE,
+  region = "both"
+)
+
+## S4 method for signature 'linkSet'
+width(x)
+
+## S4 method for signature 'linkSet'
+reduce(x, drop.empty.ranges = FALSE, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] A linkSet object
+
+\item[\code{use.names}] A logical indicating whether to use names
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A linkSet object
+\end{Value}
+%
+\begin{Author}
+Gilbert Han
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+data(linkExample)
+resize_bait <- resizeRegions(linkExample, width = 75, fix = "start", region = "bait")
+resize_bait
+
+narrow_bait <- narrowRegions(linkExample, start = 1, width = 5, region = "bait")
+narrow_bait
+
+shift_oe <- shiftRegions(linkExample, shift = 10, region = "oe")
+shift_oe
+
+flank_bait <- flankRegions(linkExample, width = 100, start = TRUE, both = FALSE, use.names = TRUE, ignore.strand = FALSE, region = "bait")
+flank_bait
+
+width(linkExample)
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{withTxDb,character,function-method}{Execute Database Operation with Automatic Connection Management}{withTxDb,character,function.Rdash.method}
+%
+\begin{Description}
+Execute Database Operation with Automatic Connection Management
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S4 method for signature 'character,function'
+withTxDb(x, expr, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] The genome name or object to operate on
+
+\item[\code{expr}] Expression to evaluate with database connection
+
+\item[\code{...}] Additional arguments
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Result of the database operation
 \end{Value}
 \printindex{}
 \end{document}

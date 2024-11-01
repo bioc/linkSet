@@ -1,4 +1,4 @@
-* using log directory ‘/home/zhanglab/lh/2024.6_3dSNP/script/utils/lkObj/..Rcheck’
+* using log directory ‘/home/zhanglab/lh/2024.6_3dSNP/script/utils/linkSet/..Rcheck’
 * using R version 4.4.1 (2024-06-14)
 * using platform: x86_64-pc-linux-gnu
 * R was compiled by
@@ -7,7 +7,7 @@
 * running under: Ubuntu 20.04.4 LTS
 * using session charset: UTF-8
 * checking for file ‘./DESCRIPTION’ ... OK
-* this is package ‘linkSet’ version ‘0.0.0.1’
+* this is package ‘linkSet’ version ‘0.99.0’
 * package encoding: UTF-8
 * checking package namespace information ... OK
 * checking package dependencies ... OK
@@ -16,19 +16,29 @@
 * checking for executable files ... OK
 * checking for hidden files and directories ... NOTE
 Found the following hidden files and directories:
+  .Rhistory
+  .github/.gitignore
   .gitignore
+  vignettes/.gitignore
   ..Rcheck
   .Rproj.user
   .git
+  .github
 These were most likely included in error. See section ‘Package
 structure’ in the ‘Writing R Extensions’ manual.
-* checking for portable file names ... OK
+* checking for portable file names ... ERROR
+Found the following files with duplicate lower-cased file names:
+  docs/reference/linkSet.html
+File names must not differ just by case to be usable on all R
+platforms.
+Please rename the files and try again.
+See section ‘Package structure’ in the ‘Writing R Extensions’ manual.
+ OK
 * checking for sufficient/correct file permissions ... OK
 * checking whether package ‘linkSet’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking DESCRIPTION meta-information ... NOTE
-Malformed Description field: should contain one or more complete sentences.
 Checking should be performed on sources prepared by ‘R CMD build’.
 * checking top-level files ... OK
 * checking for left-over files ... OK
@@ -43,7 +53,7 @@ Most likely, these were included erroneously.
 * checking whether the package can be loaded with stated dependencies ... OK
 * checking whether the package can be unloaded cleanly ... OK
 * checking whether the namespace can be loaded with stated dependencies ... NOTE
-Warning: no function found corresponding to methods exports from ‘linkSet’ for: ‘first’, ‘second’, ‘seqinfo’, ‘show’
+Warning: no function found corresponding to methods exports from ‘linkSet’ for: ‘flank’, ‘narrow’, ‘promoters’, ‘resize’, ‘show’, ‘trim’
 
 A namespace must be able to be loaded with just the base namespace
 loaded: otherwise if the namespace gets loaded by a saved object, the
@@ -52,21 +62,28 @@ session will be unable to start.
 Probably some imports need to be declared in the NAMESPACE file.
 * checking whether the namespace can be unloaded cleanly ... OK
 * checking loading without being on the library search path ... OK
-* checking dependencies in R code ... NOTE
+* checking dependencies in R code ... WARNING
+'::' or ':::' imports not declared from:
+  ‘DBI’ ‘doParallel’
+'loadNamespace' or 'requireNamespace' call not declared from: ‘GenomicInteractions’
 Namespaces in Imports field not imported from:
-  ‘BiocGenerics’ ‘GenomeInfoDb’ ‘IRanges’ ‘Matrix’ ‘Organism.dplyr’
-  ‘S4Vectors’ ‘methods’
+  ‘Matrix’ ‘dplyr’
   All declared Imports should be used.
-Packages in Depends field not imported from:
-  ‘GenomicRanges’ ‘SummarizedExperiment’
-  These packages need to be imported from (in the NAMESPACE file)
-  for when this namespace is loaded but not attached.
-Unexported object imported by a ':::' call: ‘GenomicRanges:::extraColumnSlotNames’
-  See the note in ?`:::` about the use of this operator.
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
+linkSet,GRanges-GRanges-character_Or_missing: warning in
+  .new_LK(anchor1 = anchor1, anchor2 = anchor2, nameBait = nameBait,
+  region = regions, metadata = metadata): partial argument match of
+  'region' to 'regions'
+.convert_to_grange: no visible global function definition for ‘Rle’
+.exist_distance: no visible global function definition for ‘mcols’
+.exist_inter: no visible global function definition for ‘mcols’
+.exportToLinkSet: no visible binding for global variable ‘otherEndID’
+.exportToLinkSet: no visible binding for global variable ‘baitID’
+.filter.fragments: no visible global function definition for ‘mcols’
+.get_dist_output: no visible global function definition for ‘seqnames’
 .makeNakedMatFromGInteractions: no visible global function definition
   for ‘mcols’
 .makeNakedMatFromGInteractions: no visible binding for global variable
@@ -74,81 +91,308 @@ Unexported object imported by a ':::' call: ‘GenomicRanges:::extraColumnSlotNa
 .new_LK: no visible global function definition for
   ‘make_zero_col_DFrame’
 .new_LK: no visible binding for global variable ‘gr1’
-.new_LK: no visible global function definition for ‘new’
 .pasteAnchor: no visible global function definition for ‘seqnames’
 .pasteAnchor: no visible global function definition for ‘showAsCell’
 .pasteAnchor: no visible global function definition for ‘ranges’
 .safeNMcols: no visible global function definition for ‘mcols’
-showLinkSet: no visible global function definition for
+.verify.linkSet: no visible global function definition for ‘is’
+.verify.linkSet: no visible global function definition for ‘mcols’
+.verify.linkSet: no visible global function definition for ‘mcols<-’
+fit.glm: no visible global function definition for ‘POtr’
+fit.glm : <anonymous>: no visible global function definition for
+  ‘pPOtr’
+fit.glm: no visible global function definition for ‘NBItr’
+fit.glm : <anonymous>: no visible global function definition for
+  ‘pNBItr’
+fit.model: no visible global function definition for ‘mcols’
+ggplot_add.interSet: no visible global function definition for
+  ‘seqnames’
+ggplot_add.interSet: no visible global function definition for ‘mcols’
+plotBaits: no visible global function definition for ‘is’
+plotBaits: no visible global function definition for ‘seqnames’
+plotBaits: no visible global function definition for ‘strand’
+plotBaits: no visible binding for global variable ‘oe_middle’
+plotBaits: no visible binding for global variable ‘.data’
+plotBaits: no visible binding for global variable ‘color_factor’
+run.model.fitting: no visible binding for global variable ‘distance’
+run.model.fitting: no visible binding for global variable ‘temp.data’
+run.model.fitting: no visible binding for global variable ‘expected’
+run.model.fitting: no visible binding for global variable ‘p.value’
+run.model.fitting: no visible global function definition for
+  ‘create.modelfit.plot’
+$,linkSet: no visible global function definition for ‘mcols’
+$<-,linkSet: no visible global function definition for ‘mcols’
+$<-,linkSet: no visible global function definition for ‘mcols<-’
+Convert,ANY: no visible binding for global variable ‘baitCol’
+Convert,ANY: no visible global function definition for ‘mcols<-’
+Convert,GInteractions: no visible global function definition for
+  ‘mcols<-’
+Convert,Pairs: no visible global function definition for ‘mcols<-’
+Convert,data.frame: no visible global function definition for ‘mcols<-’
+annotateInter,linkSet: no visible global function definition for
+  ‘seqnames’
+annotateInter,linkSet: no visible global function definition for
+  ‘mcols’
+annotateInter,linkSet: no visible global function definition for
+  ‘mcols<-’
+annotatePromoter,linkSet: no visible global function definition for
+  ‘mcols<-’
+as.GInteractions,linkSet: no visible global function definition for
+  ‘mcols’
+as.GInteractions,linkSet: no visible global function definition for
+  ‘mcols<-’
+as.data.frame,linkSet: no visible global function definition for
+  ‘mcols’
+baitGInteractions,GInteractions-GRanges-GRanges: no visible global
+  function definition for ‘mcols’
+baitGInteractions,GInteractions-GRanges-GRanges: no visible global
+  function definition for ‘mcols<-’
+countInteractibility,linkSet: no visible global function definition for
+  ‘mcols’
+countInteractions,linkSet: no visible global function definition for
+  ‘mcols’
+countInteractions,linkSet: no visible global function definition for
+  ‘mcols<-’
+crossGeneEnhancer,linkSet: no visible global function definition for
+  ‘mcols’
+crossGeneEnhancer,linkSet: no visible global function definition for
+  ‘mcols<-’
+diagnoseLinkSet,linkSet: no visible global function definition for
+  ‘mcols’
+diagnoseLinkSet,linkSet: no visible binding for global variable ‘prop’
+exportInterBed,linkSet: no visible global function definition for
+  ‘mcols’
+exportInterBed,linkSet: no visible global function definition for
+  ‘write.table’
+exportWashU,linkSet: no visible global function definition for ‘mcols’
+exportWashU,linkSet: no visible global function definition for
+  ‘write.table’
+filterLinks,linkSet: no visible global function definition for
+  ‘seqnames’
+flank,linkSet: no visible binding for global variable ‘flank’
+flankRegions,linkSet: no visible binding for global variable ‘flank’
+linkSet,GRanges-GRanges-character_Or_missing: no visible global
+  function definition for ‘mcols’
+linkSet,GRanges-GRanges-character_Or_missing: no visible global
+  function definition for ‘mcols<-’
+linkSet,GRanges-GRanges-character_Or_missing: no visible global
+  function definition for ‘make_zero_col_DFrame’
+linkSet,character-GRanges-character_Or_missing: no visible global
+  function definition for ‘mcols’
+linkSet,character-GRanges-character_Or_missing: no visible global
+  function definition for ‘mcols<-’
+linkSet,character-GRanges-character_Or_missing: no visible global
+  function definition for ‘make_zero_col_DFrame’
+names<-,linkSet: no visible global function definition for
+  ‘validObject’
+narrow,linkSet: no visible binding for global variable ‘narrow’
+narrowRegions,linkSet: no visible binding for global variable ‘narrow’
+oe<-,linkSet: no visible global function definition for ‘is’
+oe<-,linkSet: no visible global function definition for ‘mcols’
+oe<-,linkSet: no visible global function definition for ‘mcols<-’
+orderLinks,linkSet: no visible global function definition for ‘mcols’
+pairdist,linkSet: no visible global function definition for ‘mcols’
+pairdist,linkSet: no visible global function definition for ‘mcols<-’
+parallel_slot_names,linkSet: no visible global function definition for
+  ‘callNextMethod’
+plot_genomic_ranges,linkSet: no visible global function definition for
+  ‘is’
+plot_genomic_ranges,linkSet: no visible global function definition for
+  ‘mcols’
+plot_genomic_ranges,linkSet: no visible binding for global variable
+  ‘xstart’
+plot_genomic_ranges,linkSet: no visible binding for global variable
+  ‘xend’
+plot_genomic_ranges,linkSet: no visible binding for global variable
+  ‘region’
+promoterRegions,linkSet: no visible binding for global variable
+  ‘promoters’
+promoters,linkSet: no visible binding for global variable ‘promoters’
+reduceRegions,linkSet: no visible global function definition for
+  ‘subjectHits’
+regions<-,linkSet: no visible global function definition for
+  ‘validObject’
+regionsBait<-,linkSet: no visible global function definition for ‘is’
+regionsBait<-,linkSet: no visible global function definition for
+  ‘mcols’
+regionsBait<-,linkSet: no visible global function definition for
+  ‘mcols<-’
+resize,linkSet: no visible binding for global variable ‘resize’
+resizeRegions,linkSet: no visible binding for global variable ‘resize’
+run_chicane,linkSet: no visible binding for global variable ‘q.value’
+run_chicane,linkSet: no visible binding for global variable ‘p.value’
+run_chicane,linkSet: no visible global function definition for ‘mcols’
+run_chicane,linkSet: no visible global function definition for
+  ‘mcols<-’
+showLinkSet,linkSet: no visible global function definition for
   ‘makePrettyMatrixForCompactPrinting’
-showLinkSet: no visible global function definition for ‘getSlots’
-showLinkSet: no visible global function definition for
+showLinkSet,linkSet: no visible global function definition for
+  ‘getSlots’
+showLinkSet,linkSet: no visible global function definition for
   ‘makeClassinfoRowForCompactPrinting’
-showLinkSet: no visible global function definition for ‘seqinfo’
-linkSet,GRanges-GRanges-character_Or_missing: no visible global
-  function definition for ‘mcols’
-linkSet,GRanges-GRanges-character_Or_missing: no visible global
-  function definition for ‘mcols<-’
-linkSet,GRanges-GRanges-character_Or_missing: no visible global
-  function definition for ‘DataFrame’
-linkSet,GRanges-GRanges-character_Or_missing: no visible global
-  function definition for ‘make_zero_col_DFrame’
-linkSet,character-GRanges-character_Or_missing: no visible global
-  function definition for ‘mcols’
-linkSet,character-GRanges-character_Or_missing: no visible global
-  function definition for ‘mcols<-’
-linkSet,character-GRanges-character_Or_missing: no visible global
-  function definition for ‘DataFrame’
-linkSet,character-GRanges-character_Or_missing: no visible global
-  function definition for ‘make_zero_col_DFrame’
-linkSet,character-GRanges-character_Or_missing: no visible global
-  function definition for ‘GRanges’
-seqinfo,linkSet: no visible global function definition for ‘seqinfo’
+subsetBaitRegion,linkSet: no visible global function definition for
+  ‘queryHits’
+subsetOE,linkSet: no visible global function definition for ‘queryHits’
+trim,linkSet: no visible global function definition for ‘trim’
 Undefined global functions or variables:
-  DataFrame GRanges getSlots gr1 makeClassinfoRowForCompactPrinting
-  makePrettyMatrixForCompactPrinting make_zero_col_DFrame mcols mcols<-
-  new ranges seqinfo seqnames showAsCell
+  .data NBItr POtr Rle baitCol baitID callNextMethod color_factor
+  create.modelfit.plot distance expected flank getSlots gr1 is
+  makeClassinfoRowForCompactPrinting makePrettyMatrixForCompactPrinting
+  make_zero_col_DFrame mcols mcols<- narrow oe_middle otherEndID
+  p.value pNBItr pPOtr promoters prop q.value queryHits ranges region
+  resize seqnames showAsCell strand subjectHits temp.data trim
+  validObject write.table xend xstart
 Consider adding
-  importFrom("methods", "getSlots", "new")
+  importFrom("methods", "callNextMethod", "getSlots", "is",
+             "validObject")
+  importFrom("utils", "write.table")
 to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
 contains 'methods').
 * checking Rd files ... OK
-* checking Rd metadata ... OK
-* checking Rd cross-references ... OK
+* checking Rd metadata ... WARNING
+Rd files with duplicated alias 'linkSet':
+  ‘linkSet-class.Rd’ ‘linkSet.Rd’
+* checking Rd cross-references ... WARNING
+Missing link or links in Rd file 'linkSet-class.Rd':
+  ‘linkSet-methods’
+
+See section 'Cross-references' in the 'Writing R Extensions' manual.
 * checking for missing documentation entries ... WARNING
 Undocumented code objects:
-  ‘anchor1’ ‘anchor2’ ‘anchorIds’ ‘anchors’ ‘annotatePromoter’ ‘bait’
-  ‘linkSet’ ‘oe’ ‘regions’
+  ‘anchor1<-’ ‘anchor2<-’ ‘anchorIds’ ‘anchors’ ‘as.GInteractions’
+  ‘bait’ ‘bait<-’ ‘baitGInteractions’ ‘clean_unused_regions’
+  ‘countInteractibility’ ‘countInteractions’ ‘diagnoseLinkSet’
+  ‘exportInterBed’ ‘exportWashU’ ‘geom_linkset’ ‘linkExample’ ‘oe’
+  ‘oe<-’ ‘plotBaits’ ‘reduceRegions’ ‘regions<-’ ‘regionsBait’
+  ‘regionsBait<-’ ‘run_chicane’ ‘showLinkSet’ ‘theme_linkset’
+  ‘theme_range’ ‘unchecked_anchor1<-’ ‘unchecked_anchor2<-’
+  ‘unchecked_regions<-’ ‘withTxDb’
+Undocumented data sets:
+  ‘linkExample’
 Undocumented S4 classes:
-  ‘character_Or_missing’ ‘linkSet’
+  ‘character_Or_missing’
 Undocumented S4 methods:
-  generic 'anchor1' and siglist 'linkSet'
-  generic 'anchor2' and siglist 'linkSet'
+  generic '$' and siglist 'linkSet'
+  generic '$<-' and siglist 'linkSet'
   generic 'anchorIds' and siglist 'linkSet'
   generic 'anchors' and siglist 'linkSet'
+  generic 'annotatePromoter' and siglist 'linkSet'
   generic 'bait' and siglist 'linkSet'
+  generic 'bait<-' and siglist 'linkSet'
+  generic 'clean_unused_regions' and siglist 'linkSet'
   generic 'first' and siglist 'linkSet'
   generic 'linkSet' and siglist 'GRanges,GRanges,character_Or_missing'
   generic 'linkSet' and siglist
     'character,GRanges,character_Or_missing'
+  generic 'names' and siglist 'linkSet'
+  generic 'names<-' and siglist 'linkSet'
   generic 'oe' and siglist 'linkSet'
-  generic 'regions' and siglist 'linkSet'
+  generic 'oe<-' and siglist 'linkSet'
+  generic 'regions<-' and siglist 'linkSet'
+  generic 'regionsBait' and siglist 'linkSet'
+  generic 'regionsBait<-' and siglist 'linkSet'
   generic 'second' and siglist 'linkSet'
-  generic 'seqinfo' and siglist 'linkSet'
   generic 'show' and siglist 'linkSet'
+  generic 'showLinkSet' and siglist 'linkSet'
+  generic 'unchecked_anchor1<-' and siglist 'linkSet'
+  generic 'unchecked_anchor2<-' and siglist 'linkSet'
+  generic 'unchecked_regions<-' and siglist 'linkSet'
 All user-level objects in a package (including S4 classes and methods)
 should have documentation entries.
 See chapter ‘Writing R documentation files’ in the ‘Writing R
 Extensions’ manual.
 * checking for code/documentation mismatches ... OK
-* checking Rd \usage sections ... OK
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in Rd file 'Convert.Rd'
+  ‘source’ ‘oeCol’
+Documented arguments not in \usage in Rd file 'Convert.Rd':
+  ‘specificCol’
+
+Undocumented arguments in Rd file 'baitGInteractions-GInteractions-GRanges-GRanges-method.Rd'
+  ‘x’
+Documented arguments not in \usage in Rd file 'baitGInteractions-GInteractions-GRanges-GRanges-method.Rd':
+  ‘gi’
+
+Undocumented arguments in Rd file 'countInteractions-linkSet-method.Rd'
+  ‘baitRegions’
+
+Undocumented arguments in Rd file 'crossGeneEnhancer-linkSet-method.Rd'
+  ‘x’
+
+Undocumented arguments in Rd file 'diagnoseLinkSet-linkSet-method.Rd'
+  ‘x’
+
+Documented arguments not in \usage in Rd file 'dot-dbCache.Rd':
+  ‘x’ ‘genome’ ‘keyType’ ‘upstream’ ‘overwrite’
+
+Undocumented arguments in Rd file 'dot-filter.fragments.Rd'
+  ‘bait.filters’ ‘target.filters’ ‘verbose’
+
+Undocumented arguments in Rd file 'filterLinks-linkSet-method.Rd'
+  ‘x’
+
+Undocumented arguments in Rd file 'fit.model.Rd'
+  ‘linkSet’ ‘distance.bins’
+Documented arguments not in \usage in Rd file 'fit.model.Rd':
+  ‘interaction.data’
+
+Undocumented arguments in Rd file 'geom_linkset-linkSet-method.Rd'
+  ‘linkSet’
+Documented arguments not in \usage in Rd file 'geom_linkset-linkSet-method.Rd':
+  ‘link.file’ ‘file.type’ ‘plot.curve’
+
+Undocumented arguments in Rd file 'geom_range.Rd'
+  ‘bait_col’ ‘oe_col’ ‘default_col’ ‘minimal_width’
+
+Undocumented arguments in Rd file 'linkSet-GRange-Methods.Rd'
+  ‘width’ ‘fix’ ‘...’ ‘region’ ‘start’ ‘end’ ‘shift’ ‘both’
+  ‘ignore.strand’ ‘upstream’ ‘downstream’ ‘drop.empty.ranges’
+
+Undocumented arguments in Rd file 'orderLinks-linkSet-method.Rd'
+  ‘x’
+
+Undocumented arguments in Rd file 'reduceRegions-linkSet-method.Rd'
+  ‘region’
+Documented arguments not in \usage in Rd file 'reduceRegions-linkSet-method.Rd':
+  ‘reduceBait’ ‘reduceOE’
+
+Undocumented arguments in Rd file 'run.model.fitting.Rd'
+  ‘distance.bins’
+
+Undocumented arguments in Rd file 'run_chicane-linkSet-method.Rd'
+  ‘include.zeros’ ‘remove.adjacent’ ‘temp.directory’ ‘keep.files’
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
 * checking Rd contents ... OK
 * checking for unstated dependencies in examples ... OK
-* checking examples ... NONE
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking LazyData ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking files in ‘vignettes’ ... WARNING
+Files in the 'vignettes' directory but no files in 'inst/doc':
+  ‘hic_workthrough.Rmd’ ‘hicut.R’ ‘img/9.10_data_structure.png’
+  ‘img/linkSetImport.png’ ‘img/linksetmethod.png’ ‘img/overview.png’
+  ‘linkSet.Rmd’
+* checking examples ... OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... OK
+  Running ‘testthat.R’
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... WARNING
+Directory 'inst/doc' does not exist.
+Package vignettes without corresponding single PDF/HTML:
+  ‘hic_workthrough.Rmd’
+  ‘linkSet.Rmd’
+* checking re-building of vignette outputs ... OK
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.
 * checking PDF version of manual without index ... ERROR
 Re-running with no redirection of stdout/stderr.
 * DONE
-Status: 1 ERROR, 3 WARNINGs, 5 NOTEs
+Status: 2 ERRORs, 9 WARNINGs, 4 NOTEs

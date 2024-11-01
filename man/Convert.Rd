@@ -6,6 +6,7 @@
 \alias{Convert,data.frame-method}
 \alias{Convert,Pairs-method}
 \alias{Convert,ANY-method}
+\alias{readvalidPairs}
 \title{Convert different object types to linkSet}
 \usage{
 Convert(x, ...)
@@ -17,6 +18,8 @@ Convert(x, ...)
 \S4method{Convert}{Pairs}(x, baitCol = NULL, ...)
 
 \S4method{Convert}{ANY}(x, ...)
+
+readvalidPairs(file)
 }
 \arguments{
 \item{x}{An object of unsupported class}
@@ -24,6 +27,8 @@ Convert(x, ...)
 \item{...}{Additional arguments (not used)}
 
 \item{baitCol}{A character string specifying the column to use for bait naming}
+
+\item{file}{A character string specifying the path to the validPairs file}
 
 \item{specificCol}{A character string specifying the column to use for bait naming}
 }
@@ -37,7 +42,33 @@ A linkSet object
 A linkSet object
 
 Nothing, throws an error
+
+A GInteractions object
 }
 \description{
 Convert other data formats to linkSet. Currently supported: GInteractions, data.frame.
+}
+\examples{
+library(InteractionSet)
+gi <- GenomicInteractions::GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
+ranges = IRanges(start = c(100, 200, 300, 400), width = 50)))
+ls <- Convert(gi)
+ls
+
+df <- data.frame(
+  gene = c("gene1", "gene2"),
+  peak = c("chr1:1000-2000", "chr2:1500-2500"),
+  score = c(5.5, 6.0)
+)
+ls <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
+ls
+  gr1 <- GRanges(seqnames = c("chr1", "chr2"),
+                ranges = IRanges(start = c(1000, 2000), width = 100),
+                strand = "+", symbol = c("BRCA1", "TP53"))
+  gr2 <- GRanges(seqnames = c("chr1", "chr2"),
+                ranges = IRanges(start = c(5000, 6000), width = 100),
+                strand = "+")
+  pairs <- Pairs(first = gr1, second = gr2, elementMetadata = DataFrame(symbol = c("BRCA1", "TP53")))
+  ls <- Convert(pairs, baitCol = "symbol")
+  ls
 }

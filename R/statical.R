@@ -32,8 +32,28 @@
 #'	\item{q.value}{FDR-corrected p-value}
 #'
 #' @import data.table
-#'
+#' @rdname chicane
 #' @export
+#'
+#' @examples
+#' # Example usage of run_chicane function
+#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'                strand = "+")
+#' ls <- linkSet(gr1, gr2, specificCol = "symbol")
+#' annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+#' annotated_ls <- countInteractibility(annotated_ls)
+#' annotated_ls <- linkSet::pairdist(annotated_ls)
+#' # Run run_chicane function
+#' result_ls <- run_chicane(annotated_ls, replicate.merging.method = 'sum', 
+#'                          bait.filters = c(0, 1), target.filters = c(0, 1), 
+#'                          distance.bins = NULL, multiple.testing.correction = 'bait-level', 
+#'                          verbose = TRUE)
+#' result_ls	
+#' 
 setMethod("run_chicane", "linkSet", function(linkSet, 
 	replicate.merging.method = 'sum',
 	distribution = 'negative-binomial',
@@ -111,7 +131,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'	Verify that linkSet object is in expected format. Throws an error if object does not fit requirements.
 #'
 #' @param linkSet Object to be verified.
-#'
+#' @rdname chicane
 #' @return None
 #'
 .verify.linkSet <- function(linkSet) {
@@ -153,7 +173,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @param linkSet LinkSet object containing interactions
 #'
 #' @return LinkSet object containing fragments that passed all filters
-#'
+#' @rdname chicane
 #' @import data.table
 #' @export
 
@@ -238,7 +258,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'  \item{model}{model object. Set to NULL if no model could be fit.}
 #' 	\item{expected.values}{vector of expected values for each element in original data, or vector of NAs if no model could be fit}
 #' 	\item{p.values}{vector of p-values for test of significantly higher response than expected, or vector of NAs if no model could be fit}
-#'
+#' @rdname chicane
 #' @export
 .model.try.catch <- function(
 	model.formula, 
@@ -400,7 +420,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'  Path to directory to store intermediate QC data and plots.
 #'
 #' @return Interactions data with expected number of interactions and p-values added.
-#'
+#' @rdname chicane
 #' @details
 #' 	Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
 #' 	are fit separately in each quantile of the distance-sorted data.
@@ -492,7 +512,7 @@ fit.model <- function(
 #' @param bait.to.bait Logical indicating if model should be fit as bait-to-bait
 #' @param adjustment.terms Characted vector of extra terms to adjust for in the model fit
 #'
-#'
+#' @rdname chicane
 #' @return Interactions data with expeceted number of interactions and p-values added.
 #'
 #' @importFrom foreach %dopar%
@@ -711,7 +731,7 @@ run.model.fitting <- function(
 #' 	The minimum number of expected rows in a distance bin. Ignored if distance.bins is set
 #' @param verbose 
 #'	Logical indicating whether to print progress reports
-#'
+#' @rdname chicane
 #' @return 
 #'	List where each element corresponds to a specified distance bin, and the final one corresponding to trans-interactions (if present)
 #'
@@ -801,7 +821,7 @@ run.model.fitting <- function(
 #'  In such cases, the Poisson distribution may be a suitable alternative.
 #' 
 #' @param e Error object
-#' 
+#' @rdname chicane
 #' @return Boolean indicating if error matches
 #'
 .is.glm.nb.theta.error <- function(e) {
@@ -831,7 +851,7 @@ run.model.fitting <- function(
 #'	\code{glm.nb} does not work when all responses are constant, or there are only two unique values and a covariate is a perfect predictor.
 #'
 #' @param interaction.data Data table of interaction data on which model is to be fit
-#'
+#' @rdname chicane
 #' @return boolean indicating if model can be fit
 #' 
 .check.model.numerical.fit <- function(interaction.data) {
@@ -890,13 +910,10 @@ run.model.fitting <- function(
 #' 	Data table of interaction calls. Must contain columns p.value and bait.id.
 #' @param bait.level 
 #'	Logical indicating whether multiple testing correction should be performed per bait.
-#' 
+#' @rdname chicane
 #' @return Original data table with new column
 #' 	\item{q.value}{FDR-corrected p-value}
-#'
-#'
-#'
-#' @export
+
 multiple.testing.correct <- function(
 	interaction.data,
 	bait.level = TRUE
@@ -955,7 +972,7 @@ multiple.testing.correct <- function(
 #'
 #' @param dat Data frame or data table to be split
 #' @param bins Number of bins to split data into
-#'
+#' @rdname chicane
 #' @return 
 #'	List with \code{bins} elements. Each element corresponds to one portion 
 #'	of the data  
@@ -995,7 +1012,7 @@ multiple.testing.correct <- function(
 #'	Helper function to check if the chicane model can be fit on each element of a split data list.
 #'
 #' @param split.data List of data.table objects with fragment interaction data
-#'
+#' 
 #' @return Logical indicating if the model can be fit
 #'
 .check.split.data.numerical.fit <- function(split.data) {
@@ -1029,7 +1046,7 @@ multiple.testing.correct <- function(
 #'	Verify that interaction.data object is in expected format. Throws an error if object does not fit requirements.
 #'
 #' @param interaction.data Object to be verified.
-#'
+#' @rdname chicane
 #' @return None
 #'
 .verify.interaction.data <- function(interaction.data) {
@@ -1074,7 +1091,7 @@ multiple.testing.correct <- function(
 #'	Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
 #' @param trace
 #' 	Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
-#'
+#' @rdname chicane
 #' @return List with elements
 #'  \item{model}{model object}
 #' 	\item{expected.values}{vector of expected values for each element in original data}
@@ -1261,7 +1278,7 @@ fit.glm <- function(
 #'
 #' @param model.data Data used to fit model
 #' @param model Resulting negative binomial model object
-#'
+#' @rdname chicane
 #' @return None
 #' 
 .model.rows.sanity.check <- function(model.data, model) {
@@ -1286,7 +1303,7 @@ fit.glm <- function(
 #' @param w Warning object
 #'
 #' @return Logical indicating if warning matches iteration limit reached warning
-#'
+#' @rdname chicane
 .is.glm.nb.maxiter.warning <- function(w) {
 
 	if( 'iteration limit reached' != w$message ) {
@@ -1307,7 +1324,7 @@ fit.glm <- function(
 #'  In such cases, the Poisson distribution may be a suitable alternative.
 #'
 #' @param w Warning object
-#'
+#' @rdname chicane
 #' @return Boolean indicating if warning matches
 #' 
 .is.glm.nb.theta.warning <- function(w) {

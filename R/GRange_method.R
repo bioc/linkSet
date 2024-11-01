@@ -211,7 +211,11 @@ setMethod("width", "linkSet", function(x) {
 #' @importFrom GenomicRanges reduce findOverlaps
 #' @importFrom IRanges IRanges
 #'
-#' 
+#' @examples
+#' data(linkExample)
+#' reduced_ls <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
+#' reduced_ls
+#'
 
 setMethod("reduceRegions", "linkSet", function(x, region = "both", countInteractions = TRUE, ...) {
 

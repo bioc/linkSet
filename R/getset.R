@@ -10,6 +10,9 @@
 #' while for the setters, the slots of x are modified accordingly – see Details. 
 #' @param x A linkSet object
 #' @author Gilbert Han
+#' @examples
+#' data(linkExample)
+#' anchor1(linkExample)
 #' @export
 setMethod("anchor1", "linkSet", function(x) { x@anchor1 })
 
@@ -17,6 +20,9 @@ setMethod("anchor1", "linkSet", function(x) { x@anchor1 })
 #' @rdname linkSet-accessors
 #' @aliases anchor2
 #' @param x A linkSet object
+#' @examples
+#' data(linkExample)
+#' anchor2(linkExample)
 #' @export
 setMethod("anchor2", "linkSet", function(x) { x@anchor2 })
 
@@ -25,6 +31,9 @@ setMethod("anchor2", "linkSet", function(x) { x@anchor2 })
 #' @aliases regions
 #' @param x A linkSet object
 #' @return A vector of the regions
+#' @examples
+#' data(linkExample)
+#' regions(linkExample)
 #' @export
 setMethod("regions", "linkSet", function(x) {x@regions})
 

@@ -14,3 +14,9 @@
 \description{
 Export linkSet to WashU format
 }
+\examples{
+data(linkExample)
+tmpfile <- tempfile(fileext = ".txt")
+exportWashU(linkExample, tmpfile)
+cat(readLines(tmpfile), sep = "\n")
+}

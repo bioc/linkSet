@@ -52,13 +52,36 @@ setMethod("parallelVectorNames", "linkSet", function(x) {
   c("anchor1", "anchor2","nameBait", "regions", "names")
 })
 
-
+#' Display detailed information about a linkSet object
 #' @export
+#' @rdname show
+#' @examples
+#' # Example usage of show method for linkSet object
+#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'                strand = "+")
+#' ls <- linkSet(gr1, gr2, specificCol = "symbol")
+#' show(ls)
 setMethod("show", "linkSet", function(object) {
   showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE, baitRegion=FALSE)
 })
 
+
 #' @export
+#' @rdname show
+#' @examples
+#' # Example usage of showLinkSet method for linkSet object
+#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
+#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'                strand = "+")
+#' ls <- linkSet(gr1, gr2, specificCol = "symbol")
+#' showLinkSet(ls)
 setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE, 
                                           print.classinfo=FALSE, baitRegion=FALSE) {
   lx <- length(x)
@@ -73,7 +96,6 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
     message("Please annotate bait first.")
     baitRegion <- FALSE
   }
-  
   if (baitRegion) {
     out <- makePrettyMatrixForCompactPrinting(x, function(x) {
       .makeNakedMatFromGInteractions(x, baitRegion=TRUE)
@@ -309,8 +331,12 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
           }
 )
 
-#== clean unused regions ==#
+
+#' clean unused regions 
 #' @export
+#' @examples
+#' data(linkExample)
+#' linkExample <- clean_unused_regions(linkExample)
 setMethod("clean_unused_regions", "linkSet", function(x) {
     used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
     new_regions <- regions(x)[used_regions]
@@ -340,6 +366,10 @@ setMethod("clean_unused_regions", "linkSet", function(x) {
 #'
 #' @return A new linkSet object containing only the specified bait interactions
 #' @export
+#' @examples
+#' data(linkExample)
+#' subset_bait_names <- c("bait1", "bait2")
+#' subsetted_linkSet <- subsetBait(linkExample, subset_bait_names)
 setMethod("subsetBait", "linkSet", function(x, subset) {
   idx <- bait(x) %in% subset
   clean_unused_regions(x[idx])
@@ -353,6 +383,10 @@ setMethod("subsetBait", "linkSet", function(x, subset) {
 #'
 #' @return A new linkSet object containing only the interactions with bait regions overlapping the subset
 #' @export
+#' @examples
+#' data(linkExample)
+#' subset_bait_regions <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(100, 200), end = c(150, 250)))
+#' subsetted_linkSet <- subsetBaitRegion(linkExample, subset_bait_regions)
 setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
   bait_regions <- regionsBait(x)
   if (is.null(bait_regions)) {
@@ -374,6 +408,10 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
 #'
 #' @return A new linkSet object containing only the interactions with oe regions overlapping the subset
 #' @export
+#' @examples
+#' data(linkExample)
+#' subset_oe_regions <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(300, 400), end = c(350, 450)))
+#' subsetted_linkSet <- subsetOE(linkExample, subset_oe_regions)
 setMethod("subsetOE", "linkSet", function(x, subset) {
   oe_regions <- oe(x)
   if (is.character(subset)) {
@@ -384,4 +422,3 @@ setMethod("subsetOE", "linkSet", function(x, subset) {
   ls = x[idx]
   ls = clean_unused_regions(ls)
 })
-

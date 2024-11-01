@@ -2,10 +2,15 @@
 % Please edit documentation in R/distance.R
 \name{diagnoseLinkSet,linkSet-method}
 \alias{diagnoseLinkSet,linkSet-method}
+\alias{diagnoseLinkSet}
 \title{Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution}
 \usage{
 \S4method{diagnoseLinkSet}{linkSet}(x)
 }
 \description{
 Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
+}
+\examples{
+data(linkExample)
+diagnoseLinkSet(linkExample)
 }
