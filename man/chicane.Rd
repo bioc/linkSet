@@ -301,7 +301,7 @@ or a covariate is a perfect predictor of count.
 }
 \examples{
 # Example usage of run_chicane function
-gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+gr1 <- GRanges(seqnames = c("chr1", "chr3", "chr3"),
                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
 gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),

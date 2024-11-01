@@ -20,8 +20,10 @@
 
   # Create new connection
   src <- if (genome == "hg38") {
+    require(TxDb.Hsapiens.UCSC.hg38.knownGene)
     Organism.dplyr::src_organism("TxDb.Hsapiens.UCSC.hg38.knownGene")
   } else if (genome == "mm10") {
+    require(TxDb.Mmusculus.UCSC.mm10.knownGene)
     Organism.dplyr::src_organism("TxDb.Mmusculus.UCSC.mm10.knownGene")
   } else {
     stop("Unsupported genome. Please use 'hg38' or 'mm10'.")
@@ -128,6 +130,8 @@ reg.finalizer(.dbCache, function(e) {
 #' @return Result of the database operation
 #' @export
 #' @examples
+#' requireNamespace("TxDb.Hsapiens.UCSC.hg38.knownGene")
+#' requireNamespace("org.Hs.eg.db")
 #' result <- withTxDb("hg38", function(src) {
 #'   genes <- Organism.dplyr::genes(src)
 #'   return(genes)

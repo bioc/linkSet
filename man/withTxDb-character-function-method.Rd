@@ -20,6 +20,8 @@ Result of the database operation
 Execute Database Operation with Automatic Connection Management
 }
 \examples{
+requireNamespace("TxDb.Hsapiens.UCSC.hg38.knownGene")
+requireNamespace("org.Hs.eg.db")
 result <- withTxDb("hg38", function(src) {
   genes <- Organism.dplyr::genes(src)
   return(genes)

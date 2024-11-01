@@ -62,13 +62,4 @@ df <- data.frame(
 )
 ls <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
 ls
-  gr1 <- GRanges(seqnames = c("chr1", "chr2"),
-                ranges = IRanges(start = c(1000, 2000), width = 100),
-                strand = "+", symbol = c("BRCA1", "TP53"))
-  gr2 <- GRanges(seqnames = c("chr1", "chr2"),
-                ranges = IRanges(start = c(5000, 6000), width = 100),
-                strand = "+")
-  pairs <- Pairs(first = gr1, second = gr2, elementMetadata = DataFrame(symbol = c("BRCA1", "TP53")))
-  ls <- Convert(pairs, baitCol = "symbol")
-  ls
 }

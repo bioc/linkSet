@@ -12,7 +12,7 @@
 #' @export
 #' @examples
 #' library(InteractionSet)
-#' gi <- GenomicInteractions::GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
+#' gi <- GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
 #' ranges = IRanges(start = c(100, 200, 300, 400), width = 50)))
 #' ls <- Convert(gi)
 #' ls
