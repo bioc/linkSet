@@ -275,11 +275,13 @@ It might be common that you only have the bait name, but don't have the exact ba
 The annotation function can help you to annotate the bait region from a gene annotation.
 
 ```{r}
-bait <- c("BRCA1", "TP53", "NONEXISTENT")
+gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+               ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+               strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
 gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-                strand = "+")
-ls <- linkSet(bait, gr2)
+               ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+               strand = "+")
+ls <- linkSet(gr1, gr2, specificCol = "symbol")
 
 # Test annotatePromoter
 annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
