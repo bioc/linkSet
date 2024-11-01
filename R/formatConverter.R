@@ -147,16 +147,6 @@ setMethod("Convert", signature(x = "data.frame"), function(x, source = "data.fra
 #'
 #' @return A linkSet object
 #' @export
-#' @examples
-#'   gr1 <- GRanges(seqnames = c("chr1", "chr2"),
-#'                 ranges = IRanges(start = c(1000, 2000), width = 100),
-#'                 strand = "+", symbol = c("BRCA1", "TP53"))
-#'   gr2 <- GRanges(seqnames = c("chr1", "chr2"),
-#'                 ranges = IRanges(start = c(5000, 6000), width = 100),
-#'                 strand = "+")
-#'   pairs <- Pairs(first = gr1, second = gr2, elementMetadata = DataFrame(symbol = c("BRCA1", "TP53")))
-#'   ls <- Convert(pairs, baitCol = "symbol")
-#'   ls
 setMethod("Convert", signature(x = "Pairs"), function(x,baitCol = NULL, ...) {
   # Extract first and second GRanges
   anchor1 <- x@first

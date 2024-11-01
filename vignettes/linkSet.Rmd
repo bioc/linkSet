@@ -275,7 +275,7 @@ It might be common that you only have the bait name, but don't have the exact ba
 The annotation function can help you to annotate the bait region from a gene annotation.
 
 ```{r}
-gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
+gr1 <- GRanges(seqnames = c("chr1", "chr3", "chr3"),
                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
 gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
