@@ -405,11 +405,6 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' 	Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
 #' 	are fit separately in each quantile of the distance-sorted data.
 #'
-#' @examples
-#' \donttest{
-#' 	data(bre80);
-#'	fit.model(bre80);
-#' }
 #'
 #' @export
 fit.model <- function(
@@ -900,12 +895,6 @@ run.model.fitting <- function(
 #' 	\item{q.value}{FDR-corrected p-value}
 #'
 #'
-#' @examples
-#' \dontrun{
-#' 	data(bre80);
-#'  results <- fit.model(bre80);	
-#'  adjusted.results <- multiple.testing.correct(results);
-#' }
 #'
 #' @export
 multiple.testing.correct <- function(

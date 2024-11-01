@@ -28,6 +28,7 @@ Imports:
     foreach,
     iterators,
     stats,
+    rlang,
     MASS,
     data.table
 Suggests: 

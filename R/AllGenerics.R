@@ -60,6 +60,13 @@ setGeneric("subsetOE", function(x, ...) {
 setGeneric("annotatePromoter", function(x, genome = "hg38", keyType = "symbol",upstream = 500,overwrite = FALSE,...) standardGeneric("annotatePromoter"))
 
 #' @export
+setGeneric("withTxDb", function(x, expr, ...) {
+  standardGeneric("withTxDb")
+})
+
+
+
+#' @export
 setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
 
 #' @export
@@ -109,7 +116,7 @@ setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
   standardGeneric("baitGInteractions")
 })
 
-#' @export 
+#' @export
 setGeneric("as.GInteractions", function(x){
   standardGeneric("as.GInteractions")
 })
@@ -117,7 +124,7 @@ setGeneric("as.GInteractions", function(x){
 #' @export
 setGeneric("exportInterBed", function(x, outfile){
   standardGeneric("exportInterBed")
-}) 
+})
 
 #' @export
 setGeneric("exportWashU", function(x, outfile){
@@ -172,14 +179,14 @@ setGeneric("orderLinks", function(x, by = "count", decreasing = TRUE) {
 # plot.R
 #' @export
 setGeneric("geom_linkset", function(linkSet, score.col = "count", score.threshold = NULL, score.color = c("grey70", "#56B1F7", "#132B43"),
- scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.05,  remove_x_axis = FALSE, 
+ scale.range = 10,  plot.space = 0.1, plot.height = 0.2, arrow.size = 0.05,  remove_x_axis = FALSE,
  link_plot_on_top = FALSE,extend.base = 10000,show.rect = FALSE, x.range = NULL, log.scale = TRUE) {
   standardGeneric("geom_linkset")
 })
 
 #' @export
 setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL,x.range = NULL,
-                                            score.col = "count", 
+                                            score.col = "count",
                                             show.rect = TRUE,
                                             extend.base = 10000,
                                             ...,
@@ -194,7 +201,7 @@ setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NU
                                             inherit.aes = TRUE,
                                             link_plot_on_top = FALSE,
                                             arrow.size = 0.05, remove_x_axis = FALSE,
-                                            plot.height = 0.4, plot.space = 0.1, 
+                                            plot.height = 0.4, plot.space = 0.1,
                                             log.scale = TRUE) {
   standardGeneric("plot_genomic_ranges")
 })

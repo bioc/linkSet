@@ -13,8 +13,8 @@
 #' @export
 #'
 #' @examples
-#' linkSet = data(linkExample)
-#' linkSet = c(linkSet,linkSet)
+#' data(linkExample)
+#' linkSet = c(linkExample,linkExample)
 #' result <- countInteractions(linkSet)
 #' result
 #'
@@ -56,12 +56,12 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
 #' @description This function calculate the number of trans interactions for each bait and oe. The word "interactibility" can refer to https://doi.org/10.1038%2Fnature11279.
 #' @return A linkSet object with counts for each unique interaction
 #' @examples
-#' linkSet = data(linkExample)
-#' linkSet = c(linkSet,linkSet)
+#' data(linkExample)
+#' linkSet = c(linkExample,linkExample)
 #' linkSet = countInteractions(linkSet)
 #' linkSet = countInteractibility(linkSet)
 #' @export
-#' 
+#'
 setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
   # Ensure inter_type and count are present
   if (!"inter_type" %in% colnames(mcols(x))) {
@@ -120,8 +120,8 @@ setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
 #' @param distance The maximum distance between bait and other end
 #' @return A linkSet object with filtered interactions
 #' @examples
-#' linkSet = data(linkExample)
-#' linkSet = c(linkSet, linkSet)
+#' data(linkExample)
+#' linkSet = c(linkExample,linkExample)
 #' linkSet = countInteractions(linkSet)
 #' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' @export
@@ -168,8 +168,8 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 #' @param score_threshold The minimum score to filter interactions
 #' @return A linkSet object with filtered interactions
 #' @examples
-#' linkSet = data(linkExample)
-#' linkSet = c(linkSet, linkSet)
+#' data(linkExample)
+#' linkSet = c(linkExample,linkExample)
 #' linkSet = countInteractions(linkSet)
 #' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)
@@ -190,7 +190,7 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
   baitDf <- as.data.frame(table(oeName, baitName))
   baitDf <- baitDf[baitDf$Freq > 0, ]
   enhancerDf <- as.data.frame(table(baitDf$oeName))
-  
+
   # Assign the Freq column to the mcol of x
   mcols(x)$crossFreq <- enhancerDf$Freq[match(oeName, enhancerDf[,1])]
 
@@ -204,8 +204,8 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 #' @param decreasing Whether to sort in decreasing order
 #' @return A linkSet object with ordered interactions
 #' @examples
-#' linkSet = data(linkExample)
-#' linkSet = c(linkSet,linkSet)
+#' data(linkExample)
+#' linkSet = c(linkExample,linkExample)
 #' linkSet = countInteractions(linkSet)
 #' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)

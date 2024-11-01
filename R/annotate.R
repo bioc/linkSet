@@ -25,6 +25,56 @@
 #'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
 #'
 #'
+# Create a new environment to store database connections
+.dbCache <- new.env(parent = emptyenv())
+
+# Helper function to get or create database connection
+.getDBConnection <- function(genome) {
+  # Create a key for the connection
+  conn_key <- paste0("conn_", genome)
+
+  # Check if connection exists and is valid
+  if (exists(conn_key, envir = .dbCache)) {
+    src <- get(conn_key, envir = .dbCache)
+    if (DBI::dbIsValid(src$con)) {
+      return(src)
+    } else {
+      # Remove invalid connection
+      rm(list = conn_key, envir = .dbCache)
+    }
+  }
+
+  # Create new connection
+  src <- if (genome == "hg38") {
+    Organism.dplyr::src_organism("TxDb.Hsapiens.UCSC.hg38.knownGene")
+  } else if (genome == "mm10") {
+    Organism.dplyr::src_organism("TxDb.Mmusculus.UCSC.mm10.knownGene")
+  } else {
+    stop("Unsupported genome. Please use 'hg38' or 'mm10'.")
+  }
+
+  # Store the connection
+  assign(conn_key, src, envir = .dbCache)
+
+  return(src)
+}
+
+# Function to cleanup connections
+.cleanupConnections <- function() {
+  for (conn_key in ls(.dbCache)) {
+    src <- get(conn_key, envir = .dbCache)
+    if (inherits(src, "src_dbi") && DBI::dbIsValid(src$con)) {
+      tryCatch({
+        DBI::dbDisconnect(src$con)
+      }, error = function(e) {
+        warning(paste("Failed to disconnect from database:", e$message))
+      })
+    }
+  }
+  rm(list = ls(.dbCache), envir = .dbCache)
+}
+
+# Modified annotatePromoter method
 setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
                                                   keyType = "symbol", upstream = 5000,
                                                   overwrite = FALSE) {
@@ -36,15 +86,9 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
     warning("regionsBait is being overwritten")
   }
 
-  src <- NULL
   tryCatch({
-    if (genome == "hg38") {
-      src <- Organism.dplyr::src_organism("TxDb.Hsapiens.UCSC.hg38.knownGene")
-    } else if (genome == "mm10") {
-      src <- Organism.dplyr::src_organism("TxDb.Mmusculus.UCSC.mm10.knownGene")
-    } else {
-      stop("Unsupported genome. Please use 'hg38' or 'mm10'.")
-    }
+    # Get cached or new connection
+    src <- .getDBConnection(genome)
 
     genes <- bait(x)
     geneGr <- Organism.dplyr::genes(src, filter = ~(symbol %in% genes))
@@ -68,13 +112,34 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
   }, error = function(e) {
     warning(paste("An error occurred:", e$message))
     return(x)
-  }, finally = {
-    if (!is.null(src) && inherits(src, "src_dbi")) {
-      tryCatch({
-        DBI::dbDisconnect(src$con)
-      }, error = function(e) {
-        warning(paste("Failed to disconnect from database:", e$message))
-      })
-    }
   })
 })
+
+# Register cleanup function to be called when R exits
+reg.finalizer(.dbCache, function(e) {
+  .cleanupConnections()
+}, onexit = TRUE)
+
+#' Execute Database Operation with Automatic Connection Management
+#'
+#' @param x The genome name or object to operate on
+#' @param expr Expression to evaluate with database connection
+#' @param ... Additional arguments
+#' @return Result of the database operation
+#' @export
+setMethod("withTxDb", signature(x = "character", expr = "function"),
+  function(x, expr, ...) {
+    if (!x %in% c("mm10", "hg38")) {
+      stop("Unsupported genome. Please use 'hg38' or 'mm10'.")
+    }
+    
+    src <- .getDBConnection(x)
+    
+    tryCatch({
+      result <- expr(src, ...)
+      return(result)
+    }, error = function(e) {
+      stop(paste("Database operation failed:", e$message))
+    })
+  }
+)

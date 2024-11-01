@@ -109,3 +109,7 @@ ls
 
 
 ```
+
+```{r out.width = '80%', echo = FALSE, fig.alt="Overview diagram of the linkSet methods"}
+knitr::include_graphics("vignettes/img/linksetmethod.png")
+```

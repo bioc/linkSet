@@ -19,8 +19,8 @@ A linkSet object with counts for each unique interaction
 This function calculate the number of trans interactions for each bait and oe. The word "interactibility" can refer to https://doi.org/10.1038\%2Fnature11279.
 }
 \examples{
-linkSet = data(linkExample)
-linkSet = c(linkSet,linkSet)
+data(linkExample)
+linkSet = c(linkExample,linkExample)
 linkSet = countInteractions(linkSet)
 linkSet = countInteractibility(linkSet)
 }

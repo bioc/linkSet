@@ -281,6 +281,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #' @inheritParams ggplot2::geom_tile
 #' @inheritParams ggplot2::geom_segment
 #' @inheritParams grid::rectGrob
+#' @importFrom rlang %||%
 #'
 #' @return the return value of a `geom_*` function is not intended to be
 #'   directly handled by users. Therefore, `geom_*` functions should never be

@@ -17,8 +17,8 @@ A linkSet object with filtered interactions
 Cross gene enhancer
 }
 \examples{
-linkSet = data(linkExample)
-linkSet = c(linkSet, linkSet)
+data(linkExample)
+linkSet = c(linkExample,linkExample)
 linkSet = countInteractions(linkSet)
 linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)

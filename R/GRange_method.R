@@ -177,7 +177,7 @@ setMethod("promoterRegions", "linkSet", function(x, upstream=2000, downstream=20
 #' resize_bait <- resizeRegions(linkExample, width = 75, fix = "start", region = "bait")
 #' resize_bait
 #' 
-#' narrow_bait <- narrowRegions(linkExample, start = 10, width = 40, region = "bait")
+#' narrow_bait <- narrowRegions(linkExample, start = 1, width = 5, region = "bait")
 #' narrow_bait
 #' 
 #' shift_oe <- shiftRegions(linkExample, shift = 10, region = "oe")

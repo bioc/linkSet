@@ -56,9 +56,10 @@ knitr::include_graphics("img/overview.png")
 ```
 
 
-```{r out.width = '70%', echo = FALSE, fig.alt="Overview diagram of the linkSet class structure and its components"}
+```{r out.width = '80%', echo = FALSE, fig.alt="Overview diagram of the linkSet methods"}
 knitr::include_graphics("img/linksetmethod.png")
 ```
+
 ## Construction
 The linkSet class can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
 ```{r out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
@@ -289,11 +290,19 @@ annotated_ls
 Functional enhancers usually regulate multiple genes, we can use cross gene analysis to identify the cross gene enhancers.
 
 ```{r}
-ls <- crossGeneEnhancer(ls)
-ls <- orderLinks(ls,by = "crossFreq",decreasing = T)
-ls
+annotated_ls <- crossGeneEnhancer(annotated_ls)
+annotated_ls <- orderLinks(annotated_ls,by = "crossFreq",decreasing = T)
+annotated_ls
 ```
 
+linkSet also implement the [`CHiCANE` analysis](https://www.nature.com/articles/s41596-021-00498-1), which can identifying the high-confidence interactions.
+**CHiCANE** needs to count interactibility and dist before running the statistical test.
+```{r}
+annotated_ls <- countInteractibility(annotated_ls)
+annotated_ls <- linkSet::pairdist(annotated_ls)
+annotated_ls <- run_chicane(annotated_ls)
+annotated_ls
+```
 
 
 ## Visualization

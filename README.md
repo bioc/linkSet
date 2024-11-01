@@ -56,6 +56,8 @@ ls
 #>   [2]       Gene2 ---        chr2   150-159 |          Gene2
 #>   [3]       Gene3 ---        chr2   250-259 |          Gene3
 #>   -------
-#>   regions: 3 ranges and 0 metadata columns
+#>   regions: 6 ranges and 0 metadata columns
 #>   seqinfo: 2 sequences from an unspecified genome; no seqlengths
 ```
+
+<img src="vignettes/img/linksetmethod.png" alt="Overview diagram of the linkSet methods" width="80%" />

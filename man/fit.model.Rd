@@ -48,10 +48,3 @@ Fit negative binomial model to obtain p-values for interactions.
 are fit separately in each quantile of the distance-sorted data.
 }\if{html}{\out{</div>}}
 }
-\examples{
-\donttest{
-	data(bre80);
-fit.model(bre80);
-}
-
-}

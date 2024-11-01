@@ -21,8 +21,8 @@ A linkSet object with filtered interactions
 Filter links for further analysis
 }
 \examples{
-linkSet = data(linkExample)
-linkSet = c(linkSet, linkSet)
+data(linkExample)
+linkSet = c(linkExample,linkExample)
 linkSet = countInteractions(linkSet)
 linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 }

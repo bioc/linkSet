@@ -155,7 +155,12 @@ setReplaceMethod("regionsBait", "linkSet", function(x, value) {
   }
   metadata <- mcols(value)
   mcols(value) <- NULL
-  regions(x)[anchor1(x)] <- value
+  if (length(anchor1(x)) == 0) {
+    x@regions <- c(regions(x),value)
+    x@anchor1 <- (length(regions(x))-length(value)+1) : length(regions(x))
+  } else {
+    regions(x)[anchor1(x)] <- value
+  }
   mcols(x) <- cbind(mcols(x),metadata)
   return(x)
 })
