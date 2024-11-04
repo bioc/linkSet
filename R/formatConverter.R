@@ -309,82 +309,65 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
 #' @export
 #' 
 #' 
-readvalidPairs <- function(file) {
-  localFUN = function(buf) {
-    # Remove lines starting with ## or #columns:
-    buf <- buf[!grepl("^#", buf)]
-    # Remove empty lines
-    buf <- buf[nzchar(trimws(buf))]
-    
-    # Split lines and clean up
-    splits <- strsplit(buf, "\\s+")
-    # Convert to matrix and remove empty strings
-    buf <- do.call(rbind, splits)
-    
-    # Ensure numeric positions are properly converted
-    pos1 <- as.numeric(buf[, 3])
-    pos2 <- as.numeric(buf[, 5])
-    
-    # Check for NA values
-    valid_rows <- !is.na(pos1) & !is.na(pos2)
-    if (!all(valid_rows)) {
-      warning("Removing ", sum(!valid_rows), " invalid rows")
-      buf <- buf[valid_rows, ]
-      pos1 <- pos1[valid_rows]
-      pos2 <- pos2[valid_rows]
-    }
-    
-    # Create GRanges objects
-    dat <- GRanges(
-      seqnames = buf[, 2],  # chr1
-      ranges = IRanges(start = pos1, width = 1),  # position1
-      strand = buf[, 4]     # strand1
-    )
-    
-    dat2 <- GRanges(
-      seqnames = buf[, 5],  # chr2 (changed from 4)
-      ranges = IRanges(start = pos2, width = 1),  # position2
-      strand = buf[, 7]     # strand2 (changed from 6)
-    )
-    
-    gi <- InteractionSet::GInteractions(anchor1 = dat, anchor2 = dat2)
-    return(gi)
+readvalidPairs <- function(file,njobs = 1) {
+  # Read file with data.table
+  message("Reading file...")
+  
+  # First check the header structure
+  header_lines <- system(paste("grep '^#' ", file), intern = TRUE)
+  skip_lines <- length(header_lines)
+  
+  dt <- data.table::fread(
+    file,
+    skip = skip_lines,
+    col.names = c("readID", "chr1", "pos1", "strand1", "chr2", "pos2", "strand2"),
+    colClasses = c(
+      "character", # readID
+      "character", # chr1
+      "numeric",   # pos1
+      "character", # strand1
+      "character", # chr2
+      "numeric",   # pos2
+      "character"  # strand2
+    ),
+    check.names = TRUE,
+    nThread = njobs
+  )
+
+  
+  # Filter for valid rows
+  valid_rows <- dt
+  if(nrow(dt) == 0) {
+    stop("No valid interactions found after filtering.")
   }
   
-  .readFile(file, localFUN)
+  message("Converting to GInteractions...")
+  
+  # Create GRanges for anchor1
+  gr1 <- GRanges(
+    seqnames = valid_rows$chr1,
+    ranges = IRanges(start = valid_rows$pos1, width = 1),
+    strand = valid_rows$strand1
+  )
+  
+  # Create GRanges for anchor2
+  gr2 <- GRanges(
+    seqnames = valid_rows$chr2,
+    ranges = IRanges(start = valid_rows$pos2, width = 1),
+    strand = valid_rows$strand2
+  )
+  
+  # Create GInteractions object
+  gi <- InteractionSet::GInteractions(anchor1 = gr1, anchor2 = gr2)
+  
+  # Clean up
+  rm(dt, valid_rows, gr1, gr2)
+  #gc()
+  
+  return(gi)
 }
 
-.readFile <- function(file, FUN){
-  if (!file.exists(file)) {
-    stop("File does not exist: ", file)
-  }
-  file_info <- file.info(file)
-  if (is.na(file_info$size)) {
-    stop("Unable to determine file size for: ", file)
-  }
-  s <- file_info$size
 
-  if(s<100000000){
-    buf <- readChar(file, s, useBytes=TRUE)
-    buf <- strsplit(buf, "\n", fixed=TRUE, useBytes=TRUE)[[1]]
-    res <- FUN(buf)
-  }else{
-    message("file is too huge. Please consider to subset the data before import.")
-    res <- NULL
-    con <- file(file, open="r")
-    while(length(buf <- readLines(con, n=1000000, warn=FALSE))>0){
-      buf <- FUN(buf)
-      if(length(res)<1) {
-        res <- buf
-      }else{
-        suppressWarnings(res <- c(res, buf))
-      }
-    }
-    close(con)
-  }
-  res <- unique(res)
-  return(res)
-}
 
 #' coerce linkSet to DataFrame
 #' @param x A linkSet object
