@@ -309,23 +309,49 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
 #' @export
 #' 
 #' 
-readvalidPairs <- function(file){
-  localFUN = function(buf){
-    # Remove lines starting with ##
-    buf <- buf[!grepl("^##", buf)]
-    # Remove lines starting with #columns:
-    buf <- buf[!grepl("^#columns:", buf)]
+readvalidPairs <- function(file) {
+  localFUN = function(buf) {
+    # Remove lines starting with ## or #columns:
+    buf <- buf[!grepl("^#", buf)]
+    # Remove empty lines
+    buf <- buf[nzchar(trimws(buf))]
     
-    buf <- do.call(rbind, strsplit(buf, "\\s"))
-    dat <- GRanges(buf[, 2], IRanges(as.numeric(buf[, 3]), 
-                                     width = 1),
-                   strand = buf[, 4])
-    dat2 <- GRanges(buf[, 5], IRanges(as.numeric(buf[, 6]), 
-                                      width = 1),
-                    strand = buf[, 7])
-    gi <- InteractionSet::GInteractions(anchor1=dat, anchor2 = dat2)
+    # Split lines and clean up
+    splits <- strsplit(buf, "\\s+")
+    # Convert to matrix and remove empty strings
+    buf <- do.call(rbind, splits)
+    
+    # Ensure numeric positions are properly converted
+    pos1 <- as.numeric(buf[, 3])
+    pos2 <- as.numeric(buf[, 5])
+    
+    # Check for NA values
+    valid_rows <- !is.na(pos1) & !is.na(pos2)
+    if (!all(valid_rows)) {
+      warning("Removing ", sum(!valid_rows), " invalid rows")
+      buf <- buf[valid_rows, ]
+      pos1 <- pos1[valid_rows]
+      pos2 <- pos2[valid_rows]
+    }
+    
+    # Create GRanges objects
+    dat <- GRanges(
+      seqnames = buf[, 2],  # chr1
+      ranges = IRanges(start = pos1, width = 1),  # position1
+      strand = buf[, 4]     # strand1
+    )
+    
+    dat2 <- GRanges(
+      seqnames = buf[, 5],  # chr2 (changed from 4)
+      ranges = IRanges(start = pos2, width = 1),  # position2
+      strand = buf[, 7]     # strand2 (changed from 6)
+    )
+    
+    gi <- InteractionSet::GInteractions(anchor1 = dat, anchor2 = dat2)
+    return(gi)
   }
-  .readFile(file, localFUN);
+  
+  .readFile(file, localFUN)
 }
 
 .readFile <- function(file, FUN){
