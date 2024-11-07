@@ -59,5 +59,5 @@ ls
 #>   regions: 6 ranges and 0 metadata columns
 #>   seqinfo: 2 sequences from an unspecified genome; no seqlengths
 ```
-
+The full manual can be reached at https://gilberthan1011.github.io/linkSet/articles/linkSet.html https://gilberthan1011.github.io/linkSet/articles/linkSet.html . 
 <img src="vignettes/img/linksetmethod.png" alt="Overview diagram of the linkSet methods" width="80%" />
