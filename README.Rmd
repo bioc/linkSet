@@ -110,6 +110,7 @@ ls
 
 ```
 
+The full manual can be reached at [Documentation](https://gilberthan1011.github.io/linkSet/articles/linkSet.html).
 ```{r out.width = '80%', echo = FALSE, fig.alt="Overview diagram of the linkSet methods"}
 knitr::include_graphics("vignettes/img/linksetmethod.png")
 ```
