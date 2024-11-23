@@ -19,7 +19,7 @@ Convert(x, ...)
 
 \S4method{Convert}{ANY}(x, ...)
 
-readvalidPairs(file)
+readvalidPairs(file, njobs = 1, format = "validPairs")
 }
 \arguments{
 \item{x}{An object of unsupported class}
@@ -28,7 +28,11 @@ readvalidPairs(file)
 
 \item{baitCol}{A character string specifying the column to use for bait naming}
 
-\item{file}{A character string specifying the path to the validPairs file}
+\item{file}{A character string specifying the path to the validPairs file or 4DN pairs file}
+
+\item{njobs}{An integer specifying the number of threads to use for reading the file}
+
+\item{format}{A character string specifying the format of the file, either "validPairs" or "pair". Pair format should be "readID chr1 pos1 chr2 pos2 strand1 strand2". And validPairs should be "readID chr1 pos1 strand1 chr2 pos2 strand2".}
 
 \item{specificCol}{A character string specifying the column to use for bait naming}
 }

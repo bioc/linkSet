@@ -23,14 +23,13 @@
 #' 	Logical indicating whether to print progress reports.
 #' @param interim.data.dir
 #'  Path to directory to store intermediate QC data and plots. NULL indicate skip intermediate results.
-#' @inheritParams fit.model
-#' @inheritParams fit.glm
 #' 
 #' @return A linkSet object with additional columns:
 #' 	\item{expected}{The expected number of reads linking the two fragments under the fitted model}
 #'	\item{p.value}{P-value for test of the observed number of reads significantly exceeding the expected count}
 #'	\item{q.value}{FDR-corrected p-value}
 #'
+#' 
 #' @import data.table
 #' @rdname chicane
 #' @export
@@ -174,7 +173,9 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'
 #' @return LinkSet object containing fragments that passed all filters
 #' @rdname chicane
-#' @import data.table
+#' @keywords internal
+#' @noRd
+#' @import linkSet
 #' @export
 
 .filter.fragments <- function(
@@ -248,7 +249,6 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @description
 #' 	Internal function for fitting model within a tryCatch loop, handling numerical errors gracefully.
 #'
-#' @inheritParams run.model.fitting
 #' @param model.formula formula
 #' @param data model data
 #' @param init.theta Initial value of theta in negative binomial model
@@ -258,6 +258,8 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'  \item{model}{model object. Set to NULL if no model could be fit.}
 #' 	\item{expected.values}{vector of expected values for each element in original data, or vector of NAs if no model could be fit}
 #' 	\item{p.values}{vector of p-values for test of significantly higher response than expected, or vector of NAs if no model could be fit}
+#' @keywords internal
+#' @noRd
 #' @rdname chicane
 #' @export
 .model.try.catch <- function(
@@ -407,7 +409,6 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @description
 #'  Fit negative binomial model to obtain p-values for interactions.
 #'
-#' @inheritParams fit.glm
 #' @param interaction.data 
 #'	data.table object containing interaction counts. Must contain columns distance, count, and bait_trans_count.
 #' @param adjustment.terms 
@@ -420,6 +421,8 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'  Path to directory to store intermediate QC data and plots.
 #'
 #' @return Interactions data with expected number of interactions and p-values added.
+#' @keywords internal
+#' @noRd
 #' @rdname chicane
 #' @details
 #' 	Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
@@ -507,14 +510,13 @@ fit.model <- function(
 #' 	Run model fitting procedure for either bait-to-bait or other interactions.
 #'	Meant for internal use only. 
 #'
-#' @inheritParams fit.model
-#' @inheritParams fit.glm
 #' @param bait.to.bait Logical indicating if model should be fit as bait-to-bait
 #' @param adjustment.terms Characted vector of extra terms to adjust for in the model fit
 #'
 #' @rdname chicane
+#' @noRd
 #' @return Interactions data with expeceted number of interactions and p-values added.
-#'
+#' @keywords internal
 #' @importFrom foreach %dopar%
 #' @importFrom iterators icount
 #' @importFrom stats logLik
@@ -734,7 +736,8 @@ run.model.fitting <- function(
 #' @rdname chicane
 #' @return 
 #'	List where each element corresponds to a specified distance bin, and the final one corresponding to trans-interactions (if present)
-#'
+#' @keywords internal
+#' @noRd
 #' @export
 .distance.split <- function(
 	interaction.data, 
@@ -1091,6 +1094,7 @@ multiple.testing.correct <- function(
 #'	Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}
 #' @param trace
 #' 	Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}
+#' @keywords internal
 #' @rdname chicane
 #' @return List with elements
 #'  \item{model}{model object}
@@ -1301,6 +1305,7 @@ fit.glm <- function(
 #'	Check if a warning object is an iteration limit reached warning from \code{glm.nb}
 #' 
 #' @param w Warning object
+#' @keywords internal
 #' @rdname chicane
 #' @return Logical indicating if warning matches iteration limit reached warning
 .is.glm.nb.maxiter.warning <- function(w) {

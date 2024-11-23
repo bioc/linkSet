@@ -3,11 +3,6 @@
 \name{run_chicane,linkSet-method}
 \alias{run_chicane,linkSet-method}
 \alias{.verify.linkSet}
-\alias{.filter.fragments}
-\alias{.model.try.catch}
-\alias{fit.model}
-\alias{run.model.fitting}
-\alias{.distance.split}
 \alias{.is.glm.nb.theta.error}
 \alias{.check.model.numerical.fit}
 \alias{multiple.testing.correct}
@@ -42,59 +37,6 @@
 
 .verify.linkSet(linkSet)
 
-.filter.fragments(
-  linkSet,
-  bait.filters = c(0, 1),
-  target.filters = c(0, 1),
-  verbose = FALSE
-)
-
-.model.try.catch(
-  model.formula,
-  data,
-  distribution = "negative-binomial",
-  maxit = 100,
-  epsilon = 1e-08,
-  init.theta = NULL,
-  start = NULL,
-  trace = FALSE,
-  verbose = FALSE
-)
-
-fit.model(
-  linkSet,
-  distance.bins = NULL,
-  distribution = "negative-binomial",
-  adjustment.terms = NULL,
-  maxit = 100,
-  epsilon = 1e-08,
-  cores = 1,
-  trace = FALSE,
-  verbose = FALSE,
-  interim.data.dir = NULL
-)
-
-run.model.fitting(
-  interaction.data,
-  distance.bins = NULL,
-  distribution = "negative-binomial",
-  bait.to.bait = FALSE,
-  adjustment.terms = NULL,
-  maxit = 100,
-  epsilon = 1e-08,
-  cores = 1,
-  trace = FALSE,
-  verbose = FALSE,
-  interim.data.dir = NULL
-)
-
-.distance.split(
-  interaction.data,
-  distance.bins = NULL,
-  min.rows.bin = 50,
-  verbose = FALSE
-)
-
 .is.glm.nb.theta.error(e)
 
 .check.model.numerical.fit(interaction.data)
@@ -124,7 +66,7 @@ fit.glm(
 .is.glm.nb.theta.warning(w)
 }
 \arguments{
-\item{linkSet}{LinkSet object containing interactions}
+\item{linkSet}{Object to be verified.}
 
 \item{replicate.merging.method}{Method that should be used for merging replicates, if applicable}
 
@@ -137,39 +79,23 @@ When global multiple testing correction is performed, altering the bait filterin
 \item{target.filters}{Vector of length two, giving lower and higher filter, respectively.
 Changing this filtering setting may affect multiple testing correction by altering the number of tests performed.}
 
-\item{distance.bins}{Number of distance bins desired. If NULL, a number is chosen to ensure that the negative binomial can be fit in all bins.}
+\item{distance.bins}{Number of bins to split distance into. Models are fit separately in each bin.}
 
 \item{multiple.testing.correction}{String specifying how multiple testing correction should be performed, by bait or globally.}
-
-\item{adjustment.terms}{Characted vector of extra terms to adjust for in the model fit}
 
 \item{maxit}{Maximum number of IWLS iterations for fitting the model (passed to \code{glm.control})}
 
 \item{epsilon}{Positive convergence tolerance for Poisson and negative binomial models. Passed to \code{glm.control}}
 
-\item{cores}{Integer value specifying how many cores to use to fit model for cis-interactions.}
-
 \item{trace}{Logical indicating if output should be produced for each of model fitting procedure. Passed to \code{glm.control} or \code{gamlss.control}}
 
-\item{verbose}{Logical indicating whether to print progress reports}
+\item{verbose}{Logical indicating whether to print progress reports.}
 
-\item{interim.data.dir}{Path to directory to store intermediate QC data and plots.}
-
-\item{model.formula}{formula}
-
-\item{data}{Data frame containing variables specified in formula}
-
-\item{init.theta}{Initial value of theta if fitting the negative binomial distribution}
-
-\item{start}{Starting values for model coefficients}
-
-\item{interaction.data}{Object to be verified.}
-
-\item{bait.to.bait}{Logical indicating if model should be fit as bait-to-bait}
-
-\item{min.rows.bin}{The minimum number of expected rows in a distance bin. Ignored if distance.bins is set}
+\item{interim.data.dir}{Path to directory to store intermediate QC data and plots. NULL indicate skip intermediate results.}
 
 \item{e}{Error object}
+
+\item{interaction.data}{Object to be verified.}
 
 \item{bait.level}{Logical indicating whether multiple testing correction should be performed per bait.}
 
@@ -178,6 +104,12 @@ Changing this filtering setting may affect multiple testing correction by alteri
 \item{bins}{Number of bins to split data into}
 
 \item{formula}{Formula specifying model of interest}
+
+\item{data}{Data frame containing variables specified in formula}
+
+\item{start}{Starting values for model coefficients}
+
+\item{init.theta}{Initial value of theta if fitting the negative binomial distribution}
 
 \item{model.data}{Data used to fit model}
 
@@ -192,19 +124,6 @@ A linkSet object with additional columns:
 \item{q.value}{FDR-corrected p-value}
 
 None
-
-LinkSet object containing fragments that passed all filters
-
-List with elements
-\item{model}{model object. Set to NULL if no model could be fit.}
-\item{expected.values}{vector of expected values for each element in original data, or vector of NAs if no model could be fit}
-\item{p.values}{vector of p-values for test of significantly higher response than expected, or vector of NAs if no model could be fit}
-
-Interactions data with expected number of interactions and p-values added.
-
-Interactions data with expeceted number of interactions and p-values added.
-
-List where each element corresponds to a specified distance bin, and the final one corresponding to trans-interactions (if present)
 
 Boolean indicating if error matches
 
@@ -235,21 +154,6 @@ Run full method for detecting significant interactions in capture Hi-C experimen
 either from a linkSet object or preprocessed data from \code{prepare.data}
 
 Verify that linkSet object is in expected format. Throws an error if object does not fit requirements.
-
-Filter low and high-interacting restriction fragments based on the total number of trans counts
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Internal function for fitting model within a tryCatch loop, handling numerical errors gracefully.
-}\if{html}{\out{</div>}}
-
-Fit negative binomial model to obtain p-values for interactions.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Run model fitting procedure for either bait-to-bait or other interactions.
-}\if{html}{\out{</div>}}
-
-Meant for internal use only.
-
-Split interaction data into subsets that are large enough for the chicane model to be fit (see Details),
-based on distance. This step allows the distance term in the model to be fit in a piecewise linear fashion.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Check if an error matches the error raised by \code{glm.nb} due to an inflated theta estimate.
 }\if{html}{\out{</div>}}
@@ -288,17 +192,6 @@ Check if a warning object is an iteration limit reached warning from \code{glm.n
 This happens when the variance of the negative binomial does not exceed the mean (i.e. there is no overdispersion).
 In such cases, the Poisson distribution may be a suitable alternative.
 }
-\details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
-are fit separately in each quantile of the distance-sorted data.
-}\if{html}{\out{</div>}}
-
-Fitting \code{glm.nb} fails when there is a lack of overdispersion in the data. The chicane method
-contains logic to catch these errors and instead fit a Poisson model. However, to avoid this happening
-more than necessary, an attempt is made to avoid distance splits that will clearly result in numerical errors.
-This includes bins of data where the count is the same for all rows,
-or a covariate is a perfect predictor of count.
-}
 \examples{
 # Example usage of run_chicane function
 gr1 <- GRanges(seqnames = c("chr1", "chr3", "chr3"),
@@ -319,3 +212,4 @@ result_ls <- run_chicane(annotated_ls, replicate.merging.method = 'sum',
 result_ls	
 
 }
+\keyword{internal}
