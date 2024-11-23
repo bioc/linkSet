@@ -39,20 +39,18 @@ suppressPackageStartupMessages({
 })
 ```
 
-We use our custom function `readvalidPairs` to load the example data. 
+We use our custom function `readvalidPairs` to load the [example data](https://data.4dnucleome.org/files-processed/4DNFI9DUBGCW/). 
 Firstly, we need to load into [GInteractions object](https://bioconductor.org/packages/release/bioc/vignettes/InteractionSet/inst/doc/GInteractions.html).
 ```{r setup_data}
-hic_file <- system.file("extdata", "toyValidatePair", 
+hic_file <- system.file("extdata", "toyExample.pair.gz", 
                         package="linkSet")
-gi <- readvalidPairs(hic_file)
+gi <- readvalidPairs(hic_file,format = "pair")
 promoterGr <- withTxDb("mm10", function(src) {
   genes <- Organism.dplyr::genes(src, columns = "symbol")
   IRanges::promoters(genes, upstream = 10000)
 })
 file_url <- c("http://www.enhanceratlas.org/data/download/enhancer/mm/Embryo_body.bed")
-temp_file <- tempfile(fileext = ".bed")
-download.file(file_url, temp_file, method = "curl")
-enhancer <- rtracklayer::import(temp_file)
+enhancer <- rtracklayer::import(file_url, format="BED")
 ```
 
 Because the hic data only contains digist end, so we resize the region to upstream 5kb and downstream 5kb.
@@ -102,10 +100,8 @@ plot_genomic_ranges(ls,showOE = oe(ls)[1])
 ```
 
 We can also choose to visualze the bait center region.
+
 ```{r}
-plot_genomic_ranges(ls,showBait = "Ncoa2")
-```
-```{r}
-plot_genomic_ranges(ls,showBait = "Sulf1")
+plot_genomic_ranges(ls,showBait = "Xkr4")
 
 ```

@@ -303,37 +303,89 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
 
 ###############################################################
 #' Read validPairs file to GInteractions
-#' @param file A character string specifying the path to the validPairs file
+#' @param file A character string specifying the path to the validPairs file or 4DN pairs file
+#' @param format A character string specifying the format of the file, either "validPairs" or "pair". Pair format should be "readID chr1 pos1 chr2 pos2 strand1 strand2". And validPairs should be "readID chr1 pos1 strand1 chr2 pos2 strand2".
+#' @param njobs An integer specifying the number of threads to use for reading the file
 #' @return A GInteractions object
 #' @rdname Convert
 #' @export
 #' 
 #' 
-readvalidPairs <- function(file,njobs = 1) {
+readvalidPairs <- function(file, njobs = 1, format = "validPairs") {
+  # Validate format parameter
+  if (!format %in% c("validPairs", "pair")) {
+    stop("format must be either 'validPairs' or 'pair'")
+  }
+
   # Read file with data.table
   message("Reading file...")
   
+  # Check if file is gzipped
+  is_gzipped <- grepl("\\.gz$", file)
+  
   # First check the header structure
-  header_lines <- system(paste("grep '^#' ", file), intern = TRUE)
+  if(is_gzipped) {
+    header_lines <- system(paste("zcat", file, "| grep '^#'"), intern = TRUE)
+  } else {
+    header_lines <- system(paste("grep '^#'", file), intern = TRUE)
+  }
   skip_lines <- length(header_lines)
   
-  dt <- data.table::fread(
-    file,
-    skip = skip_lines,
-    col.names = c("readID", "chr1", "pos1", "strand1", "chr2", "pos2", "strand2"),
-    colClasses = c(
+  # Check column structure from header
+  if(format == "pair" && length(header_lines) > 0) {
+    col_line <- header_lines[grep("#columns:", header_lines)]
+    if(length(col_line) > 0) {
+      cols <- strsplit(gsub("#columns:\\s*", "", col_line), "\\s+")[[1]]
+    } else {
+      cols <- c("readID", "chrom1", "pos1", "chrom2", "pos2", "strand1", "strand2")
+    }
+  }
+  
+  if(format == "pair") {
+    # Define base columns and classes
+    base_cols <- c("readID", "chr1", "pos1", "chr2", "pos2", "strand1", "strand2")
+    base_classes <- c(
       "character", # readID
       "character", # chr1
       "numeric",   # pos1
-      "character", # strand1
       "character", # chr2
       "numeric",   # pos2
+      "character", # strand1
       "character"  # strand2
-    ),
-    check.names = TRUE,
-    nThread = njobs
-  )
-
+    )
+    
+    dt <- data.table::fread(
+      cmd = if(is_gzipped) paste("zcat", file) else file,
+      skip = skip_lines,
+      check.names = TRUE,
+      nThread = njobs
+    )
+    
+    # Rename columns based on position
+    if(ncol(dt) >= length(base_cols)) {
+      setnames(dt, 1:length(base_cols), base_cols)
+    } else {
+      stop("File has fewer columns than expected minimum")
+    }
+    
+  } else {
+    dt <- data.table::fread(
+      cmd = if(is_gzipped) paste("zcat", file) else file,
+      skip = skip_lines,
+      col.names = c("readID", "chr1", "pos1", "strand1", "chr2", "pos2", "strand2"),
+      colClasses = c(
+        "character", # readID
+        "character", # chr1
+        "numeric",   # pos1
+        "character", # strand1
+        "character", # chr2
+        "numeric",   # pos6
+        "character"  # strand2
+      ),
+      check.names = TRUE,
+      nThread = njobs
+    )
+  }
   
   # Filter for valid rows
   valid_rows <- dt
@@ -360,13 +412,19 @@ readvalidPairs <- function(file,njobs = 1) {
   # Create GInteractions object
   gi <- InteractionSet::GInteractions(anchor1 = gr1, anchor2 = gr2)
   
+  # Add additional metadata if columns exist
+  if(format == "pair") {
+    if("pair_type" %in% names(dt)) mcols(gi)$pair_type <- dt$pair_type
+    if("mapq1" %in% names(dt)) mcols(gi)$mapq1 <- dt$mapq1
+    if("mapq2" %in% names(dt)) mcols(gi)$mapq2 <- dt$mapq2
+  }
+  
   # Clean up
   rm(dt, valid_rows, gr1, gr2)
   #gc()
   
   return(gi)
 }
-
 
 
 #' coerce linkSet to DataFrame
