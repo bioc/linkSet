@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# linkSet v0.99.1
+# linkSet v0.99.3
 
 <!-- badges: start -->
 
@@ -20,6 +20,11 @@ ATAC-seq data analysis.
 </p>
 
 ## Installation
+
+``` r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
 
 linkSet is not currently available on Bioconductor. You can install it
 from [GitHub](https://github.com/GilbertHan1011/linkSet) with:

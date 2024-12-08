@@ -78,6 +78,10 @@ cat(gsub(pattern = '\n', replacement = ' ', x = description[, "Description"]))
 </p>
 
 ## Installation
+``` r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
 
 `r pkg` is not currently available on Bioconductor.
 You can install it from [GitHub](`r github.url`) with:

@@ -28,6 +28,10 @@ We highly recommend you to use custom data instead of the example data provided 
 
 ## Setup
 
+```{r}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
 
 ```{r setup}
 suppressPackageStartupMessages({
