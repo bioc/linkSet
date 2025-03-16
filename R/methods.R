@@ -39,7 +39,7 @@ setValidity2("linkSet", function(object) {
 
 
 setMethod("parallel_slot_names", "linkSet", function(x) {
-  base_slots <- callNextMethod() # Get the base slots from the parent class
+  base_slots <- methods::callNextMethod() # Get the base slots from the parent class
   if (length(x@anchor1) == 0) {
     c("anchor2", "nameBait", "NAMES", base_slots)
   } else {
@@ -55,6 +55,9 @@ setMethod("parallelVectorNames", "linkSet", function(x) {
 #' Display detailed information about a linkSet object
 #' @export
 #' @rdname show
+#' @importFrom methods show
+#' @param object A linkSet object to display
+#' @docType methods
 #' @examples
 #' # Example usage of show method for linkSet object
 #' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
@@ -69,21 +72,12 @@ setMethod("show", "linkSet", function(object) {
   showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE, baitRegion=FALSE)
 })
 
-
+#' @rdname showLinkSet
+#' @importFrom methods show
 #' @export
-#' @rdname show
-#' @examples
-#' # Example usage of showLinkSet method for linkSet object
-#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-#'                strand = "+")
-#' ls <- linkSet(gr1, gr2, specificCol = "symbol")
-#' showLinkSet(ls)
-setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE, 
+setMethod("showLinkSet", "linkSet",function(object, margin="", print.seqinfo=FALSE, 
                                           print.classinfo=FALSE, baitRegion=FALSE) {
+  x <- object
   lx <- length(x)
   nr <- length(regions(x))
   nc <- .safeNMcols(x)
@@ -97,11 +91,11 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
     baitRegion <- FALSE
   }
   if (baitRegion) {
-    out <- makePrettyMatrixForCompactPrinting(x, function(x) {
+    out <- S4Vectors::makePrettyMatrixForCompactPrinting(x, function(x) {
       .makeNakedMatFromGInteractions(x, baitRegion=TRUE)
     })
   } else {
-    out <- makePrettyMatrixForCompactPrinting(x, .makeNakedMatFromGInteractions)
+    out <- S4Vectors::makePrettyMatrixForCompactPrinting(x, .makeNakedMatFromGInteractions)
   }
 
   if (print.classinfo) {
@@ -112,8 +106,8 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
       .COL2CLASS <- c(bait = "character", "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges")
     }
     extraColumnNames <- GenomicRanges:::extraColumnSlotNames(x)
-    .COL2CLASS <- c(.COL2CLASS, getSlots(class(x))[extraColumnNames])
-    classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
+    .COL2CLASS <- c(.COL2CLASS, methods::getSlots(class(x))[extraColumnNames])
+    classinfo <- S4Vectors::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
     classinfo[,"   "] <- ""
     stopifnot(identical(colnames(classinfo), colnames(out)))
     out <- rbind(classinfo, out)
@@ -161,7 +155,10 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
   ans
 }
 
-
+#' Format anchor information for display
+#' @importFrom GenomicRanges seqnames ranges
+#' @importFrom S4Vectors showAsCell
+#' @keywords internal
 .pasteAnchor <- function(x, append) {
   if(is.character(x)){
     out <- as.matrix(x)
@@ -197,7 +194,7 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
   return(list(anchor1=anchor1, anchor2=anchor2, regions=regions))
 }
 
-
+#' @keywords internal
 .new_LK <- function(anchor1, anchor2, nameBait, regions, metadata) {
   elementMetadata <- make_zero_col_DFrame(length(nameBait))
 
@@ -205,7 +202,7 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
   anchor1 <- as.integer(anchor1)
   anchor2 <- as.integer(anchor2)
   if (is.null(nameBait)){
-    nameBait <- paste(gr1)
+    nameBait <- paste(regions[anchor1])
   }
   msg <- .check_inputs(anchor1, anchor2, nameBait, regions)
   if (is.character(msg)) { stop(msg) }
@@ -226,6 +223,14 @@ setMethod("showLinkSet", "linkSet",function(x, margin="", print.seqinfo=FALSE,
       metadata=as.list(metadata))
 }
 
+
+#' Create a linkSet object from input data
+#' @param anchor1 For the first method, a character vector of bait names. For the second method, a GRanges object containing anchor1 regions.
+#' @param anchor2 A GRanges object containing anchor2 regions
+#' @param specificCol Optional character vector specifying names for the baits. Can be either a column name from anchor1's metadata or a vector of names.
+#' @param metadata Optional list of metadata to store
+#' @param ... Additional columns to add to the linkSet's elementMetadata
+#' @return A linkSet object containing the interaction data
 #' @export
 setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
           function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
@@ -271,6 +276,13 @@ setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
   return(list(indices=split(refdex, obj.dex), ranges=combined))
 }
 
+#' Create a linkSet object from input data
+#' @param anchor1 For the first method, a character vector of bait names. For the second method, a GRanges object containing anchor1 regions.
+#' @param anchor2 A GRanges object containing anchor2 regions
+#' @param specificCol Optional character vector specifying names for the baits. Can be either a column name from anchor1's metadata or a vector of names.
+#' @param metadata Optional list of metadata to store
+#' @param ... Additional columns to add to the linkSet's elementMetadata
+#' @return A linkSet object containing the interaction data
 #' @export
 setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
           function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
@@ -324,19 +336,15 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
 
             out <- .new_LK(anchor1=anchor1, anchor2=anchor2,
                            nameBait=nameBait,
-                           region= regions,
+                           regions= regions,
                            metadata=metadata)
             mcols(out) <- mcolBind
             out
           }
 )
 
-
-#' clean unused regions 
+#' @rdname clean_unused_regions
 #' @export
-#' @examples
-#' data(linkExample)
-#' linkExample <- clean_unused_regions(linkExample)
 setMethod("clean_unused_regions", "linkSet", function(x) {
     used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
     new_regions <- regions(x)[used_regions]
@@ -396,7 +404,7 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
     subset <- .convert_to_grange(subset)
   }
   overlaps <- findOverlaps(bait_regions, subset)
-  idx <- queryHits(overlaps)
+  idx <- S4Vectors::queryHits(overlaps)
   clean_unused_regions(x[idx])
 })
 
@@ -418,7 +426,7 @@ setMethod("subsetOE", "linkSet", function(x, subset) {
     subset <- .convert_to_grange(subset)
   }
   overlaps <- findOverlaps(oe_regions, subset)
-  idx <- queryHits(overlaps)
+  idx <- S4Vectors::queryHits(overlaps)
   ls = x[idx]
   ls = clean_unused_regions(ls)
 })

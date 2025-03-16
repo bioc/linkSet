@@ -1,9 +1,7 @@
 #' @keywords internal
 "_PACKAGE"
-
 #' @name linkSet
 #'
-#' @aliases linkSet
 #'
 #' @title linkSet: Base Classes for Storing Genomic Link Data
 #'
@@ -29,14 +27,16 @@
 #'         and intra-chromosomal interactions.
 #' }
 #'
-#' @importFrom GenomicRanges GRanges
-#' @importFrom methods new setClass setGeneric setMethod
-#' @importFrom S4Vectors DataFrame
+#' @importClassesFrom GenomicRanges GRanges
+#' @importFrom GenomicRanges flank narrow promoters resize trim
+#' @importFrom methods new setClass setGeneric setMethod show
+#' @importFrom S4Vectors Rle DataFrame make_zero_col_DFrame mcols mcols<-
 #' @importFrom IRanges IRanges
 #' @importFrom GenomeInfoDb seqinfo
 #' @importFrom BiocGenerics start end width
 #' @importFrom Organism.dplyr select
-#'
+#' @importFrom foreach %dopar%
+#' @importFrom rlang .data
 #' @references
 #' Add any relevant references here.
 #'
@@ -48,8 +48,7 @@
 #' }
 #'
 #' @examples
-#' # Basic usage example
-#' library(linkSet)
-#' # Add a simple example here
+#' data(linkExample)
+#' linkExample
 #'
 NULL

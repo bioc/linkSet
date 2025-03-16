@@ -3,13 +3,13 @@
 #' @description Convert other data formats to linkSet. Currently supported: GInteractions, data.frame.
 #' 
 #' @param x A GInteractions object
-#' @param specificCol A character string specifying the column to use for bait naming
 #' @param ... Additional arguments (not used)
 #' 
 #' @rdname Convert
 #' 
 #' @return A linkSet object
 #' @export
+#' @importFrom S4Vectors mcols mcols<-
 #' @examples
 #' library(InteractionSet)
 #' gi <- GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
@@ -43,19 +43,22 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
   return(ls)
 })
 
+#' Convert string intervals to GRanges
+#' @importFrom S4Vectors Rle
+#' @keywords internal
 .convert_to_grange <- function(intervals) {
   # convert "chr1.816066.816566" or "chr1:816066-816566" to grange format
   parts <- strsplit(intervals, "[.:\\-]")
   
   # Check if all parts have exactly 3 elements
-  if (!all(sapply(parts, length) == 3)) {
+  if (!all(vapply(parts, length, FUN.VALUE = numeric(1)) == 3)) {
     stop("Please input peak format like chr1.816066.816566 or chr1:816066-816566")
   }
   
-  chromosomes <- sapply(parts, `[`, 1)
-  starts <- as.numeric(sapply(parts, `[`, 2)) - 1  # Convert to 0-based
-  ends <- as.numeric(sapply(parts, `[`, 3))
-  
+  # Extract components with proper type specification
+  chromosomes <- vapply(parts, `[`, FUN.VALUE = character(1), 1)  # First element is character (chromosome)
+  starts <- as.numeric(vapply(parts, `[`, FUN.VALUE = character(1), 2), USE.NAMES = FALSE)  # Convert to numeric after extraction
+  ends <- as.numeric(vapply(parts, `[`, FUN.VALUE = character(1), 3), USE.NAMES = FALSE)    # Convert to numeric after extraction
   # Create a GRanges object
   granges_obj <- GRanges(
     seqnames = Rle(chromosomes),
@@ -63,10 +66,12 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
   )
   return(granges_obj)
 }
-
 #' Convert data.frame to linkSet
 #'
 #' @param x A data.frame object
+#' @param source The source of the data frame, either "data.frame" or "chicane"
+#' @param baitCol The column name in the data frame that contains the bait information
+#' @param oeCol The column name in the data frame that contains the other end information
 #' @param ... Additional arguments (not used)
 #' @rdname Convert
 #' @return A linkSet object
@@ -184,11 +189,12 @@ setMethod("Convert", signature(x = "Pairs"), function(x,baitCol = NULL, ...) {
 #'
 #' @param x An object of unsupported class
 #' @param ... Additional arguments (not used)
+#' @param baitCol A character string specifying the column to use for bait naming
 #'
 #' @rdname Convert
 #' @return Nothing, throws an error
 #' @export
-setMethod("Convert", signature(x = "ANY"), function(x, ...) {
+setMethod("Convert", signature(x = "ANY"), function(x, baitCol = NULL, ...) {
   if (inherits(x, "GenomicInteractions")) {
     if (!requireNamespace("GenomicInteractions", quietly = TRUE)) {
       stop("Package 'GenomicInteractions' is needed for this function to work. Please install it.",
@@ -239,25 +245,19 @@ setMethod("Convert", signature(x = "ANY"), function(x, ...) {
 
 
 ###############################################################
-#' Convert GInteractions with bait range and oe ranges to linkSet
-#' 
-#' 
-#'
-#' @param gi A GInteractions object
-#' @param geneGr A GRanges object representing genes
-#' @param peakGr A GRanges object representing peaks
+#' @rdname baitGInteractions
 #' @param geneSymbol A character vector with same length as geneGr or column name in mcols(geneGr) for gene symbols
-#'
-#' @return A linkSet object
-#' @export
 #' @examples
 #' # Example usage:
 #' library(GenomicRanges)
 #' library(InteractionSet)
 #' 
 #' # Create example GRanges objects for genes and peaks
-#' geneGr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(100, 200), end = c(150, 250)), geneSymbol = c("Gene1", "Gene2"))
-#' peakGr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(300, 400), end = c(350, 450)))
+#' geneGr <- GRanges(seqnames = "chr1", 
+#'                   ranges = IRanges(start = c(100, 200), end = c(150, 250)), 
+#'                   geneSymbol = c("Gene1", "Gene2"))
+#' peakGr <- GRanges(seqnames = "chr1", 
+#'                   ranges = IRanges(start = c(300, 400), end = c(350, 450)))
 #' 
 #' # Create example GInteractions object
 #' gi <- GInteractions(anchor1 = geneGr, anchor2 = peakGr)
@@ -267,6 +267,7 @@ setMethod("Convert", signature(x = "ANY"), function(x, ...) {
 #' 
 #' # Print the linkSet object
 #' print(linkSetObj)
+#' @export
 setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges", peakGr = "GRanges"), function(x, geneGr, peakGr, geneSymbol=NULL) {
   gi <- x
   # validate geneSymbol in in mcols(geneGr)
@@ -622,6 +623,9 @@ setMethod("as.data.frame", "linkSet", function(x) {
   proxOE
   }
 
+#' Export to linkSet format
+#' @keywords internal
+#' @importFrom rlang .data
 .exportToLinkSet <- function(cd, scoreCol="score", cutoff=0, b2bcutoff=NULL,
                        order=c("position", "score")[1], removeMT=TRUE)
 {
@@ -663,13 +667,13 @@ setMethod("as.data.frame", "linkSet", function(x) {
   
   x = x[, c("baitID", "otherEndID", "N", scoreCol,"distSign","isBait2bait"), with=FALSE]
   
-  data.table::setkey(x, otherEndID)
-  data.table::setkey(rmap, otherEndID)
+  data.table::setkey(x, "otherEndID")
+  data.table::setkey(rmap, "otherEndID")
   
   x = merge(x, rmap, by="otherEndID", allow.cartesian = TRUE)
-  data.table::setkey(x, baitID)
+  data.table::setkey(x, "baitID")
   
-  data.table::setkey(baitmap, baitID)  
+  data.table::setkey(baitmap, "baitID")  
   x = merge(x, baitmap, by="baitID", allow.cartesian = TRUE)
   
   # note that baitmapGeneIDcol has been renamed into "promID" above 
@@ -719,16 +723,8 @@ setMethod("as.data.frame", "linkSet", function(x) {
 
 
 #######################################################
-# export
-#' export linkset to GInteractions
-#' 
-#' @param x A linkset object
-#' @return A GInteractions object
+#' @rdname as.GInteractions
 #' @export
-#' @examples
-#' data(linkExample)
-#' gi <- as.GInteractions(linkExample)
-#' gi
 setMethod("as.GInteractions", "linkSet", function(x) {
   anchor.one = regionsBait(x)
   anchor.two = oe(x)
@@ -738,16 +734,10 @@ setMethod("as.GInteractions", "linkSet", function(x) {
   return(gi)
 })
 
-#' Export linkSet to interBed format
-#' 
-#' @param x A linkSet object
-#' @param outfile Output file name
+
+#' @rdname exportInterBed
+#' @importFrom utils write.table
 #' @export
-#' @examples
-#' data(linkExample)
-#' tmpfile <- tempfile(fileext = ".txt")
-#' exportInterBed(linkExample, tmpfile)
-#' cat(readLines(tmpfile), sep = "\n")
 setMethod("exportInterBed", "linkSet", function(x, outfile) {
   gr1 <- as.data.frame(regionsBait(x))
   colnames(gr1) <- paste0("bait_",colnames(gr1))
@@ -762,19 +752,12 @@ setMethod("exportInterBed", "linkSet", function(x, outfile) {
 
   out <- cbind(gr1, bait_name = gr1Name, gr2, otherEnd_name = gr2Name, metaDf)
 
-  write.table(out, outfile, sep="\t", quote=FALSE, row.names=FALSE)
+  utils::write.table(out, outfile, sep="\t", quote=FALSE, row.names=FALSE)
 })
 
-#' Export linkSet to WashU format
-#' 
-#' @param x A linkSet object
-#' @param outfile Output file name
+#' @rdname exportWashU
+#' @importFrom utils write.table
 #' @export
-#' @examples
-#' data(linkExample)
-#' tmpfile <- tempfile(fileext = ".txt")
-#' exportWashU(linkExample, tmpfile)
-#' cat(readLines(tmpfile), sep = "\n")
 setMethod("exportWashU", "linkSet", function(x, outfile) {
   gr1 <- as.data.frame(regionsBait(x))
   colnames(gr1) <- paste0("bait_",colnames(gr1))
@@ -792,5 +775,5 @@ setMethod("exportWashU", "linkSet", function(x, outfile) {
     out = cbind(gr1, bait_name = gr1Name, gr2, otherEnd_name = gr2Name)
   }
 
-  write.table(out, outfile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+  utils::write.table(out, outfile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
 })

@@ -74,7 +74,7 @@ knitr::include_graphics("img/linkSetImport.png")
 ### Construction from GRanges objects
 
 To construct a `linkSet` object from GRanges objects:
-```{r}
+```{r, eval = FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 ```
@@ -299,7 +299,7 @@ Functional enhancers usually regulate multiple genes, we can use cross gene anal
 
 ```{r}
 annotated_ls <- crossGeneEnhancer(annotated_ls)
-annotated_ls <- orderLinks(annotated_ls,by = "crossFreq",decreasing = T)
+annotated_ls <- orderLinks(annotated_ls,by = "crossFreq",decreasing = TRUE)
 annotated_ls
 ```
 

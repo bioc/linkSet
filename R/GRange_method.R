@@ -80,16 +80,26 @@
 #' @export
 #' @rdname linkSet-GRange-Methods
 #' @aliases trim
+#' @inheritParams GenomicRanges::trim
 #' @description This man page documents intra range transformations of a [linkSet-class] object.
 #' 
 #' @param x A linkSet object
 #' @param use.names A logical indicating whether to use names
+#' @param width The desired width of the output ranges
+#' @param fix The anchor point for resizing operations ("start", "end", or "center")
+#' @param region Which regions to modify ("both", "bait", or "oe")
+#' @param start,end The desired start and end coordinates for narrowing
+#' @param shift The number of positions to shift
+#' @param both Whether to get flanking regions on both sides
+#' @param upstream,downstream Number of bases upstream/downstream for promoter regions
+#' @param drop.empty.ranges Whether to drop empty ranges when reducing
+#' @param ... Additional arguments passed to the GenomicRanges trim method
 #' @return A linkSet object
 #' @author Gilbert Han
 #' 
 #' 
-setMethod("trim", "linkSet", function(x, use.names=TRUE) {
-    regions(x) <- trim(regions(x), use.names=use.names)
+setMethod("trim", "linkSet", function(x, use.names=TRUE, ...) {
+    regions(x) <- trim(regions(x), use.names=use.names, ...)
     return(x)
 })
 
@@ -193,31 +203,13 @@ setMethod("width", "linkSet", function(x) {
     list(bait=w[anchor1(x)], oe=w[anchor2(x)])
 })
 
-## reduce
-#' Reduce a linkSet object
-#'
-#' This function reduces the bait and/or oe regions of a linkSet object and optionally counts interactions,
-#' while maintaining the original length of the linkSet.
-#'
-#' @param x A linkSet object
-#' @param reduceBait Logical, whether to reduce bait regions (default: TRUE)
-#' @param reduceOE Logical, whether to reduce other end (oe) regions (default: TRUE)
-#' @param countInteractions Logical, whether to count interactions after reducing (default: TRUE)
-#' @param ... Additional arguments passed to GenomicRanges::reduce
-#'
-#' @return A reduced linkSet object with the same length as the input
-#' @export
-#'
+#' @rdname reduceRegions
 #' @importFrom GenomicRanges reduce findOverlaps
 #' @importFrom IRanges IRanges
-#'
-#' @examples
-#' data(linkExample)
-#' reduced_ls <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
-#' reduced_ls
-#'
-
-setMethod("reduceRegions", "linkSet", function(x, region = "both", countInteractions = TRUE, ...) {
+#' @importFrom S4Vectors subjectHits
+#' @export
+setMethod("reduceRegions", "linkSet", function(x, region = "both", 
+            countInteractions = TRUE, ...) {
 
   original_bait <- regionsBait(x)
   original_oe <- oe(x)
@@ -225,13 +217,13 @@ setMethod("reduceRegions", "linkSet", function(x, region = "both", countInteract
   if (region == "bait" || region == "both") {
     bait_reduced <- GenomicRanges::reduce(original_bait, ...)
     bait_overlaps <- findOverlaps(original_bait, bait_reduced)
-    new_bait_regions <- bait_reduced[subjectHits(bait_overlaps)]
+    new_bait_regions <- bait_reduced[S4Vectors::subjectHits(bait_overlaps)]
     regionsBait(x) <- new_bait_regions
   }
   if (region == "oe" || region == "both") {
     oe_reduced <- GenomicRanges::reduce(original_oe, ...)
     oe_overlaps <- findOverlaps(original_oe, oe_reduced)
-    new_oe <- oe_reduced[subjectHits(oe_overlaps)]
+    new_oe <- oe_reduced[S4Vectors::subjectHits(oe_overlaps)]
     oe(x) <- new_oe
   }
 

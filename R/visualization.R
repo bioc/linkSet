@@ -1,23 +1,4 @@
-#' Add Genome Links to Coverage Plot.
-#'
-#' @param link.file File contains region link information.
-#' @param file.type The type of \code{link.file}, choose from bedpe, pairs. Default: bedpe.
-#' @param score.col Column index that contains score information, used when \code{file.type} is bedpe. Default: NULL.
-#' @param score.threshold The score threshold, used when \code{score.col} is not NULL. Default: NULL.
-#' @param score.color The score color vector. Default: c("grey70", "#56B1F7", "#132B43").
-#' @param scale.range Scale the height of links according to width, should be greater than or equal to 1 (not scale). Default: 10.
-#' @param plot.curve One of 'curve' or 'bezier', for the latter it is required to install package \code{ggforce}. Default: 'curve'.
-#' @param plot.space Top and bottom margin. Default: 0.1.
-#' @param plot.height The relative height of link to coverage plot. Default: 0.2.
-#' @param show.rect Logical value, whether to add rect border to the plot. Default: FALSE.
-#' @param extend.base Extend the base pair range to show more information. Default: 1000000.
-#' @param x.range The range of x-axis to show. Default: NULL.
-#' @param log.scale Logical value, whether to log1p the score. Default: TRUE.
-#' @param arrow.size The size of the arrow head. Default: 0.02.
-#' @param remove_x_axis Logical value, whether to remove the x-axis. Default: FALSE.
-#' @param link_plot_on_top Logical value, whether to plot the link plot on top of the coverage plot. Default: FALSE.
-#'
-#' @return Plot.
+#' @rdname geom_linkset
 #' @importFrom GenomicRanges GRanges makeGRangesFromDataFrame start end
 #' @importFrom IRanges IRanges subsetByOverlaps
 #' @importFrom utils read.table
@@ -27,7 +8,6 @@
 #'   element_text margin scale_y_continuous scale_x_continuous expansion
 #'   coord_cartesian geom_curve
 #' @importFrom patchwork wrap_plots
-#' @references \url{https://stuartlab.org/signac/articles/cicero.html}
 #' @export
 #'
 #'
@@ -157,8 +137,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     }
 
     y_limit <- ifelse(flip_arrow, 0, 1)
-    link.point.plot.pos = link.point.plot[link.point.plot$width > 0,]
-    link.point.plot.neg = link.point.plot[link.point.plot$width < 0,]
+    link.point.plot.pos <- link.point.plot[link.point.plot$width > 0,]
+    link.point.plot.neg <- link.point.plot[link.point.plot$width < 0,]
     link.basic.plot <-
       ggplot2::ggplot(data = link.point.plot) +
       ggplot2::geom_curve(
@@ -261,7 +241,6 @@ ggplot_add.interSet <- function(object, plot, object_name) {
   return(combined_plot)
 }
 
-
 #' Plot genomic ranges
 #'
 #' `geom_range()` and `geom_half_range()` draw tiles that are designed to
@@ -276,11 +255,17 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #' useful for comparing between two transcripts or free up plotting space for
 #' other transcript annotations (e.g. `geom_junction()`).
 #'
+#' @param bait_col Color for bait regions. Default is "red".
+#' @param oe_col Color for other end regions. Default is "DeepSkyBlue3".
+#' @param default_col Default color for regions. Default is "grey".
+#' @param minimal_width Minimal width for the range. Default is 0.01.
+#'
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_point
 #' @inheritParams ggplot2::geom_tile
 #' @inheritParams ggplot2::geom_segment
 #' @inheritParams grid::rectGrob
+#' 
 #' @importFrom rlang %||%
 #'
 #' @return the return value of a `geom_*` function is not intended to be
@@ -425,6 +410,7 @@ GeomRange <- ggplot2::ggproto("GeomRange", ggplot2::GeomTile,
 #' @examples
 #' data(linkExample)
 #' plot_genomic_ranges(linkExample, extend.base = 10)
+#' @importFrom rlang .data
 #' @export
 #' 
 setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
@@ -483,8 +469,9 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
     data <- extract_data_from_linkset(linkset)
 
     # Create the base plot
-    p <- ggplot2::ggplot(data, ggplot2::aes(xstart =  xstart, xend = xend, region = region)) +
+    p <- ggplot2::ggplot(data = data) +
         geom_range(
+            ggplot2::aes(xstart = .data$xstart, xend = .data$xend, region = .data$region),
             minimal_width = minimal_width,
             bait_col = bait_col,
             oe_col = oe_col,
@@ -526,10 +513,12 @@ extract_data_from_linkset <- function(linkset) {
 }
 
 
-
 #' linkSet-theme
 #' @export
 #' @rdname linkSet-theme
+#' @param x.range A numeric vector specifying the x-axis range.
+#' @param margin.len A numeric value specifying the margin length.
+#' @param show.rect A logical value indicating whether to show the rectangle.
 #' @examples
 #' data(linkExample)
 #' x.range <- c(0, 100)
@@ -623,7 +612,28 @@ theme_range <- function(x.range, show.rect) {
   }
 }
 
-
+#' Plot baits in a linkSet object
+#' @title Plot Baits
+#' @importFrom rlang .data
+#' @importFrom GenomicRanges strand
+#' @name plotBaits
+#' @param linkset A linkSet object
+#' @param scoreCol Column name containing scores for coloring points
+#' @param countCol Column name containing counts for y-axis values
+#' @param n Number of random baits to plot if baits parameter is NULL
+#' @param baits Vector of specific baits to plot. If NULL, n random baits are selected
+#' @param plotBaitNames Logical indicating whether to show bait names in plot titles
+#' @param plevel1 Upper threshold for score coloring (red)
+#' @param plevel2 Lower threshold for score coloring (blue)
+#' @param outfile Output file path. If NULL, plot is displayed rather than saved
+#' @param width Width of output plot in inches
+#' @param height Height of output plot in inches
+#' @param extend.base Base pairs to extend view range on either side of bait
+#' @param bgCol Color for points below plevel2 threshold
+#' @param lev2Col Color for points between plevel2 and plevel1 thresholds
+#' @param lev1Col Color for points above plevel1 threshold
+#' @param ... Additional plotting parameters
+#' @return A ggplot object
 #' @export
 plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, baits = NULL, plotBaitNames = TRUE, 
                       plevel1 = 5, plevel2 = 3, outfile = NULL,
@@ -657,7 +667,7 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
       expandGr <- GRanges(
         seqnames = seqnames(baitGr),
         ranges = IRanges(start = new_start, end = new_end),
-        strand = strand(baitGr)
+        strand = GenomicRanges::strand(baitGr)
       )
       this <- subsetOE(this, expandGr)
     }
@@ -685,7 +695,7 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
       as.character(bait)
     }
     p <- ggplot2::ggplot(plotDf, 
-                         ggplot2::aes(x = oe_middle, y = .data[[countCol]], color = color_factor)) +
+                         ggplot2::aes(x = .data$oe_middle, y = .data[[countCol]], color = .data$color_factor)) +
       ggplot2::geom_point() +
       ggplot2::geom_vline(xintercept = bait_middle, color = "grey", linetype = "dashed") +
       ggplot2::labs(title = title, x = "Distance from viewpoint", y = countCol) +

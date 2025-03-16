@@ -1,41 +1,23 @@
-#' run_chicane
-#'
-#' @description
-#'	This function adapts the \code{chicane} function from the \code{ChICANE} package to work with the \code{linkSet} object format.
-#' Run full method for detecting significant interactions in capture Hi-C experiments, starting 
-#'  either from a linkSet object or preprocessed data from \code{prepare.data}
-
-#' @param linkSet 
-#'	A linkSet object containing interaction data. Can be used instead of interactions specification if the linkSet object has already been prepared.
-#' @param replicate.merging.method
-#' 	Method that should be used for merging replicates, if applicable
-#' @param bait.filters 
-#'	Vector of length two, where the first element corresponds to the lower-end filter and the second to the upper-end filter.
-#' 	When global multiple testing correction is performed, altering the bait filtering settings may affect the number of significant results.
-#' @param target.filters
-#' 	Vector of length two, giving lower and higher filter, respectively. 
-#'	Changing this filtering setting may affect multiple testing correction by altering the number of tests performed.
-#' @param distance.bins
-#' 	Number of bins to split distance into. Models are fit separately in each bin.
-#' @param multiple.testing.correction
-#'	String specifying how multiple testing correction should be performed, by bait or globally.
-#' @param verbose
-#' 	Logical indicating whether to print progress reports.
-#' @param interim.data.dir
-#'  Path to directory to store intermediate QC data and plots. NULL indicate skip intermediate results.
+#' @rdname run_chicane
+#' @param replicate.merging.method Method for merging replicates (default: 'sum')
+#' @param distribution Distribution to use for modeling (default: 'negative-binomial')
+#' @param include.zeros How to handle zero counts (default: 'none')
+#' @param bait.filters Vector of length 2 for bait filtering thresholds (default: c(0,1))
+#' @param target.filters Vector of length 2 for target filtering thresholds (default: c(0,1))
+#' @param distance.bins Number of distance bins (default: NULL)
+#' @param multiple.testing.correction Method for multiple testing correction (default: 'bait-level')
+#' @param adjustment.terms Additional terms for model adjustment (default: NULL)
+#' @param remove.adjacent Whether to remove adjacent fragments (default: FALSE)
+#' @param temp.directory Directory for temporary files (default: NULL)
+#' @param keep.files Whether to keep temporary files (default: FALSE)
+#' @param maxit Maximum iterations for model fitting (default: 100)
+#' @param epsilon Convergence threshold (default: 1e-8)
+#' @param cores Number of CPU cores to use (default: 1)
+#' @param trace Whether to print trace information (default: FALSE)
+#' @param verbose Whether to print progress information (default: FALSE)
 #' 
-#' @return A linkSet object with additional columns:
-#' 	\item{expected}{The expected number of reads linking the two fragments under the fitted model}
-#'	\item{p.value}{P-value for test of the observed number of reads significantly exceeding the expected count}
-#'	\item{q.value}{FDR-corrected p-value}
-#'
-#' 
-#' @import data.table
-#' @rdname chicane
-#' @export
-#'
 #' @examples
-#' # Example usage of run_chicane function
+#' # Create example data
 #' gr1 <- GRanges(seqnames = c("chr1", "chr3", "chr3"),
 #'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
 #'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
@@ -43,16 +25,27 @@
 #'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
 #'                strand = "+")
 #' ls <- linkSet(gr1, gr2, specificCol = "symbol")
-#' annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+#' 
+#' # Annotate and prepare data
+#' annotated_ls <- suppressWarnings(
+#'   annotatePromoter(ls, genome = "hg38", upstream = 500, overwrite = TRUE)
+#' )
 #' annotated_ls <- countInteractibility(annotated_ls)
 #' annotated_ls <- linkSet::pairdist(annotated_ls)
-#' # Run run_chicane function
-#' result_ls <- run_chicane(annotated_ls, replicate.merging.method = 'sum', 
-#'                          bait.filters = c(0, 1), target.filters = c(0, 1), 
-#'                          distance.bins = NULL, multiple.testing.correction = 'bait-level', 
-#'                          verbose = TRUE)
-#' result_ls	
 #' 
+#' # Run analysis
+#' result_ls <- run_chicane(
+#'   annotated_ls, 
+#'   replicate.merging.method = 'sum',
+#'   bait.filters = c(0, 1),
+#'   target.filters = c(0, 1),
+#'   distance.bins = NULL,
+#'   multiple.testing.correction = 'bait-level',
+#'   verbose = TRUE
+#' )
+#' 
+#' @import data.table
+#' @export
 setMethod("run_chicane", "linkSet", function(linkSet, 
 	replicate.merging.method = 'sum',
 	distribution = 'negative-binomial',
@@ -69,8 +62,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 	epsilon = 1e-8,
 	cores = 1,
 	trace = FALSE,
-	verbose = FALSE,
-	interim.data.dir = NULL
+	verbose = FALSE
 	) {
 	# TO DO:
 	#	- check format of linkSet object if passed directly
@@ -102,8 +94,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 		cores = cores,
 		maxit = maxit,
 		epsilon = epsilon,
-		trace = trace,
-		interim.data.dir = interim.data.dir
+		trace = trace
 		);
 
 	chicane.results <- multiple.testing.correct(
@@ -111,8 +102,8 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 		bait.level = 'bait-level' == multiple.testing.correction
 		);
 	#print(dim(chicane.results))
-	# sort by q-value
-	chicane.results <- chicane.results[ order(q.value, p.value) ];
+	# sort by q-value and p-value
+	chicane.results <- chicane.results[order(chicane.results$q.value, chicane.results$p.value), ];
 	#print(dim(chicane.results))
 	# Convert results back to linkSet
 	result_linkSet <- linkSet
@@ -130,6 +121,9 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #'	Verify that linkSet object is in expected format. Throws an error if object does not fit requirements.
 #'
 #' @param linkSet Object to be verified.
+#' @importFrom methods is
+#' @importFrom S4Vectors mcols mcols<-
+#' @keywords internal
 #' @rdname chicane
 #' @return None
 #'
@@ -404,32 +398,24 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 }
 
 
-#' fit.model
-#'
-#' @description
-#'  Fit negative binomial model to obtain p-values for interactions.
-#'
-#' @param interaction.data 
-#'	data.table object containing interaction counts. Must contain columns distance, count, and bait_trans_count.
-#' @param adjustment.terms 
-#' 	Character vector of extra terms to adjust for in the model fit.
-#' @param verbose
-#'	Logical indicating whether to print progress reports. 	
-#' @param cores
-#'	Integer value specifying how many cores to use to fit model for cis-interactions.
-#' @param interim.data.dir
-#'  Path to directory to store intermediate QC data and plots.
-#'
-#' @return Interactions data with expected number of interactions and p-values added.
+#' Fit Statistical Model for Interaction Analysis
+#' 
+#' @title Fit Model for Interaction Analysis
+#' @description Fit negative binomial model to obtain p-values for interactions.
+#' 
+#' @param linkSet A linkSet object
+#' @param distance.bins Distance bins for model fitting (default: NULL)
+#' @param distribution Type of distribution to use (default: 'negative-binomial')
+#' @param adjustment.terms Character vector of extra terms to adjust for in the model fit
+#' @param maxit Maximum number of iterations (default: 100)
+#' @param epsilon Convergence threshold (default: 1e-8)
+#' @param cores Number of cores to use (default: 1)
+#' @param trace Whether to print trace information (default: FALSE)
+#' @param verbose Whether to print progress reports (default: FALSE)
+#' 
+#' @return A data.table with fitted model results including expected counts and p-values
 #' @keywords internal
 #' @noRd
-#' @rdname chicane
-#' @details
-#' 	Fit a negative binomial model for obtaining p-value for interactions. The data is first sorted by distance, and models
-#' 	are fit separately in each quantile of the distance-sorted data.
-#'
-#'
-#' @export
 fit.model <- function(
 	linkSet, 
 	distance.bins = NULL,
@@ -439,8 +425,7 @@ fit.model <- function(
 	epsilon = 1e-8,
 	cores = 1,
 	trace = FALSE,
-	verbose = FALSE,
-	interim.data.dir = NULL
+	verbose = FALSE
 	) {
 	### MAIN ##################################################################
   print("fitting model....")
@@ -472,8 +457,7 @@ fit.model <- function(
 			cores = cores,
 			maxit = maxit,
 			epsilon = epsilon,
-			trace = trace,
-			interim.data.dir = interim.data.dir
+			trace = trace
 			);
 	}
 
@@ -488,8 +472,7 @@ fit.model <- function(
 			cores = cores,
 			maxit = maxit, 
 			epsilon = epsilon,
-			trace = trace,
-			interim.data.dir = interim.data.dir
+			trace = trace
 			);
 	}
 
@@ -520,6 +503,8 @@ fit.model <- function(
 #' @importFrom foreach %dopar%
 #' @importFrom iterators icount
 #' @importFrom stats logLik
+#' @importFrom rlang .data
+#' @importFrom data.table :=
 run.model.fitting <- function(
 	interaction.data,
 	distance.bins = NULL, 
@@ -530,8 +515,7 @@ run.model.fitting <- function(
 	epsilon = 1e-8,
 	cores = 1,
 	trace = FALSE,
-	verbose = FALSE,
-	interim.data.dir = NULL
+	verbose = FALSE
 	) {
 
 	# TO DO:
@@ -564,14 +548,14 @@ run.model.fitting <- function(
 		trans.formula <- stats::as.formula(count ~ log(bait.trans.count + 1) )
 	}
 
-	# if requested, update model with user-requested terms
+	# if requested, update model with user-requested terms
 	if( !is.null(adjustment.terms) ) {
 		adjustment.string <- paste(adjustment.terms, collapse = ' + ');
 
 		cis.formula <- stats::update.formula(cis.formula, paste0('~ . + ', adjustment.string) );
 		trans.formula <- stats::update.formula(trans.formula, paste0('~ . + ', adjustment.string) );
 
-		# graceful error handling – make sure all variables are in the input data
+		# graceful error handling – make sure all variables are in the input data
 		# do this here in case user specifies something like log(x) in adjustment.terms
 		formula.vars <- unique( c(all.vars(cis.formula), all.vars(trans.formula)) );
 		if( !all(formula.vars %in% names(interaction.data)) ) {
@@ -582,10 +566,10 @@ run.model.fitting <- function(
 			stop(error.message);
 		}
 	}
-	trans.data <- interaction.data[ is.na(distance) ,];
+	trans.data <- interaction.data[ is.na(interaction.data$distance) ,];
 
 	# Fit models separately in each quantile of distance
-	cis.data <- interaction.data[ !is.na(distance) ,];
+	cis.data <- interaction.data[ !is.na(interaction.data$distance) ,];
 	cis.data <- cis.data[ order(cis.data$distance), ];
 
 	# free up memory
@@ -625,16 +609,16 @@ run.model.fitting <- function(
 		temp.data = distance.binned.data,
 		iter.i = icount(),
 		.packages = packages,
-    .export = ".model.try.catch"
+    .export = c(".model.try.catch", "create.modelfit.plot")
 		) %dopar% {
 		
-		# progress meter
+		# progress meter
 		if(verbose) cat('*');
 
-		# fit model through helper function that gracefully handles numerical errors
+		# fit model through helper function that gracefully handles numerical errors
 		model <- .model.try.catch(
 			cis.formula, 
-			temp.data,
+			get("temp.data"),
 			distribution = distribution,
 			maxit = maxit,
 			epsilon = epsilon,
@@ -643,34 +627,11 @@ run.model.fitting <- function(
 			start = start
 			);
     #browser()
-		temp.data[, expected := model$expected.values ];
-		temp.data[, p.value := model$p.values ];
-
+		data.table::set(get("temp.data"), j = "expected", value = model$expected.values)
+		data.table::set(get("temp.data"), j = "p.value", value = model$p.values)
 		# clear memory
 		#for (gc.i in 1:5) { gc(); }
-
-		# plot model's fit
-		if (!is.null(interim.data.dir) && !is.null(model$model) && bait.to.bait == FALSE) {
-
-			# store model fits to a file:
-			sink(file = file.path(interim.data.dir, paste0('model_fit_distance_adjusted_nonb2b_', iter.i, '.txt')), type = c('output', 'message'));
-			print(summary(model$model));
-			print(logLik(model$model));
-			sink(NULL)
-			if (distribution %in% c('negative-binomial', 'poisson')) {
-				create.modelfit.plot(
-					model$model, 
-					file.name = file.path(interim.data.dir, paste0('model_fit_distance_adjusted_nonb2b_', iter.i, '.png'))
-					);
-				}
-			else {
-				if (verbose) cat('\nskipping model fit rootogram as countreg::rootogram does not support: ', distribution);
-				}
-			}
-
-		# clear memory
-		#for (gc.i in 1:5) { gc(); }
-		return(temp.data);
+		return(get("temp.data"));
 	}
 
 	# fit trans-interactions
@@ -691,8 +652,8 @@ run.model.fitting <- function(
 			init.theta = init.theta,
 			start = start
 			);
-		trans.data[, expected := trans.model$expected.values ];
-		trans.data[, p.value := trans.model$p.values ];
+		data.table::set(trans.data, j = "expected", value = trans.model$expected.values)
+		data.table::set(trans.data, j = "p.value", value = trans.model$p.values)
 
 		# add to p-value data frame
 		p.value.data[[ length(p.value.data) + 1 ]] <- trans.data; 
@@ -1070,7 +1031,6 @@ multiple.testing.correct <- function(
 	}
 }
 
-
 #' fit.glm
 #'
 #' @description
@@ -1100,7 +1060,7 @@ multiple.testing.correct <- function(
 #'  \item{model}{model object}
 #' 	\item{expected.values}{vector of expected values for each element in original data}
 #' 	\item{p.values}{vector of p-values for test of significantly higher response than expected}
-#' 
+#' @importFrom utils getFromNamespace
 fit.glm <- function(
 	formula, 
 	data, 
@@ -1113,7 +1073,12 @@ fit.glm <- function(
 	) {
 
 	distribution <- match.arg(distribution);
-
+	if (distribution %in% c('truncated-poisson', 'truncated-negative-binomial')) {
+    if (!requireNamespace("gamlss.tr", quietly = TRUE)) {
+            stop("Package 'gamlss.tr' needed for truncated distributions. Please install it.",
+                 call. = FALSE)
+        }
+    }
 	### MAIN ##################################################################
 
 	# get observed counts
@@ -1204,7 +1169,7 @@ fit.glm <- function(
 			model <- gamlss::gamlss(
 				formula,
 				data = temp.data,
-				family = POtr(), 
+				family = utils::getFromNamespace("POtr", "gamlss.tr")(), 
 				control = gamlss.control
 				);
 
@@ -1217,7 +1182,7 @@ fit.glm <- function(
 					# Solution: set to 1 if observed count is lowest it can be
 					p.value <- ifelse(
 						observed >= 2,
-						pPOtr(observed - 1, mu = mu, lower.tail = FALSE),
+						utils::getFromNamespace("pPOtr", "gamlss.tr")(observed - 1, mu = mu, lower.tail = FALSE),
 						1
 						);
 
@@ -1235,7 +1200,7 @@ fit.glm <- function(
 			model <- gamlss::gamlss(
 				formula,
 				data = temp.data,
-				family = NBItr(), 
+				family = utils::getFromNamespace("NBItr", "gamlss.tr")(), 
 				control = gamlss.control
 				);
 
@@ -1247,7 +1212,7 @@ fit.glm <- function(
 					# Solution: set to 1 if observed count is lowest it can be
 					p.value <- ifelse(
 						observed >= 2,
-						pNBItr(
+						utils::getFromNamespace("pNBItr", "gamlss.tr")(
 							observed - 1, 
 							mu = mu, 
 							sigma = sigma,

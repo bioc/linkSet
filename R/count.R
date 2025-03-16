@@ -1,23 +1,5 @@
-#' Make Repeated Interactions Unique and Count Repetitions
-#'
-#' This function takes a linkSet object, identifies repeated interactions
-#' (where both bait and other end are repeated), makes them unique, and
-#' counts the number of repetitions for each unique interaction.
-#'
-#' @param x A linkSet object
-#'
-#' @return A list containing:
-#'   \item{unique_linkSet}{A new linkSet object with unique interactions}
-#'   \item{interaction_counts}{A data frame with counts for each unique interaction}
-#'
+#' @rdname countInteractions
 #' @export
-#'
-#' @examples
-#' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' result <- countInteractions(linkSet)
-#' result
-#'
 setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
   # Get the regions and bait names
   reg <- regions(x)
@@ -49,19 +31,8 @@ setMethod("countInteractions", "linkSet", function(x, baitRegions = TRUE) {
 })
 
 
-#' Count bait and oe
-#' @aliases countBaitOe
-#' @param x A linkSet object
-#' @param baitRegions Whether to count bait regions
-#' @description This function calculate the number of trans interactions for each bait and oe. The word "interactibility" can refer to https://doi.org/10.1038%2Fnature11279.
-#' @return A linkSet object with counts for each unique interaction
-#' @examples
-#' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
-#' linkSet = countInteractibility(linkSet)
+#' @rdname countInteractibility
 #' @export
-#'
 setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
   # Ensure inter_type and count are present
   if (!"inter_type" %in% colnames(mcols(x))) {
@@ -115,6 +86,7 @@ setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
 
 #' Filter links for further analysis
 #' @aliases filterLinks
+#' @param x A linkSet object
 #' @param filter_intra Whether to filter intra-chromosomal interactions
 #' @param filter_unannotate Whether to filter unannotated interactions
 #' @param distance The maximum distance between bait and other end
@@ -165,6 +137,7 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 
 #' Cross gene enhancer
 #' @aliases crossGeneEnhancer
+#' @param x A linkSet object
 #' @param score_threshold The minimum score to filter interactions
 #' @return A linkSet object with filtered interactions
 #' @examples
@@ -177,7 +150,7 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
   if (!is.null(score_threshold) & !"score" %in% colnames(mcols(x))) {
     warning("score column not found.")
-    score_threshold = NULL
+    score_threshold <- NULL
   }
   else if (!is.null(score_threshold)) {
     x <- x[mcols(x)$score >= score_threshold]
@@ -189,13 +162,13 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 
   # Use data.table to handle large data efficiently
   baitDf <- data.table::as.data.table(list(oeName = oeName, baitName = baitName))
-  baitDf <- baitDf[, .N, by = .(oeName, baitName)]
-  baitDf <- baitDf[N > 0]
+  baitDf <- data.table::setDT(baitDf)[, list(.N), by = list(oeName, baitName)]
+  baitDf <- baitDf[get("N") > 0]
 
-  enhancerDf <- baitDf[, .N, by = oeName]
+  enhancerDf <- data.table::setDT(baitDf)[, list(.N), by = list(oeName)]
 
   # Assign the Freq column to the mcol of x
-  mcols(x)$crossFreq <- enhancerDf$N[match(oeName, enhancerDf$oeName)]
+  mcols(x)$crossFreq <- enhancerDf[["N"]][match(oeName, enhancerDf[["oeName"]])]
 
   return(x)
 })
@@ -203,6 +176,7 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 
 #' Order linkSet by mcols
 #' @aliases orderLinks
+#' @param x A linkSet object
 #' @param by The column name to order by
 #' @param decreasing Whether to sort in decreasing order
 #' @return A linkSet object with ordered interactions
