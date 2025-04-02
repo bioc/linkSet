@@ -326,9 +326,9 @@ readvalidPairs <- function(file, njobs = 1, format = "validPairs") {
   
   # First check the header structure
   if(is_gzipped) {
-    header_lines <- system(paste("zcat", file, "| grep '^#'"), intern = TRUE)
+    header_lines <- system2("zcat", args = c(file, "| grep '^#'"), stdout = TRUE)
   } else {
-    header_lines <- system(paste("grep '^#'", file), intern = TRUE)
+    header_lines <- system2("grep", args = c("'^#'", file), stdout = TRUE)
   }
   skip_lines <- length(header_lines)
   
@@ -533,7 +533,7 @@ setMethod("as.data.frame", "linkSet", function(x) {
   
   message("Reading NBaitsPerBin file...")
   header = readLines(s$nbaitsperbinfile, n=1)
-  params = sapply(sapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]]), function(x)x[2])
+  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
   params = params[2:length(params)]
   names(params) = gsub("(\\S+)=.+", "\\1", names(params))
 

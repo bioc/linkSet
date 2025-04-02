@@ -109,3 +109,8 @@ We can also choose to visualze the bait center region.
 plot_genomic_ranges(ls,showBait = "Xkr4")
 
 ```
+
+## Session Information
+```{r}
+sessionInfo()
+```

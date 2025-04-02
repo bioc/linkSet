@@ -290,7 +290,7 @@ gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
 ls <- linkSet(gr1, gr2, specificCol = "symbol")
 
 # Test annotatePromoter
-annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = T))
+annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
 annotated_ls
 ```
 
@@ -325,4 +325,9 @@ plot_genomic_ranges(linkExample,extend.base = 10)
 You can adjust the range of the views.
 ```{r}
 plot_genomic_ranges(linkExample,extend.base = 10,x.range = c(50,200))
+```
+
+## Session Information
+```{r}
+sessionInfo()
 ```

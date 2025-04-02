@@ -66,11 +66,9 @@ run_chicane(linkSet, ...)
 }
 \value{
 A linkSet object with additional columns:
-\itemize{
 \item{expected}{The expected number of reads linking fragments under the fitted model}
 \item{p.value}{P-value for test of observed vs expected read counts}
 \item{q.value}{FDR-corrected p-value}
-}
 }
 \description{
 This function adapts the \code{chicane} function from the \code{ChICANE}
