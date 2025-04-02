@@ -53,8 +53,8 @@ promoterGr <- withTxDb("mm10", function(src) {
   genes <- Organism.dplyr::genes(src, columns = "symbol")
   IRanges::promoters(genes, upstream = 10000)
 })
-file_url <- c("http://www.enhanceratlas.org/data/download/enhancer/mm/Embryo_body.bed")
-enhancer <- rtracklayer::import(file_url, format="BED")
+file_path <- system.file("extdata", "Embryo_body.bed", package = "linkSet")
+enhancer <- rtracklayer::import(file_path, format="BED")
 ```
 
 Because the hic data only contains digist end, so we resize the region to upstream 5kb and downstream 5kb.
