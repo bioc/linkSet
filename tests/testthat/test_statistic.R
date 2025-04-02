@@ -1,5 +1,6 @@
 test_that("run_chicane processes linkSet correctly", {
   # Load example data
+  data(linkExample)
   # Prepare the linkSet object
   linkExample <- countInteractibility(linkExample)
   linkExample <- pairdist(linkExample)
