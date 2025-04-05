@@ -2,7 +2,7 @@
 % Please edit documentation in R/formatConverter.R
 \name{.exportToLinkSet}
 \alias{.exportToLinkSet}
-\title{Export to linkSet format}
+\title{Convert validated pairs to linkSet object}
 \usage{
 .exportToLinkSet(
   cd,
@@ -13,7 +13,18 @@
   removeMT = TRUE
 )
 }
+\arguments{
+\item{cd}{A data frame containing validated pairs data}
+\item{scoreCol}{Column name for score}
+\item{cutoff}{Cutoff for score}
+\item{b2bcutoff}{Cutoff for bidirectional pairs}
+\item{order}{Order of pairs (position or score)}
+\item{removeMT}{Logical indicating whether to remove mitochondrial pairs}
+}
+\value{
+A linkSet object constructed from the validated pairs data
+}
 \description{
-Export to linkSet format
+Internal function to convert validated pairs data to a linkSet object format
 }
 \keyword{internal}

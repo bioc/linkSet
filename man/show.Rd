@@ -10,6 +10,10 @@
 \arguments{
 \item{object}{A linkSet object to display}
 }
+\value{
+This function returns NULL invisibly. It is called for its side effect
+of displaying a summary of the linkSet object to the console.
+}
 \description{
 Display detailed information about a linkSet object
 }

@@ -10,8 +10,9 @@
 \item{split.data}{List of data.table objects with fragment interaction data}
 }
 \value{
-Logical indicating if the model can be fit
+Logical indicating if the model can be fit on all elements of the split data list
 }
 \description{
 Helper function to check if the chicane model can be fit on each element of a split data list.
 }
+\keyword{internal}

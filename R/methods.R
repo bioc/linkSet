@@ -343,26 +343,44 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
           }
 )
 
-#' @rdname clean_unused_regions
+#' @rdname cleanUnusedRegions
+#' @export
+setMethod("cleanUnusedRegions", "linkSet", function(x) {
+  # Get used indices
+  a1 <- anchor1(x)
+  a2 <- anchor2(x)
+  used_indices <- unique(c(a1, a2))
+  
+  # Skip if all regions are used
+  if (length(used_indices) == length(regions(x))) {
+    return(x)
+  }
+  
+  # Create new linkSet with only used regions
+  reg <- regions(x)[used_indices]
+  
+  # Map old indices to new indices
+  index_map <- rep(NA, length(regions(x)))
+  index_map[used_indices] <- seq_along(used_indices)
+  
+  # Update anchors with new indices
+  new_a1 <- index_map[a1]
+  new_a2 <- index_map[a2]
+  
+  # Create new linkSet
+  new_ls <- linkSet(reg, new_a1, new_a2)
+  
+  # Copy metadata
+  mcols(new_ls) <- mcols(x)
+  
+  return(new_ls)
+})
+
+#' @rdname cleanUnusedRegions
 #' @export
 setMethod("clean_unused_regions", "linkSet", function(x) {
-    used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
-    new_regions <- regions(x)[used_regions]
-    
-    # Create a mapping from old indices to new indices
-    index_map <- integer(length(regions(x)))
-    index_map[used_regions] <- seq_along(used_regions)
-    
-    # Update anchor indices
-    new_anchor1 <- index_map[anchor1(x)]
-    new_anchor2 <- index_map[anchor2(x)]
-    
-    # Update the linkSet object
-    unchecked_regions(x) <- new_regions
-    unchecked_anchor1(x) <- new_anchor1
-    unchecked_anchor2(x) <- new_anchor2
-    
-    return(x)
+  # Call cleanUnusedRegions for backward compatibility
+  cleanUnusedRegions(x)
 })
 
 #== subset ==#

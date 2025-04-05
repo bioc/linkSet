@@ -167,16 +167,19 @@ setGeneric("showLinkSet", function(object, margin="", print.seqinfo=FALSE, print
 #' @export
 setGeneric("regionsBait", function(x) standardGeneric("regionsBait"))
 
-#' Clean Unused Regions in a linkSet Object
-#' 
-#' This function removes unused regions from a linkSet object, ensuring that all regions 
-#' are referenced by either anchor1 or anchor2.
-#' 
-#' @param x A linkSet object from which to remove unused regions
+#' Clean Unused Regions
+#'
+#' This function removes unused regions from a linkSet object to minimize memory usage.
+#'
+#' @param x A linkSet object
 #' @return A linkSet object with unused regions removed
 #' @examples
 #' data(linkExample)
-#' linkExample <- clean_unused_regions(linkExample)
+#' linkExample <- cleanUnusedRegions(linkExample)
+#' @export
+setGeneric("cleanUnusedRegions", function(x) standardGeneric("cleanUnusedRegions"))
+
+#' @rdname cleanUnusedRegions
 #' @export
 setGeneric("clean_unused_regions", function(x) standardGeneric("clean_unused_regions"))
 
@@ -396,24 +399,47 @@ setGeneric("geom_linkset",
 )
 
 #' @export
-setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL,x.range = NULL,
-                                            score.col = "count",
-                                            show.rect = TRUE,
-                                            extend.base = 10000,
-                                            ...,
-                                            bait_col = "red",
-                                            oe_col = "DeepSkyBlue3",
-                                            default_col = "grey",
-                                            vjust = NULL,
-                                            linejoin = "mitre",
-                                            na.rm = FALSE,
-                                            minimal_width = 0.01,
-                                            show.legend = NA,
-                                            inherit.aes = TRUE,
-                                            link_plot_on_top = FALSE,
-                                            arrow.size = 0.05, remove_x_axis = FALSE,
-                                            plot.height = 0.4, plot.space = 0.1,
-                                            log.scale = TRUE) {
+setGeneric("plotGenomicRanges", function(linkset, showBait = NULL, showOE = NULL, x.range = NULL,
+                                        score.col = "count",
+                                        show.rect = TRUE,
+                                        extend.base = 10000,
+                                        ...,
+                                        bait_col = "red",
+                                        oe_col = "DeepSkyBlue3",
+                                        default_col = "grey",
+                                        vjust = NULL,
+                                        linejoin = "mitre",
+                                        na.rm = FALSE,
+                                        minimal_width = 0.01,
+                                        show.legend = NA,
+                                        inherit.aes = TRUE,
+                                        link_plot_on_top = FALSE,
+                                        arrow.size = 0.05, remove_x_axis = FALSE,
+                                        plot.height = 0.4, plot.space = 0.1,
+                                        log.scale = TRUE) {
+  standardGeneric("plotGenomicRanges")
+})
+
+#' @rdname plotGenomicRanges
+#' @export
+setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL, x.range = NULL,
+                                          score.col = "count",
+                                          show.rect = TRUE,
+                                          extend.base = 10000,
+                                          ...,
+                                          bait_col = "red",
+                                          oe_col = "DeepSkyBlue3",
+                                          default_col = "grey",
+                                          vjust = NULL,
+                                          linejoin = "mitre",
+                                          na.rm = FALSE,
+                                          minimal_width = 0.01,
+                                          show.legend = NA,
+                                          inherit.aes = TRUE,
+                                          link_plot_on_top = FALSE,
+                                          arrow.size = 0.05, remove_x_axis = FALSE,
+                                          plot.height = 0.4, plot.space = 0.1,
+                                          log.scale = TRUE) {
   standardGeneric("plot_genomic_ranges")
 })
 

@@ -6,6 +6,13 @@
 \usage{
 .pasteAnchor(x, append)
 }
+\arguments{
+\item{x}{Anchor object (character or GRanges) to format}
+\item{append}{String to append to column names}
+}
+\value{
+A matrix containing formatted anchor information for display
+}
 \description{
 Format anchor information for display
 }

@@ -6,7 +6,13 @@
 \usage{
 .convert_to_grange(intervals)
 }
+\arguments{
+\item{intervals}{Character vector of genomic intervals in format "chr:start-end"}
+}
+\value{
+A GRanges object containing the converted genomic intervals
+}
 \description{
-Convert string intervals to GRanges
+Convert string intervals in the format "chr:start-end" to GRanges objects
 }
 \keyword{internal}
