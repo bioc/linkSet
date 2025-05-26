@@ -61,7 +61,7 @@ Because the hic data only contains digist end, so we resize the region to upstre
 After that, we use `baitGInteractions` to generate the `linkSet` object.
 ```{r}
 gi <- resize(gi,10000,fix = "center")
-ls <- baitGInteractions(gi,geneGr = promoterGr,peakGr = enhancer,"symbol")
+ls <- baitGInteractions(gi, promoterGr, enhancer, geneSymbol = "symbol")
 ls
 ```
 

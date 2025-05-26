@@ -292,7 +292,7 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
   linkGene <- geneSymbol[out$subject1]
   linkGeneRange <- geneGr[out$subject1]
   linkPeak <- peakGr[out$subject2]
-  linkSetObj <- linkSet(linkGeneRange, linkPeak, linkGene)
+  linkSetObj <- linkSet(anchor1 = linkGeneRange, anchor2 = linkPeak, specificCol = linkGene)
   
   # Add mcols from gi to linkSetObj
   mcols(linkSetObj) <- cbind(mcols(linkSetObj), mcols(gi)[out$query, ])
