@@ -40,7 +40,8 @@ Imports:
     MASS,
     data.table,
     DBI,
-    doParallel
+    doParallel,
+    AnnotationDbi
 Suggests: 
     knitr,
     rmarkdown,

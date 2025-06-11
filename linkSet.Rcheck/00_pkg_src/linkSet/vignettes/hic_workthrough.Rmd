@@ -1,0 +1,116 @@
+---
+title: "hic_workthrough"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hic_workthrough}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+This vignette provides a step-by-step guide to using the `linkSet` package to analyze Hi-C/HiChIP  data. We will use a toy example to illustrate the main functions and workflows.
+Our goal is to identify the enhancer-gene links in this example
+
+We will use the following datasets as input:
+
+1. validPairs produced by [HiC-Pro](https://github.com/nservant/HiC-Pro).
+2. Mouse embryo body enhancer data from enhancer atlas [website](http://www.enhanceratlas.org/).
+3. Gene annotation data from TxDb.Mmusculus.UCSC.mm10.knownGene pakcage.
+
+We highly recommend you to use custom data instead of the example data provided in this vignette.
+
+## Setup
+
+```{r, eval = FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(linkSet)
+  library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+  library(org.Mm.eg.db)
+  library(Organism.dplyr)
+  library(InteractionSet)
+})
+```
+
+We use our custom function `readvalidPairs` to load the [example data](https://data.4dnucleome.org/files-processed/4DNFI9DUBGCW/). 
+Firstly, we need to load into [GInteractions object](https://bioconductor.org/packages/release/bioc/vignettes/InteractionSet/inst/doc/GInteractions.html).
+```{r setup_data}
+hic_file <- system.file("extdata", "toyExample.pair.gz", 
+                        package="linkSet")
+gi <- readvalidPairs(hic_file,format = "pair")
+promoterGr <- withTxDb("mm10", function(src) {
+  genes <- Organism.dplyr::genes(src, columns = "symbol")
+  IRanges::promoters(genes, upstream = 10000)
+})
+file_path <- system.file("extdata", "Embryo_body.bed", package = "linkSet")
+enhancer <- rtracklayer::import(file_path, format="BED")
+```
+
+Because the hic data only contains digist end, so we resize the region to upstream 5kb and downstream 5kb.
+After that, we use `baitGInteractions` to generate the `linkSet` object.
+```{r}
+gi <- resize(gi,10000,fix = "center")
+ls <- baitGInteractions(gi, promoterGr, enhancer, geneSymbol = "symbol")
+ls
+```
+
+When we print the `linkSet` object, we can see the basic information of the `linkSet` object.
+By default, we don't show the bait region. But you are interested in the bait region, you can set `showBaitRegion = TRUE`.
+```{r}
+showLinkSet(ls, baitRegion = TRUE)
+```
+
+## Diagnose and filter links
+Now, we can run diagnoseLinkSet to check the distance distribution and inter/intra interaction percentage.
+```{r}
+diagnoseLinkSet(ls)
+```
+
+Intrachromosomal interaction and long distance interaction are likely be noise, so we filter them.
+```{r}
+ls <- countInteractibility(ls)
+ls <- filterLinks(ls,filter_intra = TRUE, filter_unannotate = TRUE, distance = 50000000)
+```
+
+Duplicated links are associated with contact frequency, so it's a good idea to count duplicated links.
+```{r}
+ls <- countInteractions(ls)
+orderLinks(ls,by = "count",decreasing = TRUE)
+```
+
+We can notice that there is a significant link strength between `Sulf1` and `chr1:12785091-12785750`.
+
+## Cross gene links and visualization
+Enhancers that regulate multiple genes are biologically meaningful.
+```{r}
+ls <- crossGeneEnhancer(ls)
+ls <- orderLinks(ls,by = "crossFreq",decreasing = TRUE)
+ls
+```
+We can use `plot_genomic_ranges` to visualize the cross gene links.
+```{r}
+plot_genomic_ranges(ls,showOE = oe(ls)[1])
+```
+
+We can also choose to visualze the bait center region.
+
+```{r}
+plot_genomic_ranges(ls,showBait = "Xkr4")
+
+```
+
+## Session Information
+```{r}
+sessionInfo()
+```

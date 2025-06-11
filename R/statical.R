@@ -66,15 +66,15 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 	) {
 	# TO DO:
 	#	- check format of linkSet object if passed directly
-	linkSet = .verify.linkSet(linkSet)
-	.check.packages(distribution)
+	linkSet = verifyLinkSet(linkSet)
+	checkPackages(distribution)
 	### MAIN #############################################################
 	replicate.merging.method <- match.arg(replicate.merging.method);
 	multiple.testing.correction <- match.arg(multiple.testing.correction);
 
 	# Convert linkSet to data.table for processing
 	#interaction.data <- as.data.table(linkSet)
-	linkSet <- .filter.fragments(
+	linkSet <- filterFragments(
 		linkSet,
 		bait.filters = bait.filters,
 		target.filters = target.filters,
@@ -85,7 +85,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 		cat('FITTING MODEL\n');
 	}
 	
-	chicane.results <- fit.model(
+	chicane.results <- fitModel(
 		linkSet, 
 		distance.bins = distance.bins, 
 		distribution = distribution,
@@ -97,7 +97,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 		trace = trace
 		);
 
-	chicane.results <- multiple.testing.correct(
+	chicane.results <- multipleTestingCorrect(
 		chicane.results,
 		bait.level = 'bait-level' == multiple.testing.correction
 		);
@@ -127,7 +127,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @rdname chicane
 #' @return None
 #'
-.verify.linkSet <- function(linkSet) {
+verifyLinkSet <- function(linkSet) {
 	# LinkSet object
 	if( !is(linkSet, "linkSet") ) {
 		stop('linkSet must be a LinkSet object');
@@ -172,7 +172,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @import linkSet
 #' @export
 
-.filter.fragments <- function(
+filterFragments <- function(
 	linkSet,
 	bait.filters = c(0, 1),
 	target.filters = c(0, 1),
@@ -256,7 +256,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @noRd
 #' @rdname chicane
 #' @export
-.model.try.catch <- function(
+modelTryCatch <- function(
 	model.formula, 
 	data,
 	distribution = 'negative-binomial',
@@ -277,7 +277,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 	# Handle these cases by trying to fit a Poisson distribution instead.
 	model <- tryCatch({
 		# try fitting distribution as requested by user
-		fit.glm( 
+		fitGlm( 
 			model.formula, 
 			data,
 			distribution = distribution,
@@ -290,11 +290,11 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 		}, error = function(e) {
 
 			# if problem was negative binomial, try Poisson
-			if( 'negative-binomial' == distribution && .is.glm.nb.theta.error(e) ) {
+			if( 'negative-binomial' == distribution && isGlmNbThetaError(e) ) {
 
 				if(verbose) cat('\nDispersion error - running Poisson\n');
 				
-				temp.model <- fit.glm( 
+				temp.model <- fitGlm( 
 					model.formula, 
 					data,
 					distribution = 'poisson',
@@ -336,7 +336,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 			}
 		}, warning = function(w) {
 			dispersion.problem <- FALSE;
-			if( 'negative-binomial' == distribution && ( .is.glm.nb.maxiter.warning(w) || .is.glm.nb.theta.warning(w) ) ) {
+			if( 'negative-binomial' == distribution && ( isGlmNbMaxiterWarning(w) || isGlmNbThetaWarning(w) ) ) {
 				if(verbose) cat('Caught a warning - checking for dispersion problems\n');
 
 				# See if problem is lack of overdispersion
@@ -344,7 +344,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 				# 	=> if no evidence for overdispersion, fit Poisson
 
 				negbin.fit <- suppressWarnings(
-					fit.glm( 
+					fitGlm( 
 						model.formula, 
 						data,
 						distribution = 'negative-binomial',
@@ -375,7 +375,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 			}
 
 			temp.model <- tryCatch({
-				fit.glm( 
+				fitGlm( 
 					model.formula, 
 					data,
 					distribution = distribution,
@@ -416,7 +416,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 #' @return A data.table with fitted model results including expected counts and p-values
 #' @keywords internal
 #' @noRd
-fit.model <- function(
+fitModel <- function(
 	linkSet, 
 	distance.bins = NULL,
 	distribution = 'negative-binomial', 
@@ -447,7 +447,7 @@ fit.model <- function(
 	#before_fitting_time <- Sys.time()
 	#print(paste0("before_fitting_time: ", before_fitting_time))
 	if( nrow(b2b.data) > 0 ) {
-		b2b.results <- run.model.fitting(
+		b2b.results <- runModelFitting(
 			b2b.data, 
 			distance.bins = distance.bins, 
 			distribution = distribution, 
@@ -462,7 +462,7 @@ fit.model <- function(
 	}
 
 	if( nrow(non.b2b.data) > 0 ) {
-		non.b2b.results <- run.model.fitting(
+		non.b2b.results <- runModelFitting(
 			non.b2b.data, 
 			distance.bins = distance.bins, 
 			distribution = distribution,
@@ -505,7 +505,7 @@ fit.model <- function(
 #' @importFrom stats logLik
 #' @importFrom rlang .data
 #' @importFrom data.table :=
-run.model.fitting <- function(
+runModelFitting <- function(
 	interaction.data,
 	distance.bins = NULL, 
 	distribution = 'negative-binomial',
@@ -578,7 +578,7 @@ run.model.fitting <- function(
 
 	# list of data.tables, where each element corresponds to 
 	# a specific distance
-	distance.binned.data <- .distance.split(
+	distance.binned.data <- distanceSplit(
 		cis.data, 
 		distance.bins = distance.bins, 
 		verbose = verbose
@@ -609,14 +609,14 @@ run.model.fitting <- function(
 		temp.data = distance.binned.data,
 		iter.i = icount(),
 		.packages = packages,
-    .export = c(".model.try.catch", "create.modelfit.plot")
+    .export = c("modelTryCatch", "fitGlm", "isGlmNbThetaError", "isGlmNbMaxiterWarning", "isGlmNbThetaWarning")
 		) %dopar% {
 		
 		# progress meter
 		if(verbose) cat('*');
 
 		# fit model through helper function that gracefully handles numerical errors
-		model <- .model.try.catch(
+		model <- modelTryCatch(
 			cis.formula, 
 			get("temp.data"),
 			distribution = distribution,
@@ -642,7 +642,7 @@ run.model.fitting <- function(
 			cat('\n\ttrans interactions\n');
 		}
 
-		trans.model <- .model.try.catch(
+		trans.model <- modelTryCatch(
 			trans.formula, 
 			trans.data,
 			distribution = distribution,
@@ -700,7 +700,7 @@ run.model.fitting <- function(
 #' @keywords internal
 #' @noRd
 #' @export
-.distance.split <- function(
+distanceSplit <- function(
 	interaction.data, 
 	distance.bins = NULL, 
 	min.rows.bin = 50,
@@ -728,7 +728,7 @@ run.model.fitting <- function(
 
 	cis.data <- cis.data[order(cis.data$distance),];
 
-	if( nrow(cis.data) < 50 || !.check.model.numerical.fit(cis.data) ) {
+	if( nrow(cis.data) < 50 || !checkModelNumericalFit(cis.data) ) {
 		# if fewer than 50 rows in cis-data, or already too small for a decent numerical fit, keep as one item
 		split.data <- list( cis.data );
 
@@ -749,17 +749,17 @@ run.model.fitting <- function(
 
 				distance.bins <- round(distance.bins/2);
 				if( verbose ) cat('\tchecking distance.bins =', distance.bins, '\n');
-				split.data <- .smart.split(cis.data, bins = distance.bins);
-				# get indicator of whether the model can be fit in each of the split data parts
-				numerical.fit <- .check.split.data.numerical.fit(split.data);
+							split.data <- smartSplit(cis.data, bins = distance.bins);
+			# get indicator of whether the model can be fit in each of the split data parts
+			numerical.fit <- checkSplitDataNumericalFit(split.data);
 			}
 
 		} else {
 			# user has requested a specified number of distance bins
 			# split into this number of groups, and throw an error if the model cannot be fit
 
-			split.data <- .smart.split(cis.data, bins = distance.bins);
-			numerical.fit <- .check.split.data.numerical.fit(split.data);
+					split.data <- smartSplit(cis.data, bins = distance.bins);
+		numerical.fit <- checkSplitDataNumericalFit(split.data);
 			if( !numerical.fit ) {
 				stop('Model cannot be fit with the specified number of distance bins. Try using fewer bins.');
 			}
@@ -788,7 +788,7 @@ run.model.fitting <- function(
 #' @rdname chicane
 #' @return Boolean indicating if error matches
 #'
-.is.glm.nb.theta.error <- function(e) {
+isGlmNbThetaError <- function(e) {
 	
 	error.code <- deparse(e$call)[1]; # will be a character vector if it really is theta error
 	error.message <- e$message;
@@ -818,7 +818,7 @@ run.model.fitting <- function(
 #' @rdname chicane
 #' @return boolean indicating if model can be fit
 #' 
-.check.model.numerical.fit <- function(interaction.data) {
+checkModelNumericalFit <- function(interaction.data) {
 
 	### INPUT TESTS ###########################################################
 
@@ -878,14 +878,14 @@ run.model.fitting <- function(
 #' @return Original data table with new column
 #' 	\item{q.value}{FDR-corrected p-value}
 
-multiple.testing.correct <- function(
+multipleTestingCorrect <- function(
 	interaction.data,
 	bait.level = TRUE
 	) {
 
 	### INPUT TESTS ###########################################################
 
-	.verify.interaction.data(interaction.data);
+	verifyInteractionData(interaction.data);
 
 	if( !all(c('bait.id', 'p.value') %in% names(interaction.data)) ) {
 		stop('interaction.data must contain columns bait.id and p.value');
@@ -941,7 +941,7 @@ multiple.testing.correct <- function(
 #'	List with \code{bins} elements. Each element corresponds to one portion 
 #'	of the data  
 #'
-.smart.split <- function(dat, bins) {
+smartSplit <- function(dat, bins) {
 
 	### INPUT TESTS ###########################################################
 
@@ -979,7 +979,7 @@ multiple.testing.correct <- function(
 #' 
 #' @return Logical indicating if the model can be fit
 #'
-.check.split.data.numerical.fit <- function(split.data) {
+checkSplitDataNumericalFit <- function(split.data) {
 
 	### INPUT TESTS ###########################################################
 
@@ -996,7 +996,7 @@ multiple.testing.correct <- function(
 
 	element.numerical.fit <- vapply(
 		split.data,
-		.check.model.numerical.fit,
+		checkModelNumericalFit,
 		FUN.VALUE = FALSE
 		);
 
@@ -1013,7 +1013,7 @@ multiple.testing.correct <- function(
 #' @rdname chicane
 #' @return None
 #'
-.verify.interaction.data <- function(interaction.data) {
+verifyInteractionData <- function(interaction.data) {
 
 	# data.table object
 	if( !is.data.table(interaction.data) ) {
@@ -1061,7 +1061,7 @@ multiple.testing.correct <- function(
 #' 	\item{expected.values}{vector of expected values for each element in original data}
 #' 	\item{p.values}{vector of p-values for test of significantly higher response than expected}
 #' @importFrom utils getFromNamespace
-fit.glm <- function(
+fitGlm <- function(
 	formula, 
 	data, 
 	distribution = c('negative-binomial', 'poisson', 'truncated-poisson', 'truncated-negative-binomial'),
@@ -1114,7 +1114,7 @@ fit.glm <- function(
 				);
 		}
 		# sanity check that no rows were lost due to missing data
-		.model.rows.sanity.check(data, model);
+		modelRowsSanityCheck(data, model);
 
 		expected.values <- model$fitted.values;
 		p.values <- stats::pnbinom(
@@ -1134,7 +1134,7 @@ fit.glm <- function(
 
 		# Make sure no rows have been lost 
 		# (causes problems when adding to the data frame)
-		.model.rows.sanity.check(data, model);
+		modelRowsSanityCheck(data, model);
 
 		expected.values <- model$fitted.values;
 		p.values <- stats::ppois(
@@ -1250,7 +1250,7 @@ fit.glm <- function(
 #' @rdname chicane
 #' @return None
 #' 
-.model.rows.sanity.check <- function(model.data, model) {
+modelRowsSanityCheck <- function(model.data, model) {
 
 	if( nrow(model.data) != length(model$fit) ) {
 
@@ -1273,7 +1273,7 @@ fit.glm <- function(
 #' @keywords internal
 #' @rdname chicane
 #' @return Logical indicating if warning matches iteration limit reached warning
-.is.glm.nb.maxiter.warning <- function(w) {
+isGlmNbMaxiterWarning <- function(w) {
 
 	if( 'iteration limit reached' != w$message ) {
 		return(FALSE);
@@ -1296,7 +1296,7 @@ fit.glm <- function(
 #' @rdname chicane
 #' @return Boolean indicating if warning matches
 #' 
-.is.glm.nb.theta.warning <- function(w) {
+isGlmNbThetaWarning <- function(w) {
 
 	warning.code <- deparse(w$call)[1]
 
@@ -1310,7 +1310,7 @@ fit.glm <- function(
 }
 
 # check if packages are installed for truncated distributions
-.check.packages <- function(distribution) {
+checkPackages <- function(distribution) {
 	if (distribution == 'poisson' || distribution == 'negative-binomial') {
 		return(TRUE)
 	}
