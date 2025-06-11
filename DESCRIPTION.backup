@@ -19,25 +19,47 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: GenomicRanges, S4Vectors, R (>= 4.0.0)
-Imports: methods, IRanges, GenomeInfoDb, BiocGenerics, Organism.dplyr,
-        InteractionSet, ggplot2, patchwork, scales, foreach, iterators,
-        stats, rlang, MASS, data.table, DBI, doParallel
-Suggests: knitr, rmarkdown, testthat,
-        TxDb.Mmusculus.UCSC.mm10.knownGene,
-        TxDb.Hsapiens.UCSC.hg38.knownGene,
-        TxDb.Hsapiens.UCSC.hg19.knownGene, org.Mm.eg.db, org.Hs.eg.db,
-        GenomicFeatures, GenomicInteractions, gamlss, gamlss.tr
-Collate: class.R AllGenerics.R getset.R methods.R annotate.R distance.R
-        formatConverter.R linkSet-package.R GRange_method.R
-        test_helper.R visualization.R count.R statical.R data.R
-biocViews: Software, HiC, DataRepresentation, Sequencing, SingleCell,
-        Coverage
-URL: https://github.com/GilbertHan1011/linkSet,
-        https://gilberthan1011.github.io/linkSet
+Depends: 
+    GenomicRanges,
+    S4Vectors,
+    R (>= 4.0.0)
+Imports: 
+    methods,
+    IRanges,
+    GenomeInfoDb,
+    BiocGenerics,
+    Organism.dplyr,
+    InteractionSet,
+    ggplot2,
+    patchwork,
+    scales,
+    foreach,
+    iterators,
+    stats,
+    rlang,
+    MASS,
+    data.table,
+    DBI,
+    doParallel,
+    AnnotationDbi
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat,
+    TxDb.Mmusculus.UCSC.mm10.knownGene,
+    TxDb.Hsapiens.UCSC.hg38.knownGene,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    org.Mm.eg.db,
+    org.Hs.eg.db,
+    GenomicFeatures,
+    GenomicInteractions,
+    gamlss,
+    gamlss.tr
+Collate: class.R AllGenerics.R getset.R
+        methods.R annotate.R distance.R formatConverter.R 
+        linkSet-package.R GRange_method.R test_helper.R
+        visualization.R count.R statical.R data.R
+biocViews: Software, HiC, DataRepresentation, Sequencing, SingleCell, Coverage
+URL: https://github.com/GilbertHan1011/linkSet, https://gilberthan1011.github.io/linkSet
 BugReports: https://github.com/GilbertHan1011/linkSet/issues/new
 VignetteBuilder: knitr
-NeedsCompilation: no
-Packaged: 2025-05-26 13:29:57 UTC; gilberthan
-Author: Gilbert Han [aut, cre] (<https://orcid.org/0009-0000-0293-2467>)
-Maintainer: Gilbert Han <GilbertHan1011@gmail.com>
