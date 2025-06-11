@@ -52,6 +52,6 @@ gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
 gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
                strand = "+")
-ls <- linkSet(gr1, gr2, specificCol = "symbol")
-showLinkSet(ls)
+linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
+showLinkSet(linkset_obj)
 }

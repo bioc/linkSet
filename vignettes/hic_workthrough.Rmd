@@ -1,45 +1,90 @@
 ---
-title: "hic_workthrough"
-output: rmarkdown::html_vignette
+title: "Hi-C Workflow with linkSet"
+author:
+  - name: Gilbert Han
+    affiliation: Your Affiliation
+    email: GilbertHan1011@gmail.com
+date: "`r Sys.Date()`"
+package: linkSet
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 2
+    number_sections: true
+    theme: flatly
+    highlight: tango
+    fig_width: 7
+    fig_height: 5
 vignette: >
-  %\VignetteIndexEntry{hic_workthrough}
+  %\VignetteIndexEntry{Hi-C Workflow with linkSet}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.wide = TRUE,
+  fig.align = "center",
+  fig.retina = 2,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  echo = TRUE
 )
+suppressPackageStartupMessages({
+  library(BiocStyle)
+})
 ```
 
-## Introduction
-This vignette provides a step-by-step guide to using the `linkSet` package to analyze Hi-C/HiChIP  data. We will use a toy example to illustrate the main functions and workflows.
-Our goal is to identify the enhancer-gene links in this example
+`r BiocStyle::doc_date()`
+
+`r BiocStyle::pkg_ver('linkSet')`
+
+
+
+# Introduction
+This vignette provides a step-by-step guide to using the `r Biocpkg("linkSet")` package to analyze Hi-C/HiChIP data. We will use a toy example to illustrate the main functions and workflows.
+Our goal is to identify the enhancer-gene links in this example.
 
 We will use the following datasets as input:
 
 1. validPairs produced by [HiC-Pro](https://github.com/nservant/HiC-Pro).
 2. Mouse embryo body enhancer data from enhancer atlas [website](http://www.enhanceratlas.org/).
-3. Gene annotation data from TxDb.Mmusculus.UCSC.mm10.knownGene pakcage.
+3. Gene annotation data from `r Biocpkg("TxDb.Mmusculus.UCSC.mm10.knownGene")` package.
 
 We highly recommend you to use custom data instead of the example data provided in this vignette.
 
-## Setup
+# Setup
 
 ```{r, eval = FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 ```
 
-```{r setup}
+```{r load-packages}
 suppressPackageStartupMessages({
   library(linkSet)
-  library(TxDb.Mmusculus.UCSC.mm10.knownGene)
-  library(org.Mm.eg.db)
-  library(Organism.dplyr)
-  library(InteractionSet)
+  # Load additional packages only if available
+  if (requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE)) {
+    library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+  }
+  if (requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+    library(org.Mm.eg.db)
+  }
+  if (requireNamespace("Organism.dplyr", quietly = TRUE)) {
+    library(Organism.dplyr)
+  }
+  if (requireNamespace("InteractionSet", quietly = TRUE)) {
+    library(InteractionSet)
+  }
+  if (requireNamespace("rtracklayer", quietly = TRUE)) {
+    library(rtracklayer)
+  }
 })
 ```
 
@@ -49,9 +94,32 @@ Firstly, we need to load into [GInteractions object](https://bioconductor.org/pa
 hic_file <- system.file("extdata", "toyExample.pair.gz", 
                         package="linkSet")
 gi <- readvalidPairs(hic_file,format = "pair")
-promoterGr <- withTxDb("mm10", function(src) {
-  genes <- Organism.dplyr::genes(src, columns = "symbol")
-  IRanges::promoters(genes, upstream = 10000)
+promoterGr <- tryCatch({
+  withTxDb("mm10", function(src) {
+    genes <- Organism.dplyr::genes(src, columns = "symbol")
+    IRanges::promoters(genes, upstream = 10000)
+  })
+}, error = function(e) {
+  # Fallback approach using TxDb directly
+  if (requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) &&
+      requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
+    gene_ranges <- GenomicFeatures::genes(txdb)
+    
+    # Add gene symbols
+    gene_ids <- names(gene_ranges)
+    symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db, 
+                                   keys = gene_ids, 
+                                   columns = "SYMBOL", 
+                                   keytype = "ENTREZID")
+    symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
+    mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
+    genes <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
+    
+    IRanges::promoters(genes, upstream = 10000)
+  } else {
+    stop("Required packages not available for mm10 annotation")
+  }
 })
 file_path <- system.file("extdata", "Embryo_body.bed", package = "linkSet")
 enhancer <- rtracklayer::import(file_path, format="BED")
@@ -71,9 +139,11 @@ By default, we don't show the bait region. But you are interested in the bait re
 showLinkSet(ls, baitRegion = TRUE)
 ```
 
-## Diagnose and filter links
+# Diagnose and filter links
 Now, we can run diagnoseLinkSet to check the distance distribution and inter/intra interaction percentage.
+First, let's annotate the promoter regions with genome information:
 ```{r}
+ls <- suppressWarnings(annotatePromoter(ls, genome = "mm10", upstream = 1000))
 diagnoseLinkSet(ls)
 ```
 
@@ -91,7 +161,7 @@ orderLinks(ls,by = "count",decreasing = TRUE)
 
 We can notice that there is a significant link strength between `Sulf1` and `chr1:12785091-12785750`.
 
-## Cross gene links and visualization
+# Cross gene links and visualization
 Enhancers that regulate multiple genes are biologically meaningful.
 ```{r}
 ls <- crossGeneEnhancer(ls)
@@ -106,11 +176,23 @@ plot_genomic_ranges(ls,showOE = oe(ls)[1])
 We can also choose to visualze the bait center region.
 
 ```{r}
-plot_genomic_ranges(ls,showBait = "Xkr4")
-
+# Check if regionsBait exists and has names
+if (!is.null(regionsBait(ls)) && !is.null(names(regionsBait(ls)))) {
+  # Get available bait names from regionsBait
+  available_baits <- unique(names(regionsBait(ls)))
+  if (length(available_baits) > 0) {
+    # Use the first available bait for demonstration
+    plot_genomic_ranges(ls, showBait = available_baits[1])
+  } else {
+    cat("No named bait regions available for plotting")
+  }
+} else {
+  # If no regionsBait, just plot without showBait
+  plot_genomic_ranges(ls)
+}
 ```
 
-## Session Information
+# Session Information
 ```{r}
 sessionInfo()
 ```

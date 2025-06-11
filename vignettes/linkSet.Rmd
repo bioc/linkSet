@@ -6,19 +6,44 @@ author:
     email: GilbertHan1011@gmail.com
 date: "`r Sys.Date()`"
 package: linkSet
-output: rmarkdown::html_vignette 
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+    number_sections: true
+    theme: flatly
+    highlight: tango
+    fig_width: 7
+    fig_height: 5
 vignette: >
   %\VignetteIndexEntry{linkSet: Base Classes for Storing Genomic Link Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.wide = TRUE,
+  fig.align = "center",
+  fig.retina = 2,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  echo = TRUE
 )
+suppressPackageStartupMessages({
+  library(BiocStyle)
+})
 ```
+
+`r BiocStyle::doc_date()`
+
+`r BiocStyle::pkg_ver('linkSet')`
 
 # Introduction
 
@@ -26,19 +51,19 @@ knitr::opts_chunk$set(
 
 Understanding the 3D architecture of the genome is crucial for deciphering gene regulation and the role of non-coding regions. With techniques like HiC, PCHiC, scATAC-seq, and other high-throughput omics approaches, we can now identify interactions between genes and regulatory elements such as enhancers. These interactions often occur over large genomic distances and can significantly influence gene expression.
 
-The `linkSet` package addresses a critical need in genomic data analysis: a standardized framework for representing, manipulating, and analyzing gene-enhancer interactions. While several Bioconductor packages deal with genomic interactions, `linkSet` specifically focuses on gene-enhancer links with specialized methods for this type of data.
+The `r Biocpkg("linkSet")` package addresses a critical need in genomic data analysis: a standardized framework for representing, manipulating, and analyzing gene-enhancer interactions. While several Bioconductor packages deal with genomic interactions, `r Biocpkg("linkSet")` specifically focuses on gene-enhancer links with specialized methods for this type of data.
 
 ## Comparison with Existing Bioconductor Packages
 
 Several Bioconductor packages handle genomic interaction data, but `linkSet` offers distinct advantages:
 
-1. **InteractionSet**: Provides a general representation of genomic interactions but lacks specific tools for gene-enhancer links.
+1. `r Biocpkg("InteractionSet")`: Provides a general representation of genomic interactions but lacks specific tools for gene-enhancer links.
    
-2. **GenomicInteractions**: Similar to InteractionSet with visualization capabilities but doesn't incorporate domain-specific functions for regulatory element analysis.
+2. `r Biocpkg("GenomicInteractions")`: Similar to InteractionSet with visualization capabilities but doesn't incorporate domain-specific functions for regulatory element analysis.
    
-3. **plyranges**: Offers a dplyr-like interface for GRanges objects but isn't optimized for pairwise genomic interactions.
+3. `r Biocpkg("plyranges")`: Offers a dplyr-like interface for GRanges objects but isn't optimized for pairwise genomic interactions.
    
-4. **HiCExperiment**: Specializes in Hi-C data but is designed for broader chromatin contacts rather than specific enhancer-promoter interactions.
+4. `r Biocpkg("HiCExperiment")`: Specializes in Hi-C data but is designed for broader chromatin contacts rather than specific enhancer-promoter interactions.
 
 The `linkSet` package fills this gap by providing:
 - Specialized methods for annotating promoters
@@ -112,7 +137,7 @@ if (!require("BiocManager", quietly = TRUE))
 ```
 
 
-```{r setup}
+```{r load-linkset}
 suppressPackageStartupMessages(library(linkSet))
 ```
 ```{r}
@@ -236,22 +261,22 @@ linkObj
 ## Subsetting and concatenation
 LinkSet object can be easily subsetted by index.
 ```{r}
-ls_sub <- linkObj[1:2]
-ls_sub
+linkset_sub <- linkObj[1:2]
+linkset_sub
 ```
 
 If you are interested in a specific gene or region, you can subset the `linkSet` object by the bait or oe region.
 ```{r}
-ls_sub_2 <- subsetBait(linkObj, "Gene1")
-ls_sub_2
-ls_sub_3 <- subsetBaitRegion(linkObj, "chr1:100-200")
-ls_sub_3
+linkset_sub_2 <- subsetBait(linkObj, "Gene1")
+linkset_sub_2
+linkset_sub_3 <- subsetBaitRegion(linkObj, "chr1:100-200")
+linkset_sub_3
 ```
 
 You can also concatenate two `linkSet` objects.
 ```{r}
-ls_concat <- c(linkObj, linkObj)
-ls_concat
+linkset_concat <- c(linkObj, linkObj)
+linkset_concat
 ```
 
 ## GRanges method
@@ -274,15 +299,15 @@ resize_oe
 The `reduce` method allows the `linkSet` objects to be collapsed across the whole of the `linkSet` object. 
 
 ```{r}
-reduce_ls <- reduce(ls_concat)
-reduce_ls
+reduce_linkset <- reduce(linkset_concat)
+reduce_linkset
 ```
 By default, we will collapse the duplicate interactions, and count the interactions and store in the metadata columns.
 You can also choose not to count the interactions by set `countInteractions = FALSE`.
 
 ```{r}
-reduce_ls_2 <- linkSet::reduceRegions(ls_concat, countInteractions = FALSE)
-reduce_ls_2
+reduce_linkset_2 <- linkSet::reduceRegions(linkset_concat, countInteractions = FALSE)
+reduce_linkset_2
 ```
 
 ## Diagnose
@@ -297,14 +322,14 @@ diagnoseLinkSet(linkExample)
 ```
 
 ```{r}
-ls_concat
+linkset_concat
 ```
 The annotated distance and interaction type is shown in the `distance` and `inter_type` column.
 
 You can remove the intrachromosomal interactions by:
 ```{r}
-ls_concat <- filterLinks(ls_concat, filter_intra = TRUE)
-ls_concat
+linkset_concat <- filterLinks(linkset_concat, filter_intra = TRUE)
+linkset_concat
 ```
 
 
@@ -322,26 +347,26 @@ gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
 linkObj <- linkSet(gr1, gr2, specificCol = "symbol")
 
 # Test annotatePromoter
-annotated_ls <- suppressWarnings(annotatePromoter(linkObj, genome = "hg38", upstream = 500,overwrite = TRUE))
-annotated_ls
+annotated_linkset <- suppressWarnings(annotatePromoter(linkObj, genome = "hg38", upstream = 500,overwrite = TRUE))
+annotated_linkset
 ```
 
 ## Statistical analysis
 Functional enhancers usually regulate multiple genes, we can use cross gene analysis to identify the cross gene enhancers.
 
 ```{r}
-annotated_ls <- crossGeneEnhancer(annotated_ls)
-annotated_ls <- orderLinks(annotated_ls,by = "crossFreq",decreasing = TRUE)
-annotated_ls
+annotated_linkset <- crossGeneEnhancer(annotated_linkset)
+annotated_linkset <- orderLinks(annotated_linkset,by = "crossFreq",decreasing = TRUE)
+annotated_linkset
 ```
 
 linkSet also implement the [`CHiCANE` analysis](https://www.nature.com/articles/s41596-021-00498-1), which can identifying the high-confidence interactions.
 **CHiCANE** needs to count interactibility and dist before running the statistical test.
 ```{r}
-annotated_ls <- countInteractibility(annotated_ls)
-annotated_ls <- linkSet::pairdist(annotated_ls)
-annotated_ls <- run_chicane(annotated_ls)
-annotated_ls
+annotated_linkset <- countInteractibility(annotated_linkset)
+annotated_linkset <- linkSet::pairdist(annotated_linkset)
+annotated_linkset <- run_chicane(annotated_linkset)
+annotated_linkset
 ```
 
 
@@ -350,13 +375,16 @@ annotated_ls
 With `plot_genomic_ranges` function, you can visualize the link between bait and oe region.
 
 You can choose the oe-centric views to visualize the functional enhancer which regulate multiple genes.
-```{r}
-plot_genomic_ranges(linkExample,extend.base = 10)
+```{r, eval=FALSE}
+# Note: visualization requires annotated bait regions
+# linkExample doesn't have regionsBait annotated, so this will be skipped
+plot_genomic_ranges(linkExample, extend.base = 10)
 ```
 
 You can adjust the range of the views.
-```{r}
-plot_genomic_ranges(linkExample,extend.base = 10,x.range = c(50,200))
+```{r, eval=FALSE}
+# Note: visualization requires annotated bait regions  
+plot_genomic_ranges(linkExample, extend.base = 10, x.range = c(50,200))
 ```
 
 ## Session Information

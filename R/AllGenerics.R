@@ -102,13 +102,13 @@ setGeneric("withTxDb", function(x, expr, ...) {
 #' # Create example data
 #' gr1 <- GRanges("chr1", IRanges(1:3, width=1))
 #' gr2 <- GRanges("chr1", IRanges(4:6, width=1))
-#' ls <- linkSet(gr1, gr2)
+#' linkset_obj <- linkSet(gr1, gr2)
 #' 
 #' # Create new other end anchors
 #' new_oe <- GRanges("chr1", IRanges(7:9, width=1))
 #' 
 #' # Replace other end anchors
-#' oe(ls) <- new_oe
+#' oe(linkset_obj) <- new_oe
 #' @export
 setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
 
@@ -124,13 +124,13 @@ setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
 #' # Create example data
 #' gr1 <- GRanges("chr1", IRanges(1:3, width=1))
 #' gr2 <- GRanges("chr1", IRanges(4:6, width=1))
-#' ls <- linkSet(gr1, gr2)
+#' linkset_obj <- linkSet(gr1, gr2)
 #' 
 #' # Create new bait regions
 #' new_bait <- GRanges("chr1", IRanges(7:9, width=1))
 #' 
 #' # Replace bait regions
-#' regionsBait(ls) <- new_bait
+#' regionsBait(linkset_obj) <- new_bait
 #' @export
 setGeneric("regionsBait<-", function(x, value) standardGeneric("regionsBait<-"))
 
@@ -159,8 +159,8 @@ setGeneric("linkSet", function(anchor1, anchor2, specificCol, ...) standardGener
 #' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
 #'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
 #'                strand = "+")
-#' ls <- linkSet(gr1, gr2, specificCol = "symbol")
-#' showLinkSet(ls)
+#' linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
+#' showLinkSet(linkset_obj)
 #' @export
 setGeneric("showLinkSet", function(object, margin="", print.seqinfo=FALSE, print.classinfo=FALSE, baitRegion=FALSE,...) standardGeneric("showLinkSet"))
 
@@ -335,8 +335,8 @@ setGeneric("countInteractibility", function(x, baitRegions = TRUE) standardGener
 #' @return A reduced linkSet object with the same length as the input
 #' @examples
 #' data(linkExample)
-#' reduced_ls <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
-#' reduced_ls
+#' reduced_linkset <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
+#' reduced_linkset
 #' @export
 setGeneric("reduceRegions", function(x, region = "both", countInteractions = TRUE, ...) {
   standardGeneric("reduceRegions")

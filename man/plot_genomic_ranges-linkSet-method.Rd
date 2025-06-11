@@ -12,7 +12,7 @@
   x.range = NULL,
   score.col = "count",
   show.rect = TRUE,
-  extend.base = 1e+06,
+  extend.base = 10000,
   ...,
   bait_col = "red",
   oe_col = "DeepSkyBlue3",
@@ -44,7 +44,7 @@
 
 \item{show.rect}{Logical value, whether to show the rectangle. Default: TRUE.}
 
-\item{extend.base}{A numeric value specifying the extension base. Default: 1000000.}
+\item{extend.base}{A numeric value specifying the extension base. Default: 10000.}
 
 \item{...}{Additional arguments.}
 

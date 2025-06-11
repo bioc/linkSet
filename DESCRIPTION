@@ -1,9 +1,11 @@
 Package: linkSet
 Title: Base Classes for Storing Genomic Link Data
-Version: 0.99.8
+Version: 0.99.9
 Authors@R: 
     c(person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467")))
+Author: Gilbert Han [aut, cre] (<https://orcid.org/0009-0000-0293-2467>)
+Maintainer: Gilbert Han <GilbertHan1011@gmail.com>
 Description: Provides a comprehensive framework for representing, analyzing, 
     and visualizing genomic interactions, particularly focusing on gene-enhancer
     relationships. The package extends the GenomicRanges infrastructure to handle

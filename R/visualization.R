@@ -50,11 +50,16 @@ setMethod("geom_linkset", "linkSet", function(linkSet,
 
 #' @export
 ggplot_add.interSet <- function(object, plot, object_name) {
-  # get plot data
+  # get plot data (handle cases where plot may not have layers)
+  track.data <- NULL
   if ("patchwork" %in% class(plot)) {
-    track.data <- plot[[1]]$layers[[1]]$data
+    if (length(plot) > 0 && length(plot[[1]]$layers) > 0) {
+      track.data <- plot[[1]]$layers[[1]]$data
+    }
   } else {
-    track.data <- plot$layers[[1]]$data
+    if (length(plot$layers) > 0) {
+      track.data <- plot$layers[[1]]$data
+    }
   }
 
   # get parameters
@@ -389,6 +394,16 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
   
   # Extract bait and OE regions
   bait_regions <- regionsBait(linkset)
+  if (is.null(bait_regions)) {
+    warning("No bait regions found. Creating mock bait regions from unique bait names.")
+    unique_baits <- unique(bait(linkset))
+    bait_regions <- GRanges(
+      seqnames = "chr1",
+      ranges = IRanges(start = seq_along(unique_baits) * 1000, width = 1000),
+      names = unique_baits
+    )
+    names(bait_regions) <- unique_baits
+  }
   bait_ids <- seq_along(bait_regions)
   
   # If showBait or showOE are provided, filter the linkSet
@@ -414,8 +429,8 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
   # Function to create range plot
   create_range_plot <- function(gr, x.range = NULL, region_color, title = NULL) {
     # Calculate mid point of each range
-    start_pos <- start(gr)
-    end_pos <- end(gr)
+    start_pos <- GenomicRanges::start(gr)
+    end_pos <- GenomicRanges::end(gr)
     mid_pos <- (start_pos + end_pos) / 2
     
     # Determine x-axis range
@@ -429,10 +444,10 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
     
     # Create data frame for plotting
     plot_data <- data.frame(
-      chromosome = as.character(seqnames(gr)),
+      chromosome = as.character(GenomicRanges::seqnames(gr)),
       start = start_pos,
       end = end_pos,
-      name = names(gr)
+      name = if (is.null(names(gr))) paste0("region_", seq_along(gr)) else names(gr)
     )
     
     # Check if there's only one chromosome
@@ -442,11 +457,12 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       plot_data <- plot_data[plot_data$chromosome == unique_chromosomes[1], ]
     }
     
-    # Create ggplot
-    p <- ggplot(plot_data, aes_string(x = "start", xend = "end", y = 0, yend = 0)) +
+    # Create ggplot  
+    p <- ggplot(plot_data, aes_string(xmin = "start", xmax = "end", ymin = -0.1, ymax = 0.1)) +
       geomRange(color = region_color, size = 3) +
       scale_x_continuous(limits = c(min_pos, max_pos), 
-                         labels = function(x) paste0(x / 1000, "kb")) +
+                         labels = function(x) paste0(x / 1000, "kb"),
+                         expand = ggplot2::expansion(mult = 0.01)) +
       themeRange(x.range = c(min_pos, max_pos), show.rect = TRUE) +
       labs(title = title, x = "Position", y = "")
     
@@ -475,13 +491,54 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
   }
   
   # Get interaction data
-  anchor1_pos <- start(bait_regions[anchor1(linkset_subset)]) + 
-                  (end(bait_regions[anchor1(linkset_subset)]) - 
-                     start(bait_regions[anchor1(linkset_subset)])) / 2
+  if (length(linkset_subset) == 0) {
+    warning("No interactions to plot")
+    return(NULL)
+  }
   
-  anchor2_pos <- start(regions(linkset_subset)[anchor2(linkset_subset)]) + 
-                  (end(regions(linkset_subset)[anchor2(linkset_subset)]) - 
-                     start(regions(linkset_subset)[anchor2(linkset_subset)])) / 2
+  # Check if anchor indices are valid
+  anchor1_indices <- anchor1(linkset_subset)
+  anchor2_indices <- anchor2(linkset_subset)
+  
+  # For mock bait regions, map bait names to indices
+  if (is.null(regionsBait(linkset))) {
+    bait_names <- bait(linkset_subset)
+    anchor1_indices <- match(bait_names, names(bait_regions))
+    if (any(is.na(anchor1_indices))) {
+      warning("Some bait names not found in bait regions")
+      anchor1_indices[is.na(anchor1_indices)] <- 1
+    }
+  }
+  
+  # Validate anchor1_indices are within bounds
+  valid_anchor1 <- anchor1_indices >= 1 & anchor1_indices <= length(bait_regions)
+  if (!all(valid_anchor1)) {
+    warning("Some anchor1 indices are out of bounds, using first bait region as fallback")
+    anchor1_indices[!valid_anchor1] <- 1
+  }
+  
+  # Validate anchor2_indices are within bounds
+  valid_anchor2 <- anchor2_indices >= 1 & anchor2_indices <= length(regions(linkset_subset))
+  if (!all(valid_anchor2)) {
+    warning("Some anchor2 indices are out of bounds, filtering them out")
+    # Keep only valid interactions
+    valid_interactions <- valid_anchor1 & valid_anchor2
+    if (sum(valid_interactions) == 0) {
+      warning("No valid interactions found")
+      return(NULL)
+    }
+    anchor1_indices <- anchor1_indices[valid_interactions]
+    anchor2_indices <- anchor2_indices[valid_interactions]
+    linkset_subset <- linkset_subset[valid_interactions]
+  }
+  
+  anchor1_pos <- GenomicRanges::start(bait_regions[anchor1_indices]) + 
+                  (GenomicRanges::end(bait_regions[anchor1_indices]) - 
+                     GenomicRanges::start(bait_regions[anchor1_indices])) / 2
+  
+  anchor2_pos <- GenomicRanges::start(regions(linkset_subset)[anchor2_indices]) + 
+                  (GenomicRanges::end(regions(linkset_subset)[anchor2_indices]) - 
+                     GenomicRanges::start(regions(linkset_subset)[anchor2_indices])) / 2
   
   # Create link data frame
   link_data <- data.frame(
@@ -616,10 +673,6 @@ themeLinkset <- function(x.range, margin.len, show.rect) {
       axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 5)),
       axis.ticks.y = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(t = margin.len, r = margin.len, b = margin.len, l = margin.len)
-    ) +
-    ggplot2::scale_x_continuous(
-      limits = x.range,
-      expand = ggplot2::expansion(mult = 0.01)
     )
   
   return(theme)
@@ -644,10 +697,6 @@ themeRange <- function(x.range, show.rect) {
       axis.line.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 5)),
       axis.ticks.y = ggplot2::element_blank()
-    ) +
-    ggplot2::scale_x_continuous(
-      limits = x.range,
-      expand = ggplot2::expansion(mult = 0.01)
     )
   
   return(theme)

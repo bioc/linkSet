@@ -55,14 +55,14 @@ library(InteractionSet)
 gi <- GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), 
                     regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
                                      ranges = IRanges(start = c(100, 200, 300, 400), width = 50)))
-ls <- Convert(gi)
-ls
+linkset_obj <- Convert(gi)
+linkset_obj
 
 df <- data.frame(
   gene = c("gene1", "gene2"),
   peak = c("chr1:1000-2000", "chr2:1500-2500"),
   score = c(5.5, 6.0)
 )
-ls <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
-ls
+linkset_obj <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
+linkset_obj
 }

@@ -24,11 +24,11 @@ Set Bait Regions for linkSet Object
 # Create example data
 gr1 <- GRanges("chr1", IRanges(1:3, width=1))
 gr2 <- GRanges("chr1", IRanges(4:6, width=1))
-ls <- linkSet(gr1, gr2)
+linkset_obj <- linkSet(gr1, gr2)
 
 # Create new bait regions
 new_bait <- GRanges("chr1", IRanges(7:9, width=1))
 
 # Replace bait regions
-regionsBait(ls) <- new_bait
+regionsBait(linkset_obj) <- new_bait
 }
