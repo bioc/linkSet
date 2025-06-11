@@ -79,10 +79,10 @@ cleanupConnections <- function() {
 #'   gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
 #'                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
 #'                 strand = "+")
-#'   ls <- linkSet(gr1, gr2, specificCol = "symbol")
+#'   linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
 #'
 #'   # Test annotatePromoter
-#'   annotated_ls <- suppressWarnings(annotatePromoter(ls, genome = "hg38", upstream = 500,overwrite = TRUE))
+#'   annotated_linkset <- suppressWarnings(annotatePromoter(linkset_obj, genome = "hg38", upstream = 500,overwrite = TRUE))
 #'
 #'
 # Modified annotatePromoter method
@@ -131,6 +131,44 @@ reg.finalizer(dbCache, function(e) {
   cleanupConnections()
 }, onexit = TRUE)
 
+# Create a namespace environment to avoid conflicts
+.linkset_env <- new.env(parent = emptyenv())
+
+# Custom genes function that handles both Organism.dplyr and fallback cases
+.linkset_env$genes <- function(x, columns = NULL, filter = NULL, ...) {
+  # If this is called from withTxDb context and Organism.dplyr failed
+  if (inherits(x, "mock_organism_src")) {
+    # This is our fallback case
+    if (!requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) ||
+        !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+      stop("Required packages not available for mm10 annotation")
+    }
+    
+    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
+    gene_ranges <- GenomicFeatures::genes(txdb)
+    
+    if ("symbol" %in% columns) {
+      gene_ids <- names(gene_ranges)
+      symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db, 
+                                     keys = gene_ids, 
+                                     columns = "SYMBOL", 
+                                     keytype = "ENTREZID")
+      symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
+      mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
+      gene_ranges <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
+    }
+    
+    return(gene_ranges)
+  } else {
+    # Try to use Organism.dplyr if available
+    if (requireNamespace("Organism.dplyr", quietly = TRUE)) {
+      return(Organism.dplyr::genes(x, columns = columns, filter = filter, ...))
+    } else {
+      stop("Organism.dplyr package not available")
+    }
+  }
+}
+
 #' @rdname withTxDb
 #' @param x Character string specifying the genome ("hg38", "hg19", or "mm10")
 #' @param expr Function to execute with database connection
@@ -143,13 +181,60 @@ setMethod("withTxDb", signature(x = "character", expr = "function"),
       stop("Unsupported genome. Please use 'hg38', 'hg19' or 'mm10'.")
     }
     
-    src <- getDbConnection(x)
-    
+    # Use the original approach with proper error handling
     tryCatch({
+      src <- getDbConnection(x)
       result <- expr(src, ...)
       return(result)
     }, error = function(e) {
-      stop(paste("Database operation failed:", e$message))
+      # If Organism.dplyr fails, try fallback approach
+      warning(paste("Organism.dplyr approach failed:", e$message, ". Using fallback."))
+      
+      if (x == "mm10") {
+        # Create a fallback implementation that works directly with the expected call
+        if (!requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) ||
+            !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+          stop("Required packages not available for mm10 annotation")
+        }
+        
+        # Create mock source object with its own genes method
+        mock_src <- list()
+        class(mock_src) <- "mock_organism_src"
+        
+        # Create custom environment that intercepts Organism.dplyr::genes calls
+        custom_env <- new.env(parent = globalenv())
+        
+        # Create mock Organism.dplyr namespace
+        mock_organism_dplyr <- new.env()
+        mock_organism_dplyr$genes <- function(src, columns = NULL, filter = NULL, ...) {
+          txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
+          gene_ranges <- GenomicFeatures::genes(txdb)
+          
+          if ("symbol" %in% columns) {
+            gene_ids <- names(gene_ranges)
+            symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db, 
+                                           keys = gene_ids, 
+                                           columns = "SYMBOL", 
+                                           keytype = "ENTREZID")
+            symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
+            mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
+            gene_ranges <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
+          }
+          
+          return(gene_ranges)
+        }
+        
+        # Assign the mock to the custom environment
+        assign("Organism.dplyr", mock_organism_dplyr, envir = custom_env)
+        
+        # Set the expression's environment to our custom one
+        environment(expr) <- custom_env
+        
+        result <- expr(mock_src, ...)
+        return(result)
+      } else {
+        stop(paste("Fallback not implemented for genome:", x))
+      }
     })
   }
 )

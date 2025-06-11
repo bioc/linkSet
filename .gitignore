@@ -9,3 +9,8 @@ docs
 docs/
 pkgdown/
 ..Rcheck/
+/doc/
+/Meta/
+REFACTORING_TASK.md
+linkSet.Rcheck/
+linkSet*.tar.gz

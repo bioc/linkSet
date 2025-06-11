@@ -108,8 +108,8 @@ gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr2"),
               ranges = IRanges(start = c(50, 150, 250), width = 10),
               strand = "+")
 ## construct linkSet
-ls <- linkSet(gr1, gr2, specificCol = "symbol")
-ls
+linkSetExample <- linkSet(gr1, gr2, specificCol = "symbol")
+linkSetExample
 
 
 ```

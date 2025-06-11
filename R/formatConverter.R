@@ -14,8 +14,8 @@
 #' library(InteractionSet)
 #' gi <- GInteractions(anchor1 = c(1, 2), anchor2 = c(3, 4), regions = GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
 #' ranges = IRanges(start = c(100, 200, 300, 400), width = 50)))
-#' ls <- Convert(gi)
-#' ls
+#' linkset_obj <- Convert(gi)
+#' linkset_obj
 #' 
 setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL, ...) {
   anchor1 <- x@anchor1
@@ -34,13 +34,13 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
   } else {
     nameBait <- metadata[[baitCol]]
   }
-  ls <- linkSet(
+  linkset_obj <- linkSet(
     anchor1 = regions[anchor1],
     anchor2 = regions[anchor2],
     specificCol =  nameBait
   )
-  mcols(ls) <- metadata
-  return(ls)
+  mcols(linkset_obj) <- metadata
+  return(linkset_obj)
 })
 
 #' Convert string intervals to GRanges
@@ -83,8 +83,8 @@ convertToGrange <- function(intervals) {
 #'   peak = c("chr1:1000-2000", "chr2:1500-2500"),
 #'   score = c(5.5, 6.0)
 #' )
-#' ls <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
-#' ls
+#' linkset_obj <- Convert(df, source = "data.frame", baitCol = "gene", oeCol = "peak")
+#' linkset_obj
 setMethod("Convert", signature(x = "data.frame"), function(x, source = "data.frame", baitCol = "gene", oeCol = "peak", ...) {
   if (source == "chicane") {
     required_cols <- c("target.id", "bait.id", "bait.chr", "bait.start", "bait.end", "target.chr", "target.start", "target.end")
@@ -112,7 +112,7 @@ setMethod("Convert", signature(x = "data.frame"), function(x, source = "data.fra
     )
 
     # Create linkSet object
-    ls <- linkSet(
+    linkset_obj <- linkSet(
       anchor1 = bait_gr,
       anchor2 = oe_gr,
       specificCol = x[["bait.id"]]
@@ -121,9 +121,9 @@ setMethod("Convert", signature(x = "data.frame"), function(x, source = "data.fra
     # Add metadata
     metadata_cols <- setdiff(colnames(x), c("bait.chr", "bait.start", "bait.end", "target.chr", "target.start", "target.end"))
     if (length(metadata_cols) > 0) {
-      mcols(ls) <- x[, metadata_cols, drop = FALSE]
+      mcols(linkset_obj) <- x[, metadata_cols, drop = FALSE]
     }
-    return(ls)
+    return(linkset_obj)
   }
   # Implementation for data.frame conversion
   # This is a placeholder and needs to be implemented based on your data.frame structure
@@ -136,12 +136,12 @@ setMethod("Convert", signature(x = "data.frame"), function(x, source = "data.fra
     oe <- x[[oeCol]]
     oeGrange <- convertToGrange(oe)
     metadata <- x[ , !(colnames(x) %in% c(baitCol, oeCol)), drop = FALSE]
-    ls <- linkSet(
+    linkset_obj <- linkSet(
       anchor1 = bait,
       anchor2 = oeGrange
     )
-    mcols(ls) <- metadata
-    return(ls)
+    mcols(linkset_obj) <- metadata
+    return(linkset_obj)
   }
 })
 
@@ -174,16 +174,16 @@ setMethod("Convert", signature(x = "Pairs"), function(x,baitCol = NULL, ...) {
     nameBait <- metadata[[baitCol]]
   }
   # Create linkSet object
-  ls <- linkSet(
+  linkset_obj <- linkSet(
     anchor1 = anchor1,
     anchor2 = anchor2,
     specificCol = nameBait
   )
   
   # Add metadata to linkSet
-  mcols(ls) <- metadata
+  mcols(linkset_obj) <- metadata
   
-  return(ls)
+  return(linkset_obj)
 })
 
 #' Default conversion method
@@ -225,16 +225,16 @@ setMethod("Convert", signature(x = "ANY"), function(x, baitCol = NULL, ...) {
     }
 
     # Create linkSet object
-    ls <- linkSet(
+    linkset_obj <- linkSet(
       anchor1 = anchor1,
       anchor2 = anchor2,
       specificCol = nameBait
     )
     
     # Add metadata to linkSet
-    mcols(ls) <- metadata
+    mcols(linkset_obj) <- metadata
     
-    return(ls)
+    return(linkset_obj)
   } else if (inherits(x, "chicagoData")) {
     .exportToLinkSet(x, ...)
   }

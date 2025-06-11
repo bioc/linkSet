@@ -408,7 +408,7 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
     stop("Bait regions are not available. Please annotate bait first.")
   }
   if (is.character(subset)) {
-    subset <- .convert_to_grange(subset)
+    subset <- convertToGrange(subset)
   }
   overlaps <- findOverlaps(bait_regions, subset)
   idx <- S4Vectors::queryHits(overlaps)
@@ -430,7 +430,7 @@ setMethod("subsetBaitRegion", "linkSet", function(x, subset) {
 setMethod("subsetOE", "linkSet", function(x, subset) {
   oe_regions <- oe(x)
   if (is.character(subset)) {
-    subset <- .convert_to_grange(subset)
+    subset <- convertToGrange(subset)
   }
   overlaps <- findOverlaps(oe_regions, subset)
   idx <- S4Vectors::queryHits(overlaps)

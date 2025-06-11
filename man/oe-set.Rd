@@ -24,11 +24,11 @@ Set Other End Anchors for linkSet Object
 # Create example data
 gr1 <- GRanges("chr1", IRanges(1:3, width=1))
 gr2 <- GRanges("chr1", IRanges(4:6, width=1))
-ls <- linkSet(gr1, gr2)
+linkset_obj <- linkSet(gr1, gr2)
 
 # Create new other end anchors
 new_oe <- GRanges("chr1", IRanges(7:9, width=1))
 
 # Replace other end anchors
-oe(ls) <- new_oe
+oe(linkset_obj) <- new_oe
 }

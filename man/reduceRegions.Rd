@@ -30,6 +30,6 @@ Reduce a linkSet Object
 }
 \examples{
 data(linkExample)
-reduced_ls <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
-reduced_ls
+reduced_linkset <- reduceRegions(linkExample, region = "both", countInteractions = TRUE)
+reduced_linkset
 }
