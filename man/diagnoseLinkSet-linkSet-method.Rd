@@ -13,11 +13,6 @@
 \description{
 Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
 }
-\value{
-A ggplot object containing two plots: 
-1) A barplot showing the distribution of inter/intra chromosomal interactions 
-2) A histogram showing the distance distribution of interactions
-}
 \examples{
 data(linkExample)
 diagnoseLinkSet(linkExample)

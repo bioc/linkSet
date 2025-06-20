@@ -115,7 +115,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     warning("There are no valid links in the given region!")
     return(NULL)
   }
-  rownames(link.point.df) <- 1:nrow(link.point.df)
+  rownames(link.point.df) <- seq_len(nrow(link.point.df))
   # check dataframe
   if (nrow(link.point.df) < 1) {
     warning("There are no valid links in the given region!")
@@ -664,7 +664,7 @@ extractDataFromLinkset <- function(linkset) {
   all_data <- rbind(regions_data, bait_regions_data)
   
   # Add unique identifiers
-  all_data$id <- 1:nrow(all_data)
+  all_data$id <- seq_len(nrow(all_data))
   
   return(all_data)
 }
@@ -779,7 +779,7 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
       this <- subsetOE(this, expandGr)
     }
     if (length(this) == 0) {
-      warning(paste0("No interactions found for bait ", bait))
+      warning("No interactions found for bait ", bait)
       next
     }
 

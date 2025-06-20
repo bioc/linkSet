@@ -148,12 +148,12 @@ verifyLinkSet <- function(linkSet) {
 		print("Not found column 'bait.id', adding bait name as default.")
 	}
 	if (!"bait.to.bait" %in% colnames(mcols(linkSet))) {
-		mcols(linkSet)$bait.to.bait = FALSE
+		mcols(linkSet)$bait.to.bait <- FALSE
 		print("Not found column 'bait.to.bait' Set 'FALSE' as default.")
 	}
 	if (any(is.na(linkSet$bait.id))){
 		print("Found NA in 'bait.id',Filtering...")
-		linkSet = linkSet[!is.na(linkSet$bait.id)]
+		linkSet <- linkSet[!is.na(linkSet$bait.id)]
 	}
 	return(linkSet)
 }

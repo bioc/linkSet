@@ -77,30 +77,3 @@ Creates a visualization of genomic links for a linkSet object
 \details{
 Add Genome Links to Coverage Plot
 }
-\examples{
-\dontrun{
-# Load example data
-library(GenomicRanges)
-data(linkExample)
-
-# Create a basic plot with genomic links
-library(ggplot2)
-# Create a simple coverage plot first
-df <- data.frame(
-  x = c(100, 150, 200),
-  y = c(10, 20, 15)
-)
-
-p <- ggplot(df, aes(x = x, y = y)) +
-     geom_line() +
-     theme_minimal()
-
-# Add the genomic links layer
-p <- p + geom_linkset(linkExample, 
-                     score.col = "count", 
-                     link_plot_on_top = TRUE,
-                     extend.base = 500)
-# The plot can be displayed with:
-# print(p)
-}
-}

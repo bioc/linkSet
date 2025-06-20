@@ -1,6 +1,6 @@
 Package: linkSet
 Title: Base Classes for Storing Genomic Link Data
-Version: 0.99.10
+Version: 0.99.11
 Authors@R: 
     c(person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467")))
@@ -22,7 +22,7 @@ RoxygenNote: 7.3.2
 Depends: 
     GenomicRanges,
     S4Vectors,
-    R (>= 4.2.0)
+    R (>= 4.5.0)
 Imports: 
     methods,
     IRanges,

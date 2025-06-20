@@ -7,14 +7,13 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-The goal of linkSet is to provide tools for working with gene-enhancer interactions, which is commonly seen in HiC, PC-HiC, and single-cell ATAC-seq data analysis.
+Provides a comprehensive framework for representing, analyzing, and visualizing genomic interactions, particularly focusing on gene-enhancer relationships. The package extends the GenomicRanges infrastructure to handle paired genomic regions with specialized methods for chromatin interaction data from Hi-C, Promoter Capture Hi-C (PCHi-C), and single-cell ATAC-seq experiments. Key features include conversion from common interaction formats, annotation of promoters and enhancers, distance-based analyses, interaction strength metrics, statistical modeling using CHiCANE methodology, and tailored visualization tools. The package aims to standardize the representation of genomic interaction data while providing domain-specific functions not available in general genomic interaction packages.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/GilbertHan1011/linkSet}
   \item \url{https://gilberthan1011.github.io/linkSet}
-  \item \url{https://gilberthan1011.github.io/linkSet/}
   \item Report bugs at \url{https://github.com/GilbertHan1011/linkSet/issues/new}
 }
 

@@ -52,7 +52,7 @@ cleanupConnections <- function() {
       tryCatch({
         DBI::dbDisconnect(src$con)
       }, error = function(e) {
-        warning(paste("Failed to disconnect from database:", e$message))
+        warning("Failed to disconnect from database: ", e$message)
       })
     }
   }
@@ -121,7 +121,7 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
     regionsBait(x) <- gr
     return(x)
   }, error = function(e) {
-    warning(paste("An error occurred:", e$message))
+    warning("An error occurred: ", e$message)
     return(x)
   })
 })
@@ -188,7 +188,7 @@ setMethod("withTxDb", signature(x = "character", expr = "function"),
       return(result)
     }, error = function(e) {
       # If Organism.dplyr fails, try fallback approach
-      warning(paste("Organism.dplyr approach failed:", e$message, ". Using fallback."))
+      warning("Organism.dplyr approach failed: ", e$message, ". Using fallback.")
       
       if (x == "mm10") {
         # Create a fallback implementation that works directly with the expected call

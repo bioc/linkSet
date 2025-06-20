@@ -11,7 +11,7 @@
 \alias{modelRowsSanityCheck}
 \alias{isGlmNbMaxiterWarning}
 \alias{isGlmNbThetaWarning}
-\title{verifyLinkSet}
+\title{verify.linkSet}
 \usage{
 verifyLinkSet(linkSet)
 

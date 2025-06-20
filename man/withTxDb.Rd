@@ -26,7 +26,7 @@ Executes a database operation while managing the connection lifecycle automatica
 Execute Database Operation with Automatic Connection Management
 }
 \examples{
-\donttest{
+\dontrun{
 requireNamespace("TxDb.Hsapiens.UCSC.hg38.knownGene")
 requireNamespace("org.Hs.eg.db")
 result <- withTxDb("hg38", function(src) {

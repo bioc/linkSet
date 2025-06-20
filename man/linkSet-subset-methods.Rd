@@ -39,11 +39,9 @@ data(linkExample)
 subset_bait_names <- c("bait1", "bait2")
 subsetted_linkSet <- subsetBait(linkExample, subset_bait_names)
 data(linkExample)
-subset_bait_regions <- GRanges(seqnames = "chr1", 
-                              ranges = IRanges(start = c(100, 200), end = c(150, 250)))
+subset_bait_regions <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(100, 200), end = c(150, 250)))
 subsetted_linkSet <- subsetBaitRegion(linkExample, subset_bait_regions)
 data(linkExample)
-subset_oe_regions <- GRanges(seqnames = "chr1", 
-                            ranges = IRanges(start = c(300, 400), end = c(350, 450)))
+subset_oe_regions <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(300, 400), end = c(350, 450)))
 subsetted_linkSet <- subsetOE(linkExample, subset_oe_regions)
 }

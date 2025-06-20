@@ -8,7 +8,8 @@
   for demonstrating genomic interaction analysis workflows.
 }
 \usage{
-data(Embryo_body)
+# Access the file path with:
+system.file("extdata", "Embryo_body.bed", package = "linkSet")
 }
 \format{
   A BED format file with the following columns:
@@ -28,10 +29,16 @@ data(Embryo_body)
   The original data were processed to create this example dataset for demonstration purposes.
 }
 \examples{
-  # Load the dataset
-  data(Embryo_body)
+  # Get the file path
+  file_path <- system.file("extdata", "Embryo_body.bed", package = "linkSet")
   
-  # View the first few rows
-  head(Embryo_body)
+  # Read the file
+  if (file.exists(file_path)) {
+    embryo_data <- read.table(file_path, 
+                             header = FALSE, 
+                             sep = "\t",
+                             stringsAsFactors = FALSE)
+    head(embryo_data)
+  }
 }
 \keyword{datasets}

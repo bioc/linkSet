@@ -284,12 +284,25 @@ setMethod("baitGInteractions", signature(x = "GInteractions", geneGr = "GRanges"
   if (length(geneSymbol) != 1 & length(geneSymbol) != length(geneGr)) {
     warning("geneSymbol must be a column name in mcols(geneGr) or a vector of the same length as geneGr, 
     using range to represent gene instead.")
-    geneSymbol = NULL
+    geneSymbol <- NULL
   } else if (length(geneSymbol) == length(geneGr)) {
     geneSymbol <- geneSymbol
   } else if (!geneSymbol %in% colnames(mcols(geneGr))){
     warning("geneSymbol not found in geneGr, using range to represent gene instead.")
-    geneSymbol = NULL
+    geneSymbol <- NULL
+  } else {
+    geneSymbol <- mcols(geneGr)[[geneSymbol]]
+  }
+
+  if (is.null(geneSymbol)) {
+    warning("geneSymbol must be a column name in mcols(geneGr) or a vector of the same length as geneGr, 
+    using range to represent gene instead.")
+    geneSymbol <- NULL
+  } else if (length(geneSymbol) == length(geneGr)) {
+    geneSymbol <- geneSymbol
+  } else if (!geneSymbol %in% colnames(mcols(geneGr))){
+    warning("geneSymbol not found in geneGr, using range to represent gene instead.")
+    geneSymbol <- NULL
   } else {
     geneSymbol <- mcols(geneGr)[[geneSymbol]]
   }
