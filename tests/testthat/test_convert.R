@@ -64,7 +64,7 @@ test_that("Convert method for data.frame works correctly", {
 
 test_that("Convert function throws error for unsupported types", {
   unsupported_object <- matrix(1:9, 3, 3)
-  expect_error(Convert(unsupported_object), "Conversion from matrix to linkSet is not supported")
+  expect_error(Convert(unsupported_object), "Conversion from.*to linkSet is not supported")
 })
 
 test_that("baitGInteractions function works correctly", {

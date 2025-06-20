@@ -171,6 +171,15 @@ pasteAnchor <- function(x, append) {
 }
 ###############################################################
 # Constructors
+#' Enforce order of anchors
+#' 
+#' @description
+#' Ensure consistent ordering of anchor pairs
+#' 
+#' @param anchor1 First anchor indices
+#' @param anchor2 Second anchor indices
+#' @keywords internal
+#' @return List with ordered anchors
 enforceOrder <- function(anchor1, anchor2) {
     swap <- anchor2 < anchor1
     if (any(swap)) { 

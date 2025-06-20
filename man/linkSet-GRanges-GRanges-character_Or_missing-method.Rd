@@ -18,7 +18,7 @@
 \item{...}{Additional columns to add to the linkSet's elementMetadata}
 }
 \value{
-A linkSet object containing the interaction data
+A linkSet object containing the genomic interactions with metadata from both anchor regions
 }
 \description{
 Create a linkSet object from input data

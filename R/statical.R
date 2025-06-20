@@ -172,6 +172,13 @@ verifyLinkSet <- function(linkSet) {
 #' @import linkSet
 #' @export
 
+#' Filter fragments based on criteria
+#' 
+#' @description
+#' Filter fragments based on size and other criteria
+#' 
+#' @keywords internal
+#' @return Filtered fragments
 filterFragments <- function(
 	linkSet,
 	bait.filters = c(0, 1),
@@ -256,6 +263,13 @@ filterFragments <- function(
 #' @noRd
 #' @rdname chicane
 #' @export
+#' Model try-catch wrapper
+#' 
+#' @description
+#' Wrapper function for model fitting with error handling
+#' 
+#' @keywords internal
+#' @return Model fitting results with error handling
 modelTryCatch <- function(
 	model.formula, 
 	data,
@@ -416,6 +430,13 @@ modelTryCatch <- function(
 #' @return A data.table with fitted model results including expected counts and p-values
 #' @keywords internal
 #' @noRd
+#' Fit statistical model
+#' 
+#' @description
+#' Fit statistical model to interaction data
+#' 
+#' @keywords internal
+#' @return Fitted model results
 fitModel <- function(
 	linkSet, 
 	distance.bins = NULL,
@@ -505,6 +526,13 @@ fitModel <- function(
 #' @importFrom stats logLik
 #' @importFrom rlang .data
 #' @importFrom data.table :=
+#' Run model fitting
+#' 
+#' @description
+#' Execute model fitting process for interaction data
+#' 
+#' @keywords internal
+#' @return Model fitting results
 runModelFitting <- function(
 	interaction.data,
 	distance.bins = NULL, 
@@ -700,6 +728,13 @@ runModelFitting <- function(
 #' @keywords internal
 #' @noRd
 #' @export
+#' Split data by distance
+#' 
+#' @description
+#' Split interaction data into bins based on distance
+#' 
+#' @keywords internal
+#' @return Split data by distance bins
 distanceSplit <- function(
 	interaction.data, 
 	distance.bins = NULL, 
@@ -979,6 +1014,14 @@ smartSplit <- function(dat, bins) {
 #' 
 #' @return Logical indicating if the model can be fit
 #'
+#' Check split data numerical fit
+#' 
+#' @description
+#' Check if split data has valid numerical fit for model fitting
+#' 
+#' @param split.data Split data for model fitting
+#' @keywords internal
+#' @return None, stops with error if data is invalid
 checkSplitDataNumericalFit <- function(split.data) {
 
 	### INPUT TESTS ###########################################################
@@ -1309,7 +1352,14 @@ isGlmNbThetaWarning <- function(w) {
     }
 }
 
-# check if packages are installed for truncated distributions
+#' Check if packages are installed for truncated distributions
+#' 
+#' @description
+#' Check if required packages are available for truncated distributions
+#' 
+#' @param distribution Character string specifying the distribution type
+#' @keywords internal
+#' @return Logical indicating if packages are available, or stops with error
 checkPackages <- function(distribution) {
 	if (distribution == 'poisson' || distribution == 'negative-binomial') {
 		return(TRUE)

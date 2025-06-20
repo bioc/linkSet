@@ -42,7 +42,12 @@ setGeneric("anchor2<-", function(x, value) standardGeneric("anchor2<-"))
 #' @export
 #' @rdname linkSet-accessors
 setGeneric("unchecked_regions<-", function(x, value) standardGeneric("unchecked_regions<-"))
+#' Set unchecked anchor1 
+#' @keywords internal
 setGeneric("unchecked_anchor1<-", function(x, value) standardGeneric("unchecked_anchor1<-"))
+
+#' Set unchecked anchor2
+#' @keywords internal  
 setGeneric("unchecked_anchor2<-", function(x, value) standardGeneric("unchecked_anchor2<-"))
 
 #' @export

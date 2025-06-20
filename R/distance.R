@@ -38,6 +38,18 @@ existDistance <- function(x){
   !is.null(mcols(x)$distance)
   }
 
+#' Get distance output
+#' 
+#' @description
+#' Calculate distance metrics for genomic interactions
+#' 
+#' @param regs Genomic regions
+#' @param ai1 Anchor 1 indices
+#' @param ai2 Anchor 2 indices  
+#' @param type Distance type
+#' @param inter_type Interaction type
+#' @keywords internal
+#' @return Distance calculations
 getDistOutput <- function(regs, ai1, ai2, type, inter_type) {
   type <- match.arg(type, c("mid", "gap", "span"))
   chr <- as.character(seqnames(regs))

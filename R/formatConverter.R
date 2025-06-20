@@ -46,6 +46,14 @@ setMethod("Convert", signature(x = "GInteractions"), function(x, baitCol = NULL,
 #' Convert string intervals to GRanges
 #' @importFrom S4Vectors Rle
 #' @keywords internal
+#' Convert intervals to GRanges
+#' 
+#' @description
+#' Convert various interval formats to GRanges objects
+#' 
+#' @param intervals Interval data to convert
+#' @keywords internal  
+#' @return GRanges object
 convertToGrange <- function(intervals) {
   # convert "chr1.816066.816566" or "chr1:816066-816566" to grange format
   parts <- strsplit(intervals, "[.:\\-]")
@@ -236,10 +244,10 @@ setMethod("Convert", signature(x = "ANY"), function(x, baitCol = NULL, ...) {
     
     return(linkset_obj)
   } else if (inherits(x, "chicagoData")) {
-    .exportToLinkSet(x, ...)
+    exportToLinkSet(x, ...)
   }
    else {
-    stop(paste("Conversion from", class(x), "to linkSet is not supported"))
+    stop("Conversion from ", class(x), " to linkSet is not supported")
   }
 })
 
@@ -365,7 +373,7 @@ readvalidPairs <- function(file, njobs = 1, format = "validPairs") {
     
     # Rename columns based on position
     if(ncol(dt) >= length(base_cols)) {
-      setnames(dt, 1:length(base_cols), base_cols)
+      setnames(dt, seq_len(length(base_cols)), base_cols)
     } else {
       stop("File has fewer columns than expected minimum")
     }
@@ -480,7 +488,7 @@ readNPBfile = function(s){
   
   message("Reading NPerBin file...")
   header = readLines(s$nperbinfile, n=1)
-  params = sapply(sapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]]), function(x)x[2])
+  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
   params = params[2:length(params)]
   names(params) = gsub("(\\S+)=.+", "\\1", names(params))
   minsize = as.numeric(params[["minFragLen"]])
@@ -586,7 +594,7 @@ readProxOeFile <- function(s){
   
   message("Reading ProxOE file...")
   header = readLines(s$proxOEfile, n=1)
-  params = sapply(sapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]]), function(x)x[2])
+  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
   params = params[2:length(params)]
   names(params) = gsub("(\\S+)=.+", "\\1", names(params))
   minsize = as.numeric(params[["minFragLen"]])
@@ -620,7 +628,7 @@ readProxOeFile <- function(s){
   #          Amend either setting before running the analysis\n")
   #   }
   proxOE = data.table::fread(s$proxOEfile, skip=1L)
-  data.table::setnames(proxOE, 1:3, c("baitID", "otherEndID", "dist"))
+  data.table::setnames(proxOE, seq_len(3), c("baitID", "otherEndID", "dist"))
   proxOE
   }
 
@@ -744,8 +752,8 @@ setMethod("exportInterBed", "linkSet", function(x, outfile) {
   colnames(gr1) <- paste0("bait_",colnames(gr1))
   gr2 <- as.data.frame(oe(x))
   colnames(gr2) <- paste0("otherEnd",colnames(gr2))
-  gr1 = gr1[,1:3]
-  gr2 = gr2[,1:3]
+  gr1 = gr1[,seq_len(3)]
+  gr2 = gr2[,seq_len(3)]
   gr1Name = bait(x)
   gr2Name = paste0(oe(x))
 
@@ -764,8 +772,8 @@ setMethod("exportWashU", "linkSet", function(x, outfile) {
   colnames(gr1) <- paste0("bait_",colnames(gr1))
   gr2 <- as.data.frame(oe(x))
   colnames(gr2) <- paste0("otherEnd",colnames(gr2))
-  gr1 = gr1[,1:3]
-  gr2 = gr2[,1:3]
+  gr1 = gr1[,seq_len(3)]
+  gr2 = gr2[,seq_len(3)]
   gr1Name = bait(x)
   gr2Name = paste0(oe(x))
 

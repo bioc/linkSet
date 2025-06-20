@@ -233,7 +233,7 @@ setMethod("withTxDb", signature(x = "character", expr = "function"),
         result <- expr(mock_src, ...)
         return(result)
       } else {
-        stop(paste("Fallback not implemented for genome:", x))
+        stop("Fallback not implemented for genome: ", x)
       }
     })
   }

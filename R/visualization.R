@@ -308,6 +308,15 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #' ggplot(df) +
 #'   geomRange(aes(xmin = start, xmax = end, y = gene))
 #'
+#' Geom for plotting genomic ranges
+#' 
+#' @description
+#' Custom ggplot2 geom for plotting genomic ranges
+#' 
+#' @param mapping Aesthetic mappings
+#' @param data Data for plotting
+#' @keywords internal
+#' @return ggplot layer for genomic ranges
 geomRange <- function(mapping = NULL, data = NULL,
                     stat = "identity", position = "identity",
                     ...,
@@ -634,6 +643,14 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
 #' @return A data.frame with extracted data
 #' @keywords internal
 #' @noRd
+#' Extract data from linkSet object
+#' 
+#' @description
+#' Extract data from linkSet object for plotting
+#' 
+#' @param linkset A linkSet object
+#' @keywords internal
+#' @return Extracted data for visualization
 extractDataFromLinkset <- function(linkset) {
   # Extract regions
   regions_data <- as.data.frame(regions(linkset))

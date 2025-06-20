@@ -8,9 +8,8 @@ inst/doc
 docs
 docs/
 pkgdown/
-..Rcheck/
+*.Rcheck/
 /doc/
 /Meta/
 REFACTORING_TASK.md
-linkSet.Rcheck/
 linkSet*.tar.gz
