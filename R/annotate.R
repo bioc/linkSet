@@ -121,7 +121,7 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
     regionsBait(x) <- gr
     return(x)
   }, error = function(e) {
-    warning("An error occurred: ", e$message)
+    warning(e$message)
     return(x)
   })
 })

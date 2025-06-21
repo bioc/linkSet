@@ -67,9 +67,9 @@ run_chicane(linkSet, ...)
 \value{
 A linkSet object with additional columns:
 \itemize{
-\item{expected}{The expected number of reads linking fragments under the fitted model}
-\item{p.value}{P-value for test of observed vs expected read counts}
-\item{q.value}{FDR-corrected p-value}
+\item \code{expected} The expected number of reads linking fragments under the fitted model
+\item \code{p.value} P-value for test of observed vs expected read counts
+\item \code{q.value} FDR-corrected p-value
 }
 }
 \description{

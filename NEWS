@@ -1,0 +1,51 @@
+# linkSet 0.99.12
+
+## Bug Fixes
+- Fixed assignment operators (= to <-) throughout codebase
+- Fixed paste usage in condition signals
+- Removed redundant warning messages
+- Fixed documentation formatting issues
+- Added missing final newlines to files
+- Updated R version dependency to 4.5.0
+
+## Documentation
+- Fixed lost braces in itemize sections
+- Changed \dontrun to \donttest in examples
+- Added missing \value sections to documentation
+- Fixed wide example lines in documentation
+
+## Code Quality
+- Improved code style compliance with Bioconductor standards
+- Fixed indentation and formatting issues
+- Addressed BiocCheck warnings and notes
+
+# linkSet 0.99.11
+
+## Initial submission fixes
+- Fixed DESCRIPTION file conflicts
+- Removed tracked system files from Git
+- Added comprehensive documentation for exported functions
+- Fixed code style violations
+
+# linkSet 0.99.10
+
+## Major Features
+- Complete linkSet class implementation
+- Support for Hi-C, PCHi-C, and single-cell ATAC-seq data
+- Integration with CHiCANE statistical methodology
+- Comprehensive visualization tools
+- Format conversion utilities
+
+## Core Functions
+- linkSet object creation and manipulation
+- Genomic interaction analysis
+- Distance-based filtering and analysis
+- Statistical modeling and significance testing
+- Visualization of genomic interactions
+
+# linkSet 0.99.9
+
+## Initial Development
+- Basic package structure
+- Core class definitions
+- Initial method implementations 

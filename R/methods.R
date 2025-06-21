@@ -325,7 +325,7 @@ setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
                   nameBait <- mcolBind[specificColName]
                   nameBait <- unlist(nameBait)
                 } else{
-                  warning(paste0("Can't find ", specificCol, "in metadata............"))
+                  warning("Can't find ", specificCol, " in metadata............")
                   nameBait <- paste(anchor1)
                 }
               }

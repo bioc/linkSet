@@ -144,7 +144,7 @@ verifyLinkSet <- function(linkSet) {
 		stop(error.message);
 	}
 	if (!"bait.id" %in% colnames(mcols(linkSet))) {
-		mcols(linkSet)$bait.id = bait(linkSet)
+		mcols(linkSet)$bait.id <- bait(linkSet)
 		print("Not found column 'bait.id', adding bait name as default.")
 	}
 	if (!"bait.to.bait" %in% colnames(mcols(linkSet))) {

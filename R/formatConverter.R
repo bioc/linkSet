@@ -479,15 +479,15 @@ setMethod("as.data.frame", "linkSet", function(x) {
 ###############################################################
 ## Hidden "read" functions from chicago package ----------------------
 
-readRmap = function(s){
+readRmap <- function(s){
   fread(s$rmapfile, colClasses = list(character=1))
 }
 
-readBaitmap = function(s){
+readBaitmap <- function(s){
   fread(s$baitmapfile, colClasses = list(character=1))
 }
 
-readNPBfile = function(s){
+readNPBfile <- function(s){
   
   # Reads a pre-made text file containing the numbers of fragments per bait per distance bin 
   # within the interval maxl, given binsize.
@@ -500,23 +500,23 @@ readNPBfile = function(s){
   # s is the current chicagoData object's settings list
   
   message("Reading NPerBin file...")
-  header = readLines(s$nperbinfile, n=1)
-  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
-  params = params[2:length(params)]
-  names(params) = gsub("(\\S+)=.+", "\\1", names(params))
-  minsize = as.numeric(params[["minFragLen"]])
+  header <- readLines(s$nperbinfile, n=1)
+  params <- vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
+  params <- params[2:length(params)]
+  names(params) <- gsub("(\\S+)=.+", "\\1", names(params))
+  minsize <- as.numeric(params[["minFragLen"]])
   if (minsize != s$minFragLen){
     stop("The minFragLen in the NPerBin file header is not equal to minFragLen defined in experiment settings. Amend either setting (and if needed, generate a new NPerBin file) before running the analysis\n")
   }
-  maxsize = as.numeric(params[["maxFragLen"]])
+  maxsize <- as.numeric(params[["maxFragLen"]])
   if (maxsize != s$maxFragLen){
     stop("The maxFragLen in the NPerBin file header is not equal to maxFragLen defined in experiment settings. Amend either setting (and if needed, generate a new NPerBin file) before running the analysis\n")
   }
-  maxl = as.numeric(params[["maxLBrownEst"]])
+  maxl <- as.numeric(params[["maxLBrownEst"]])
   if (maxl != s$maxLBrownEst){
     stop("The maxLBrownEst in the NPerBin file header is not equal to maxLBrownEst defined in experiment settings. Amend either setting (and if needed, generate a new NPerBin file) before running the analysis\n")
   }
-  binsz = as.numeric(params[["binsize"]]) 
+  binsz <- as.numeric(params[["binsize"]]) 
   if (binsz != s$binsize){
     stop("The binsize in the NPerBin file header is not equal to binsize defined in experiment settings. Amend either setting (and if needed, generate a new NPerBin file) before running the analysis\n")
   }  
@@ -536,7 +536,7 @@ readNPBfile = function(s){
 #          Amend either setting before running the analysis\n")
 #   }
 
-  npb = data.table::fread(s$nperbinfile, skip=1L)
+  npb <- data.table::fread(s$nperbinfile, skip=1L)
   setnames(npb, names(npb)[1], "baitID")
   for(i in 2:ncol(npb)){
     setnames(npb, names(npb)[i], paste0("bin", i-1))    
@@ -544,7 +544,7 @@ readNPBfile = function(s){
   npb
 }
 
-readNbaitsPBfile = function(s){
+readNbaitsPBfile <- function(s){
   
   # Reads a pre-made text file containing the numbers of baits per other end per distance bin 
   # within the interval maxl, given binsize.
@@ -554,18 +554,18 @@ readNbaitsPBfile = function(s){
   # s is the current chicagoData object's settings list
   
   message("Reading NBaitsPerBin file...")
-  header = readLines(s$nbaitsperbinfile, n=1)
-  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
-  params = params[2:length(params)]
-  names(params) = gsub("(\\S+)=.+", "\\1", names(params))
+  header <- readLines(s$nbaitsperbinfile, n=1)
+  params <- vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
+  params <- params[2:length(params)]
+  names(params) <- gsub("(\\S+)=.+", "\\1", names(params))
 
-  maxl = as.numeric(params[["maxLBrownEst"]])
+  maxl <- as.numeric(params[["maxLBrownEst"]])
   if (maxl != s$maxLBrownEst){
     stop("The maxLBrownEst in the NBaitsPerBin file header is not equal to maxLBrownEst defined in experiment settings. Amend either setting (and if needed, generate a new NBaitsPerBin file) before running the analysis\n")
   }
 
   # Currently binsize is called bin, but should correct this
-  binsz = as.numeric(params[["binsize"]]) 
+  binsz <- as.numeric(params[["binsize"]]) 
   if (binsz != s$binsize){
     stop("The binsize in the NBaitsPerBin file header is not equal to binsize defined in experiment settings. Amend either setting (and if needed, generate a new NBaitsPerBin file) before running the analysis\n")
   }  
@@ -589,7 +589,7 @@ readNbaitsPBfile = function(s){
   #          Amend either setting before running the analysis\n")
   #   }
   
-  nbpb = data.table::fread(s$nbaitsperbinfile, skip=1L)
+  nbpb <- data.table::fread(s$nbaitsperbinfile, skip=1L)
   setnames(nbpb, names(nbpb)[1], "otherEndID")
   for(i in 2:ncol(nbpb)){
     setnames(nbpb, names(nbpb)[i], paste0("bin", i-1))    
@@ -606,23 +606,23 @@ readProxOeFile <- function(s){
   # s is the current chicagoData object's settings list
   
   message("Reading ProxOE file...")
-  header = readLines(s$proxOEfile, n=1)
-  params = vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
-  params = params[2:length(params)]
-  names(params) = gsub("(\\S+)=.+", "\\1", names(params))
-  minsize = as.numeric(params[["minFragLen"]])
+  header <- readLines(s$proxOEfile, n=1)
+  params <- vapply(vapply(strsplit(header, "\t")[[1]],function(x)strsplit(x,"=")[[1]], FUN.VALUE = list()), function(x)x[2], FUN.VALUE = "")
+  params <- params[2:length(params)]
+  names(params) <- gsub("(\\S+)=.+", "\\1", names(params))
+  minsize <- as.numeric(params[["minFragLen"]])
   if (minsize != s$minFragLen){
     stop("The minFragLen specified in the ProxOE file header is not equal to minFragLen defined in experiment settings. Amend either parameter setting (and if needed, generate a new ProxOE file) before running the analysis\n")
   }
-  maxsize = as.numeric(params[["maxFragLen"]])
+  maxsize <- as.numeric(params[["maxFragLen"]])
   if (maxsize != s$maxFragLen){
     stop("The maxFragLen specified in the ProxOE file header is not equal to maxFragLen defined in experiment settings. Amend either parameter setting (and if needed, generate a new ProxOE file) before running the analysis\n")
   }
-  maxl = as.numeric(params[["maxLBrownEst"]])
+  maxl <- as.numeric(params[["maxLBrownEst"]])
   if (maxl != s$maxLBrownEst){
     stop("The maxLBrownEst specified in the ProxOE file header is not equal to maxLBrownEst defined in experiment settings. Amend either parameter setting (and if needed, generate a new ProxOE file) before running the analysis\n")
   }
-  binsz = as.numeric(params[["binsize"]]) 
+  binsz <- as.numeric(params[["binsize"]]) 
   if (binsz != s$binsize){
     stop("The binsize specified in the ProxOE file header is not equal to binsize defined in experiment settigs. Amend either parameter setting (and if needed, generate a new ProxOE file) before running the analysis\n")
   }  
@@ -640,7 +640,7 @@ readProxOeFile <- function(s){
   #     stop("Bait files used for generating the ProxOE file and defined here do not match. 
   #          Amend either setting before running the analysis\n")
   #   }
-  proxOE = data.table::fread(s$proxOEfile, skip=1L)
+  proxOE <- data.table::fread(s$proxOEfile, skip=1L)
   data.table::setnames(proxOE, seq_len(3), c("baitID", "otherEndID", "dist"))
   proxOE
   }
@@ -663,14 +663,14 @@ exportToLinkSet <- function(cd, scoreCol="score", cutoff=0, b2bcutoff=NULL,
   }
   
   message("Reading the restriction map file...")
-  rmap = readRmap(cd@settings)
+  rmap <- readRmap(cd@settings)
   data.table::setnames(rmap, "V1", "rChr")
   data.table::setnames(rmap, "V2", "rStart")
   data.table::setnames(rmap, "V3", "rEnd")
   data.table::setnames(rmap, "V4", "otherEndID")
   
   message("Reading the bait map file...")
-  baitmap = readBaitmap(cd@settings)
+  baitmap <- readBaitmap(cd@settings)
   
   data.table::setnames(baitmap, "V1", "baitChr")
   data.table::setnames(baitmap, "V2", "baitStart")
