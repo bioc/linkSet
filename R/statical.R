@@ -167,17 +167,14 @@ verifyLinkSet <- function(linkSet) {
 #'
 #' @return LinkSet object containing fragments that passed all filters
 #' @rdname chicane
-#' @keywords internal
-#' @noRd
-#' @import linkSet
-#' @export
-
 #' Filter fragments based on criteria
 #' 
 #' @description
 #' Filter fragments based on size and other criteria
 #' 
 #' @keywords internal
+#' @noRd
+#' @import linkSet
 #' @return Filtered fragments
 filterFragments <- function(
 	linkSet,
@@ -259,16 +256,14 @@ filterFragments <- function(
 #'  \item{model}{model object. Set to NULL if no model could be fit.}
 #' 	\item{expected.values}{vector of expected values for each element in original data, or vector of NAs if no model could be fit}
 #' 	\item{p.values}{vector of p-values for test of significantly higher response than expected, or vector of NAs if no model could be fit}
-#' @keywords internal
-#' @noRd
-#' @rdname chicane
-#' @export
 #' Model try-catch wrapper
 #' 
 #' @description
 #' Wrapper function for model fitting with error handling
 #' 
 #' @keywords internal
+#' @noRd
+#' @rdname chicane
 #' @return Model fitting results with error handling
 modelTryCatch <- function(
 	model.formula, 
@@ -428,14 +423,13 @@ modelTryCatch <- function(
 #' @param verbose Whether to print progress reports (default: FALSE)
 #' 
 #' @return A data.table with fitted model results including expected counts and p-values
-#' @keywords internal
-#' @noRd
 #' Fit statistical model
 #' 
 #' @description
 #' Fit statistical model to interaction data
 #' 
 #' @keywords internal
+#' @noRd
 #' @return Fitted model results
 fitModel <- function(
 	linkSet, 
@@ -517,6 +511,11 @@ fitModel <- function(
 #' @param bait.to.bait Logical indicating if model should be fit as bait-to-bait
 #' @param adjustment.terms Characted vector of extra terms to adjust for in the model fit
 #'
+#' Run model fitting
+#' 
+#' @description
+#' Execute model fitting process for interaction data
+#' 
 #' @rdname chicane
 #' @noRd
 #' @return Interactions data with expeceted number of interactions and p-values added.
@@ -526,13 +525,6 @@ fitModel <- function(
 #' @importFrom stats logLik
 #' @importFrom rlang .data
 #' @importFrom data.table :=
-#' Run model fitting
-#' 
-#' @description
-#' Execute model fitting process for interaction data
-#' 
-#' @keywords internal
-#' @return Model fitting results
 runModelFitting <- function(
 	interaction.data,
 	distance.bins = NULL, 
@@ -725,15 +717,13 @@ runModelFitting <- function(
 #' @rdname chicane
 #' @return 
 #'	List where each element corresponds to a specified distance bin, and the final one corresponding to trans-interactions (if present)
-#' @keywords internal
-#' @noRd
-#' @export
 #' Split data by distance
 #' 
 #' @description
 #' Split interaction data into bins based on distance
 #' 
 #' @keywords internal
+#' @noRd
 #' @return Split data by distance bins
 distanceSplit <- function(
 	interaction.data, 

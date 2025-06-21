@@ -1,6 +1,6 @@
 Package: linkSet
 Title: Base Classes for Storing Genomic Link Data
-Version: 0.99.11
+Version: 0.99.12
 Authors@R: 
     c(person("Gilbert", "Han", , "GilbertHan1011@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-0293-2467")))
@@ -22,7 +22,7 @@ RoxygenNote: 7.3.2
 Depends: 
     GenomicRanges,
     S4Vectors,
-    R (>= 4.5.0)
+    R (>= 4.2.0)
 Imports: 
     methods,
     IRanges,
@@ -54,7 +54,9 @@ Suggests:
     GenomicFeatures,
     GenomicInteractions,
     gamlss,
-    gamlss.tr
+    gamlss.tr,
+    BiocStyle,
+    rtracklayer
 Collate: class.R AllGenerics.R getset.R
         methods.R annotate.R distance.R formatConverter.R 
         linkSet-package.R GRange_method.R test_helper.R

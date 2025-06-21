@@ -2,7 +2,6 @@
 % Please edit documentation in R/visualization.R
 \name{plotGenomicRanges,linkSet-method}
 \alias{plotGenomicRanges,linkSet-method}
-\alias{plotGenomicRanges}
 \title{Plot genomic ranges for linkSet objects}
 \usage{
 \S4method{plotGenomicRanges}{linkSet}(

@@ -403,6 +403,36 @@ setGeneric("geom_linkset",
     }
 )
 
+#' Plot Genomic Ranges from linkSet Object
+#' 
+#' @title Plot Genomic Ranges
+#' @description Creates a visualization of genomic ranges and interactions from a linkSet object
+#' 
+#' @param linkset A linkSet object
+#' @param showBait Logical indicating whether to show bait regions (default: NULL)
+#' @param showOE Logical indicating whether to show other end regions (default: NULL)
+#' @param x.range Range for x-axis (default: NULL)
+#' @param score.col Column name containing score information (default: "count")
+#' @param show.rect Whether to show rectangle borders (default: TRUE)
+#' @param extend.base Base pair extension range (default: 10000)
+#' @param ... Additional plotting parameters
+#' @param bait_col Color for bait regions (default: "red")
+#' @param oe_col Color for other end regions (default: "DeepSkyBlue3")
+#' @param default_col Default color (default: "grey")
+#' @param vjust Vertical adjustment (default: NULL)
+#' @param linejoin Line join style (default: "mitre")
+#' @param na.rm Whether to remove NA values (default: FALSE)
+#' @param minimal_width Minimal width for plotting (default: 0.01)
+#' @param show.legend Whether to show legend (default: NA)
+#' @param inherit.aes Whether to inherit aesthetics (default: TRUE)
+#' @param link_plot_on_top Whether to plot links on top (default: FALSE)
+#' @param arrow.size Size of arrow heads (default: 0.05)
+#' @param remove_x_axis Whether to remove x-axis (default: FALSE)
+#' @param plot.height Relative height of plot (default: 0.4)
+#' @param plot.space Plot spacing (default: 0.1)
+#' @param log.scale Whether to use log scale (default: TRUE)
+#' 
+#' @return A ggplot object
 #' @export
 setGeneric("plotGenomicRanges", function(linkset, showBait = NULL, showOE = NULL, x.range = NULL,
                                         score.col = "count",

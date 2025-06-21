@@ -174,6 +174,7 @@ reg.finalizer(dbCache, function(e) {
 #' @param expr Function to execute with database connection
 #' @param ... Additional arguments passed to expr
 #' @importFrom methods setMethod
+#' @importFrom stats setNames
 #' @export
 setMethod("withTxDb", signature(x = "character", expr = "function"),
   function(x, expr, ...) {

@@ -292,7 +292,6 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #'   the default plot specification, e.g. [borders()].
 #'
 #' @return A ggplot2 layer that can be added to a plot.
-#' @export
 #' @examples
 #' library(ggplot2)
 #'
@@ -308,15 +307,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #' ggplot(df) +
 #'   geomRange(aes(xmin = start, xmax = end, y = gene))
 #'
-#' Geom for plotting genomic ranges
-#' 
-#' @description
-#' Custom ggplot2 geom for plotting genomic ranges
-#' 
-#' @param mapping Aesthetic mappings
-#' @param data Data for plotting
 #' @keywords internal
-#' @return ggplot layer for genomic ranges
+#' @noRd
 geomRange <- function(mapping = NULL, data = NULL,
                     stat = "identity", position = "identity",
                     ...,
@@ -368,12 +360,12 @@ geomRange <- function(mapping = NULL, data = NULL,
 #' @param log.scale Whether to use log scale for colors
 #'
 #' @return A ggplot object
-#' @importFrom ggplot2 ggplot aes_string geom_curve labs scale_color_gradientn scale_x_continuous scale_y_continuous theme element_text element_blank element_rect expansion margin
+#' @importFrom ggplot2 ggplot aes_string geom_curve labs scale_color_gradientn scale_x_continuous scale_y_continuous theme element_text element_blank element_rect expansion margin theme_void
+#' @importFrom grid arrow unit
 #' @importFrom scales rescale
-#' @importFrom patchwork wrap_plots
+#' @importFrom patchwork wrap_plots plot_layout
 #' @export
 #' @aliases plotGenomicRanges,linkSet-method
-#' @aliases plotGenomicRanges
 #'
 #' @examples
 #' data(linkExample)
@@ -641,8 +633,6 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
 #'
 #' @param linkset A linkSet object
 #' @return A data.frame with extracted data
-#' @keywords internal
-#' @noRd
 #' Extract data from linkSet object
 #' 
 #' @description
@@ -650,6 +640,7 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
 #' 
 #' @param linkset A linkSet object
 #' @keywords internal
+#' @noRd
 #' @return Extracted data for visualization
 extractDataFromLinkset <- function(linkset) {
   # Extract regions

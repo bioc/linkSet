@@ -3,13 +3,12 @@
 \docType{data}
 \title{Embryo Body BED File}
 \description{
-  A BED format file containing genomic regions from mouse embryo body. This dataset contains 
+  A compressed BED format file containing genomic regions from mouse embryo body. This dataset contains 
   regulatory elements identified in mouse embryonic development and is provided as example data 
   for demonstrating genomic interaction analysis workflows.
 }
 \usage{
-# Access the file path with:
-system.file("extdata", "Embryo_body.bed", package = "linkSet")
+Embryo_body
 }
 \format{
   A BED format file with the following columns:
@@ -30,11 +29,11 @@ system.file("extdata", "Embryo_body.bed", package = "linkSet")
 }
 \examples{
   # Get the file path
-  file_path <- system.file("extdata", "Embryo_body.bed", package = "linkSet")
+  file_path <- system.file("extdata", "Embryo_body.bed.gz", package = "linkSet")
   
   # Read the file
   if (file.exists(file_path)) {
-    embryo_data <- read.table(file_path, 
+    embryo_data <- read.table(gzfile(file_path), 
                              header = FALSE, 
                              sep = "\t",
                              stringsAsFactors = FALSE)
