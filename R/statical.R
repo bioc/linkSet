@@ -66,7 +66,7 @@ setMethod("run_chicane", "linkSet", function(linkSet,
 	) {
 	# TO DO:
 	#	- check format of linkSet object if passed directly
-	linkSet = verifyLinkSet(linkSet)
+	linkSet <- verifyLinkSet(linkSet)
 	checkPackages(distribution)
 	### MAIN #############################################################
 	replicate.merging.method <- match.arg(replicate.merging.method);

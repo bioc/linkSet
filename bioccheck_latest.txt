@@ -1,0 +1,95 @@
+
+R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> BiocCheck::BiocCheck('linkSet_0.99.13.tar.gz')
+  cmd: /usr/lib/R/bin/R
+  args: --vanilla CMD INSTALL --no-test-load --library=/tmp/RtmpLzukkS/file1ae30c1179bd6d/lib '/home/zhanglab/lh/2024.6_3dSNP/script/utils/linkSet/linkSet_0.99.13.tar.gz'
+  stderr:
+  * installing *source* package ‘linkSet’ ...
+  ** using staged installation
+  ** R
+  ** data
+  ** inst
+  ** byte-compile and prepare package for lazy loading
+  
+  * removing ‘/tmp/RtmpLzukkS/file1ae30c1179bd6d/lib/linkSet’
+
+    * ERROR:
+      /home/zhanglab/lh/2024.6_3dSNP/script/utils/linkSet/linkSet_0.99.13.tar.gz
+      must be installable.
+  cmd: /usr/lib/R/bin/R
+  args: --vanilla -e 'library(linkSet)'
+  stderr:
+  Loading required package: GenomicRanges
+  Loading required package: stats4
+  Loading required package: BiocGenerics
+  
+  Attaching package: ‘BiocGenerics’
+  
+  The following objects are masked from ‘package:stats’:
+  
+      IQR, mad, sd, var, xtabs
+  
+  The following objects are masked from ‘package:base’:
+  
+      anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+      colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+      get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
+      match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+      Position, rank, rbind, Reduce, rownames, sapply, setdiff, sort,
+      table, tapply, union, unique, unsplit, which.max, which.min
+  
+  Loading required package: S4Vectors
+  
+  Attaching package: ‘S4Vectors’
+  
+  The following objects are masked from ‘package:base’:
+  
+      expand.grid, I, unname
+  
+  Loading required package: IRanges
+  Loading required package: GenomeInfoDb
+  
+  Execution halted
+
+    * ERROR:
+      /home/zhanglab/lh/2024.6_3dSNP/script/utils/linkSet/linkSet_0.99.13.tar.gz
+      must be loadable.
+─ BiocCheckVersion: 1.34.3
+─ BiocVersion: 3.16
+─ Package: linkSet
+─ PackageVersion: 0.99.13
+─ sourceDir: /tmp/RtmpLzukkS/file1ae30c7728c597/linkSet
+─ installDir: /tmp/RtmpLzukkS/file1ae30c1179bd6d
+─ BiocCheckDir: /home/zhanglab/lh/2024.6_3dSNP/script/utils/linkSet/linkSet.BiocCheck
+─ platform: unix
+─ isTarBall: TRUE
+
+* Installing package...
+* Checking for deprecated package usage...
+* Checking for remote package usage...
+* Checking for 'LazyData: true' usage...
+* Checking version number...
+* Checking for version number mismatch...
+* Checking version number validity...
+    Package version 0.99.13; pre-release
+* Checking R version dependency...
+* Checking package size...
+
+Execution halted

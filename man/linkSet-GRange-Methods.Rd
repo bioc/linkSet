@@ -135,7 +135,8 @@ narrow_bait
 shift_oe <- shiftRegions(linkExample, shift = 10, region = "oe")
 shift_oe
 
-flank_bait <- flankRegions(linkExample, width = 100, start = TRUE, both = FALSE, use.names = TRUE, ignore.strand = FALSE, region = "bait")
+flank_bait <- flankRegions(linkExample, width = 100, start = TRUE, both = FALSE, 
+                          use.names = TRUE, ignore.strand = FALSE, region = "bait")
 flank_bait
 
 width(linkExample)

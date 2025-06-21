@@ -106,12 +106,12 @@ Key features of the `linkSet` class:
    - Built on top of established Bioconductor classes
    - Ensures compatibility with a wide range of genomic analysis tools
 
-```{r out.width = '70%', echo = FALSE, fig.alt="Overview diagram of the linkSet class structure and its components"}
+```{r overview-diagram, out.width = '70%', echo = FALSE, fig.alt="Overview diagram of the linkSet class structure and its components"}
 knitr::include_graphics("img/overview.png")
 ```
 
 
-```{r out.width = '80%', echo = FALSE, fig.alt="Overview diagram of the linkSet methods"}
+```{r methods-diagram, out.width = '80%', echo = FALSE, fig.alt="Overview diagram of the linkSet methods"}
 knitr::include_graphics("img/linksetmethod.png")
 ```
 
@@ -119,19 +119,19 @@ knitr::include_graphics("img/linksetmethod.png")
 
 The `linkSet` class can be constructed from various data types, including GRanges objects for both anchors, or character vectors for bait and GRanges for other ends.
 
-```{r out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
+```{r data-structure-diagram, out.width = '70%', echo = FALSE, fig.alt="data structure of the linkSet class"}
 knitr::include_graphics("img/9.10_data_structure.png")
 ```
 
 
-```{r out.width = '70%', echo = FALSE, fig.alt="Import methods"}
+```{r import-methods-diagram, out.width = '70%', echo = FALSE, fig.alt="Import methods"}
 knitr::include_graphics("img/linkSetImport.png")
 ```
 
 ## Construction from GRanges objects
 
 To construct a `linkSet` object from GRanges objects:
-```{r, eval = FALSE}
+```{r installation, eval = FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 ```
@@ -140,7 +140,7 @@ if (!require("BiocManager", quietly = TRUE))
 ```{r load-linkset}
 suppressPackageStartupMessages(library(linkSet))
 ```
-```{r}
+```{r construct-from-granges}
 library(GenomicRanges)
 gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
               ranges = IRanges(start = c(1, 100, 200), width = 10),
@@ -157,7 +157,7 @@ linkObj
 ## Construction from GInteractions
 You can also create a `linkSet` object from a `GInteractions` object using the `Convert` function:
 
-```{r}
+```{r construct-from-ginteractions}
 library(InteractionSet)
 gi <- GInteractions(
   anchor1 = c(1, 3, 5),
@@ -176,7 +176,7 @@ linkObj_from_gi
 
 Sometimes, you need to use gene and enhancer information to construct a `linkSet` object from GInteractions.
 
-```{r}
+```{r construct-with-gene-enhancer}
 geneGr <- GRanges(
   seqnames = c("chr1", "chr2", "chr3"),
   ranges = IRanges(start = c(5, 105, 205), width = 20),
@@ -197,7 +197,7 @@ linkObj_from_gi_2
 
 ## Other construction methods
 You can also construct a `linkSet` object from a data frame.
-```{r}
+```{r construct-from-dataframe}
 test_df <- data.frame(
   gene = c("gene1", "gene2", "gene3"),
   peak = c("chr1:1000-2000", "chr2:3000-4000", "chr3:5000-6000"),

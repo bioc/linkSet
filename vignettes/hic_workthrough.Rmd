@@ -61,7 +61,7 @@ We highly recommend you to use custom data instead of the example data provided 
 
 # Setup
 
-```{r, eval = FALSE}
+```{r installation, eval = FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 ```
@@ -90,7 +90,7 @@ suppressPackageStartupMessages({
 
 We use our custom function `readvalidPairs` to load the [example data](https://data.4dnucleome.org/files-processed/4DNFI9DUBGCW/). 
 Firstly, we need to load into [GInteractions object](https://bioconductor.org/packages/release/bioc/vignettes/InteractionSet/inst/doc/GInteractions.html).
-```{r setup_data}
+```{r setup-data}
 hic_file <- system.file("extdata", "toyExample.pair.gz", 
                         package="linkSet")
 gi <- readvalidPairs(hic_file,format = "pair")
@@ -127,7 +127,7 @@ enhancer <- rtracklayer::import(file_path, format="BED")
 
 Because the hic data only contains digist end, so we resize the region to upstream 5kb and downstream 5kb.
 After that, we use `baitGInteractions` to generate the `linkSet` object.
-```{r}
+```{r create-linkset}
 gi <- resize(gi,10000,fix = "center")
 ls <- baitGInteractions(gi, promoterGr, enhancer, geneSymbol = "symbol")
 ls
@@ -135,26 +135,26 @@ ls
 
 When we print the `linkSet` object, we can see the basic information of the `linkSet` object.
 By default, we don't show the bait region. But you are interested in the bait region, you can set `showBaitRegion = TRUE`.
-```{r}
+```{r show-linkset}
 showLinkSet(ls, baitRegion = TRUE)
 ```
 
 # Diagnose and filter links
 Now, we can run diagnoseLinkSet to check the distance distribution and inter/intra interaction percentage.
 First, let's annotate the promoter regions with genome information:
-```{r}
+```{r annotate-and-diagnose}
 ls <- suppressWarnings(annotatePromoter(ls, genome = "mm10", upstream = 1000))
 diagnoseLinkSet(ls)
 ```
 
 Intrachromosomal interaction and long distance interaction are likely be noise, so we filter them.
-```{r}
+```{r filter-links}
 ls <- countInteractibility(ls)
 ls <- filterLinks(ls,filter_intra = TRUE, filter_unannotate = TRUE, distance = 50000000)
 ```
 
 Duplicated links are associated with contact frequency, so it's a good idea to count duplicated links.
-```{r}
+```{r count-and-order}
 ls <- countInteractions(ls)
 orderLinks(ls,by = "count",decreasing = TRUE)
 ```
@@ -163,19 +163,19 @@ We can notice that there is a significant link strength between `Sulf1` and `chr
 
 # Cross gene links and visualization
 Enhancers that regulate multiple genes are biologically meaningful.
-```{r}
+```{r cross-gene-analysis}
 ls <- crossGeneEnhancer(ls)
 ls <- orderLinks(ls,by = "crossFreq",decreasing = TRUE)
 ls
 ```
 We can use `plot_genomic_ranges` to visualize the cross gene links.
-```{r}
+```{r plot-genomic-ranges}
 plot_genomic_ranges(ls,showOE = oe(ls)[1])
 ```
 
 We can also choose to visualze the bait center region.
 
-```{r}
+```{r plot-bait-region}
 # Check if regionsBait exists and has names
 if (!is.null(regionsBait(ls)) && !is.null(names(regionsBait(ls)))) {
   # Get available bait names from regionsBait
@@ -193,6 +193,6 @@ if (!is.null(regionsBait(ls)) && !is.null(names(regionsBait(ls)))) {
 ```
 
 # Session Information
-```{r}
+```{r session-info}
 sessionInfo()
 ```

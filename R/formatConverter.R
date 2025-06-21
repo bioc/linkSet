@@ -680,46 +680,46 @@ exportToLinkSet <- function(cd, scoreCol="score", cutoff=0, b2bcutoff=NULL,
   
   message("Preparing the output table...")
   if (is.null(b2bcutoff)){
-    x = cd@x[ cd@x[[scoreCol]]>=cutoff, ]
+    x <- cd@x[ cd@x[[scoreCol]]>=cutoff, ]
   }
   else{
-    x = cd@x[ (cd@x$isBait2bait==TRUE & cd@x[[scoreCol]]>=b2bcutoff ) | 
+    x <- cd@x[ (cd@x$isBait2bait==TRUE & cd@x[[scoreCol]]>=b2bcutoff ) | 
                 ( cd@x$isBait2bait==FALSE & cd@x[[scoreCol]]>=cutoff ), ]
   }
   
-  x = x[, c("baitID", "otherEndID", "N", scoreCol,"distSign","isBait2bait"), with=FALSE]
+  x <- x[, c("baitID", "otherEndID", "N", scoreCol,"distSign","isBait2bait"), with=FALSE]
   
   data.table::setkey(x, "otherEndID")
   data.table::setkey(rmap, "otherEndID")
   
-  x = merge(x, rmap, by="otherEndID", allow.cartesian = TRUE)
+  x <- merge(x, rmap, by="otherEndID", allow.cartesian = TRUE)
   data.table::setkey(x, "baitID")
   
   data.table::setkey(baitmap, "baitID")  
-  x = merge(x, baitmap, by="baitID", allow.cartesian = TRUE)
+  x <- merge(x, baitmap, by="baitID", allow.cartesian = TRUE)
   
   # note that baitmapGeneIDcol has been renamed into "promID" above 
-  bm2 = baitmap[,c ("baitID", "promID"), with=FALSE]
+  bm2 <- baitmap[,c ("baitID", "promID"), with=FALSE]
   
   data.table::setDF(x)
   data.table::setDF(bm2)
   
   # this way we can be sure that the new column will be called promID.y  
-  out = merge(x, bm2, by.x="otherEndID", by.y="baitID", all.x=TRUE, all.y=FALSE, sort=FALSE)
-  out[is.na(out$promID.y), "promID.y"] = "."
+  out <- merge(x, bm2, by.x="otherEndID", by.y="baitID", all.x=TRUE, all.y=FALSE, sort=FALSE)
+  out[is.na(out$promID.y), "promID.y"] <- "."
   
-  out = out[,c("baitChr", "baitStart", "baitEnd", "baitID", "promID.x", "rChr", "rStart", "rEnd", "otherEndID", scoreCol, "N", "promID.y","isBait2bait","distSign")]
+  out <- out[,c("baitChr", "baitStart", "baitEnd", "baitID", "promID.x", "rChr", "rStart", "rEnd", "otherEndID", scoreCol, "N", "promID.y","isBait2bait","distSign")]
   
-  names(out) = c("bait_chr", "bait_start", "bait_end", "bait_ID", "bait_name", "otherEnd_chr", "otherEnd_start", "otherEnd_end", "otherEnd_ID", "score", "N_reads", "otherEnd_name","isBait2bait","distSign")
+  names(out) <- c("bait_chr", "bait_start", "bait_end", "bait_ID", "bait_name", "otherEnd_chr", "otherEnd_start", "otherEnd_end", "otherEnd_ID", "score", "N_reads", "otherEnd_name","isBait2bait","distSign")
   
-  out$N_reads [ is.na(out$N_reads) ] = 0
-  out$score = round(out$score,2)
+  out$N_reads [ is.na(out$N_reads) ] <- 0
+  out$score <- round(out$score,2)
   
   if (order=="position"){
-    out = out[order(out$bait_chr, out$bait_start, out$bait_end, out$otherEnd_chr, out$otherEnd_start, out$otherEnd_end), ]
+    out <- out[order(out$bait_chr, out$bait_start, out$bait_end, out$otherEnd_chr, out$otherEnd_start, out$otherEnd_end), ]
   }
   if (order=="score"){
-    out = out[order(out$score, decreasing=TRUE), ]
+    out <- out[order(out$score, decreasing=TRUE), ]
   }
   
   if(removeMT)
@@ -735,8 +735,8 @@ exportToLinkSet <- function(cd, scoreCol="score", cutoff=0, b2bcutoff=NULL,
   #out
   
   ##convert out to a GI
-  anchor.one = with(out, GenomicRanges::GRanges(as.character(bait_chr), IRanges::IRanges(start=bait_start, end=bait_end)))
-  anchor.two = with(out, GenomicRanges::GRanges(as.character(otherEnd_chr), IRanges::IRanges(start=otherEnd_start, end=otherEnd_end)))
+  anchor.one <- with(out, GenomicRanges::GRanges(as.character(bait_chr), IRanges::IRanges(start=bait_start, end=bait_end)))
+  anchor.two <- with(out, GenomicRanges::GRanges(as.character(otherEnd_chr), IRanges::IRanges(start=otherEnd_start, end=otherEnd_end)))
   linkSet(anchor.one, anchor.two, specificCol = out$bait_name,
                       counts=out$N_reads, baitName=out$bait_name, otherEndName=out$otherEnd_name,
                       baitID = out$bait_ID,oeID = out$otherEnd_ID,

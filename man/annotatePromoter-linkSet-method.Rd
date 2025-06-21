@@ -40,7 +40,10 @@ Annotate the link set with txDb. Give a gene list, and return a
   linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
 
   # Test annotatePromoter
-  annotated_linkset <- suppressWarnings(annotatePromoter(linkset_obj, genome = "hg38", upstream = 500,overwrite = TRUE))
+  annotated_linkset <- suppressWarnings(annotatePromoter(linkset_obj, 
+                                                        genome = "hg38", 
+                                                        upstream = 500, 
+                                                        overwrite = TRUE))
 
 
 }
