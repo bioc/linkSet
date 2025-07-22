@@ -77,3 +77,23 @@ Creates a visualization of genomic links for a linkSet object
 \details{
 Add Genome Links to Coverage Plot
 }
+\examples{
+# Create example linkSet data
+gr1 <- GRanges(seqnames = "chr1", 
+               ranges = IRanges(start = c(1000, 2000), width = 100),
+               strand = "+", symbol = c("Gene1", "Gene2"))
+gr2 <- GRanges(seqnames = "chr1", 
+               ranges = IRanges(start = c(5000, 6000), width = 100),
+               strand = "+")
+linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
+
+# Add some metadata for visualization
+mcols(linkset_obj)$count <- c(10, 20)
+
+# Example plot (requires ggplot2)
+\dontrun{
+library(ggplot2)
+p <- ggplot() + geom_linkset(linkset_obj)
+print(p)
+}
+}

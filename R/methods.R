@@ -443,6 +443,6 @@ setMethod("subsetOE", "linkSet", function(x, subset) {
   }
   overlaps <- findOverlaps(oe_regions, subset)
   idx <- S4Vectors::queryHits(overlaps)
-  ls = x[idx]
-  ls = clean_unused_regions(ls)
+  ls <- x[idx]
+  ls <- clean_unused_regions(ls)
 })

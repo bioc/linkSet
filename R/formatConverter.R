@@ -748,11 +748,11 @@ exportToLinkSet <- function(cd, scoreCol="score", cutoff=0, b2bcutoff=NULL,
 #' @rdname as.GInteractions
 #' @export
 setMethod("as.GInteractions", "linkSet", function(x) {
-  anchor.one = regionsBait(x)
-  anchor.two = oe(x)
-  metadata = mcols(x)
-  gi = InteractionSet::GInteractions(anchor.one,anchor.two)
-  mcols(gi) = metadata
+  anchor.one <- regionsBait(x)
+  anchor.two <- oe(x)
+  metadata <- mcols(x)
+  gi <- InteractionSet::GInteractions(anchor.one,anchor.two)
+  mcols(gi) <- metadata
   return(gi)
 })
 

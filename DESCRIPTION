@@ -22,7 +22,7 @@ RoxygenNote: 7.3.2
 Depends: 
     GenomicRanges,
     S4Vectors,
-    R (>= 4.2.0)
+    R (>= 4.5.0)
 Imports: 
     methods,
     IRanges,
