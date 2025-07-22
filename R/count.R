@@ -48,7 +48,7 @@ setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
   oe_regions <- paste(oe(x))
   trans <- x[x$inter_type == "intra"]
 
-  if(length(trans) == 0){
+  if (length(trans) == 0) {
     warning("No intra-chromosomal interactions found. Please run this function before you filterLinks.")
     return(x)
   }
@@ -93,13 +93,13 @@ setMethod("countInteractibility", "linkSet", function(x, baitRegions = TRUE) {
 #' @return A linkSet object with filtered interactions
 #' @examples
 #' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
-#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet <- c(linkExample, linkExample)
+#' linkSet <- countInteractions(linkSet)
+#' linkSet <- filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
 #' @export
 setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
-                                            filter_unannotate = TRUE,
-                                            distance = NULL) {
+                                             filter_unannotate = TRUE,
+                                             distance = NULL) {
   # Ensure inter_type is annotated
   if (!existInter(x)) {
     x <- annotateInter(x)
@@ -142,17 +142,16 @@ setMethod("filterLinks", "linkSet", function(x, filter_intra = TRUE,
 #' @return A linkSet object with filtered interactions
 #' @examples
 #' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
-#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
-#' linkSet = crossGeneEnhancer(linkSet, score_threshold = 10)
+#' linkSet <- c(linkExample, linkExample)
+#' linkSet <- countInteractions(linkSet)
+#' linkSet <- filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet <- crossGeneEnhancer(linkSet, score_threshold = 10)
 #' @export
 setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
   if (!is.null(score_threshold) & !"score" %in% colnames(mcols(x))) {
     warning("score column not found.")
     score_threshold <- NULL
-  }
-  else if (!is.null(score_threshold)) {
+  } else if (!is.null(score_threshold)) {
     x <- x[mcols(x)$score >= score_threshold]
   }
 
@@ -182,10 +181,10 @@ setMethod("crossGeneEnhancer", "linkSet", function(x, score_threshold = NULL) {
 #' @return A linkSet object with ordered interactions
 #' @examples
 #' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
-#' linkSet = filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
-#' linkSet = orderLinks(linkSet, by = "count", decreasing = TRUE)
+#' linkSet <- c(linkExample, linkExample)
+#' linkSet <- countInteractions(linkSet)
+#' linkSet <- filterLinks(linkSet, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100000)
+#' linkSet <- orderLinks(linkSet, by = "count", decreasing = TRUE)
 #' @export
 setMethod("orderLinks", "linkSet", function(x, by = "count", decreasing = TRUE) {
   if (!by %in% colnames(mcols(x))) {

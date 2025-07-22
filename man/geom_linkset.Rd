@@ -91,7 +91,7 @@ linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
 mcols(linkset_obj)$count <- c(10, 20)
 
 # Example plot (requires ggplot2)
-\dontrun{
+\donttest{
 library(ggplot2)
 p <- ggplot() + geom_linkset(linkset_obj)
 print(p)

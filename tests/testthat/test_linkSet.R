@@ -6,17 +6,17 @@ set.seed(7000)
 N <- 40
 all.starts <- round(runif(N, 1, 100))
 all.ends <- all.starts + round(runif(N, 5, 20))
-all.regions <- GRanges(rep(c("chrA", "chrB"), c(N-10, 10)), IRanges(all.starts, all.ends))
-genes = c(rep("SP7",4),rep("ASPN",10),rep("XBP1",6))
+all.regions <- GRanges(rep(c("chrA", "chrB"), c(N - 10, 10)), IRanges(all.starts, all.ends))
+genes <- c(rep("SP7", 4), rep("ASPN", 10), rep("XBP1", 6))
 
 
 Np <- 20
 all.anchor1 <- sample(N, Np)
 gr1 <- all.regions[all.anchor1]
 gr1$symbol <- genes
-all.anchor2 <- setdiff(1:40,all.anchor1)
+all.anchor2 <- setdiff(1:40, all.anchor1)
 gr2 <- all.regions[all.anchor2]
-x <- linkSet(gr1, gr2,specificCol = "symbol")
+x <- linkSet(gr1, gr2, specificCol = "symbol")
 x2 <- linkSet(genes, gr2)
 
 
@@ -37,7 +37,7 @@ test_that("show methods work for linkSet objects", {
   [20]        XBP1 ---        chrB    96-114 |           XBP1
   -------
   regions: 40 ranges and 0 metadata columns
-  seqinfo: 2 sequences from an unspecified genome; no seqlengths", fixed=TRUE)
+  seqinfo: 2 sequences from an unspecified genome; no seqlengths", fixed = TRUE)
 
   expect_output(sub("[0-9]", " ", show(x2)), "linkSet object with 20 interactions and 0 metadata columns:
               bait     seqnames_oe ranges_oe
@@ -55,7 +55,7 @@ test_that("show methods work for linkSet objects", {
   [20]        XBP1 ---        chrB    96-114
   -------
   regions: 20 ranges and 0 metadata columns
-  seqinfo: 2 sequences from an unspecified genome; no seqlengths", fixed=TRUE)
+  seqinfo: 2 sequences from an unspecified genome; no seqlengths", fixed = TRUE)
 })
 
 ######################################
@@ -72,17 +72,17 @@ test_that("slot access works in linkSet objects", {
   expect_true(!is.unsorted(regions(x)))
   expect_identical(regions(x), ref.regions)
 
-  expect_identical(anchors(x, id=TRUE, type="bait"), ref.anchor1)
-  expect_identical(anchors(x, id=TRUE, type="oe"), ref.anchor2)
-  expect_identical(anchors(x, id=TRUE), list(bait=ref.anchor1, oe=ref.anchor2))
+  expect_identical(anchors(x, id = TRUE, type = "bait"), ref.anchor1)
+  expect_identical(anchors(x, id = TRUE, type = "oe"), ref.anchor2)
+  expect_identical(anchors(x, id = TRUE), list(bait = ref.anchor1, oe = ref.anchor2))
 
-  expect_identical(anchors(x, type="bait"), genes)
-  expect_identical(anchors(x, type="oe"), ref.regions[ref.anchor2])
-  expect_identical(anchors(x), list(bait=genes, oe=ref.regions[ref.anchor2]))
-#  expect_identical(anchors(x, type="bait"), first(x))
-#  expect_identical(anchors(x, type="oe"), second(x))
-  expect_identical(anchors(x, type="bait"), bait(x))
-  expect_identical(anchors(x, type="oe"), oe(x))
+  expect_identical(anchors(x, type = "bait"), genes)
+  expect_identical(anchors(x, type = "oe"), ref.regions[ref.anchor2])
+  expect_identical(anchors(x), list(bait = genes, oe = ref.regions[ref.anchor2]))
+  #  expect_identical(anchors(x, type="bait"), first(x))
+  #  expect_identical(anchors(x, type="oe"), second(x))
+  expect_identical(anchors(x, type = "bait"), bait(x))
+  expect_identical(anchors(x, type = "oe"), oe(x))
 })
 
 test_that("regionsBait works correctly", {
@@ -107,13 +107,17 @@ test_that("regionsBait works correctly", {
 
 test_that("setter functions work correctly", {
   # Create a sample linkSet object for testing
-  gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
-                ranges = IRanges(start = c(1, 100, 200), width = 10),
-                strand = "+", symbol = c("Gene1", "Gene2", "Gene3"))
+  gr1 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2"),
+    ranges = IRanges(start = c(1, 100, 200), width = 10),
+    strand = "+", symbol = c("Gene1", "Gene2", "Gene3")
+  )
 
-  gr2 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
-                ranges = IRanges(start = c(11, 110, 210), width = 10),
-                strand = "+", symbol = c("Enh1", "Enh2", "Enh3"))
+  gr2 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2"),
+    ranges = IRanges(start = c(11, 110, 210), width = 10),
+    strand = "+", symbol = c("Enh1", "Enh2", "Enh3")
+  )
 
   ls <- linkSet(gr1, gr2, specificCol = "symbol")
   # Test setting bait
@@ -237,8 +241,10 @@ test_that("subsetBaitRegion works correctly", {
 
   # Test error when bait regions are not available
   ls_no_bait <- linkSet(paste(gr1), gr2)
-  expect_error(subsetBaitRegion(ls_no_bait, subset_region),
-               "Bait regions are not available. Please annotate bait first.")
+  expect_error(
+    subsetBaitRegion(ls_no_bait, subset_region),
+    "Bait regions are not available. Please annotate bait first."
+  )
 })
 
 test_that("subsetOE works correctly", {

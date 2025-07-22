@@ -1,19 +1,19 @@
 ###############################################################
 # Setting validity and show methods.
 
-checkInputs <- function(anchor1, anchor2, nameBait, regions,same.length=TRUE) {
+checkInputs <- function(anchor1, anchor2, nameBait, regions, same.length = TRUE) {
   if (!all(is.finite(anchor1)) || !all(is.finite(anchor2))) {
     return("all anchor indices must be finite integers")
   }
   if (!all(anchor1 >= 1L) || !all(anchor2 >= 1L)) {
-    return('all anchor indices must be positive integers')
+    return("all anchor indices must be positive integers")
   }
   nregs1 <- length(nameBait)
   nregs2 <- length(regions)
   if (!all(anchor1 <= nregs2) || !all(anchor2 <= nregs2)) {
     return("all anchor indices must refer to entries in 'regions'")
   }
-  if (same.length && length(nameBait)!=length(anchor2)) {
+  if (same.length && length(nameBait) != length(anchor2)) {
     return("first and second anchor vectors have different lengths")
   }
   return(TRUE)
@@ -23,13 +23,15 @@ setValidity2("linkSet", function(object) {
   if (is.unsorted(regions(object))) { # Don't move into checkInputs, as resorting comes after checking validity in various methods.
     return("'regions' should be sorted")
   }
-  msg <- checkInputs(anchor1(object), anchor2(object), bait(object),regions(object))
-  if (is.character(msg)) { return(msg) }
+  msg <- checkInputs(anchor1(object), anchor2(object), bait(object), regions(object))
+  if (is.character(msg)) {
+    return(msg)
+  }
 
   ### Length of anchors versus object is automatically checked by 'parallel_slot_names.'
 
   if (!is.null(names(object))) {
-    if (length(names(object))!=length(object)) {
+    if (length(names(object)) != length(object)) {
       stop("'NAMES' must be NULL or have length equal to that of the object")
     }
   }
@@ -49,7 +51,7 @@ setMethod("parallel_slot_names", "linkSet", function(x) {
 
 # For coercion to an environment:
 setMethod("parallelVectorNames", "linkSet", function(x) {
-  c("anchor1", "anchor2","nameBait", "regions", "names")
+  c("anchor1", "anchor2", "nameBait", "regions", "names")
 })
 
 #' Display detailed information about a linkSet object
@@ -60,39 +62,45 @@ setMethod("parallelVectorNames", "linkSet", function(x) {
 #' @docType methods
 #' @examples
 #' # Example usage of show method for linkSet object
-#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-#'                strand = "+")
+#' gr1 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'   strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT")
+#' )
+#' gr2 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'   strand = "+"
+#' )
 #' ls <- linkSet(gr1, gr2, specificCol = "symbol")
 #' show(ls)
 setMethod("show", "linkSet", function(object) {
-  showLinkSet(object, margin="  ", print.seqinfo=TRUE, print.classinfo=TRUE, baitRegion=FALSE)
+  showLinkSet(object, margin = "  ", print.seqinfo = TRUE, print.classinfo = TRUE, baitRegion = FALSE)
 })
 
 #' @rdname showLinkSet
 #' @importFrom methods show
 #' @export
-setMethod("showLinkSet", "linkSet",function(object, margin="", print.seqinfo=FALSE, 
-                                          print.classinfo=FALSE, baitRegion=FALSE) {
+setMethod("showLinkSet", "linkSet", function(object, margin = "", print.seqinfo = FALSE,
+                                             print.classinfo = FALSE, baitRegion = FALSE) {
   x <- object
   lx <- length(x)
   nr <- length(regions(x))
   nc <- safeNMcols(x)
   cat(class(x), " object with ",
-      lx, " ", ifelse(lx == 1L, "interaction", "interactions"), " and ",
-      nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
-      ":\n", sep="")
-  
+    lx, " ", ifelse(lx == 1L, "interaction", "interactions"), " and ",
+    nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
+    ":\n",
+    sep = ""
+  )
+
   if (baitRegion && is.null(regionsBait(x))) {
     message("Please annotate bait first.")
     baitRegion <- FALSE
   }
   if (baitRegion) {
     out <- S4Vectors::makePrettyMatrixForCompactPrinting(x, function(x) {
-      makeNakedMatFromGInteractions(x, baitRegion=TRUE)
+      makeNakedMatFromGInteractions(x, baitRegion = TRUE)
     })
   } else {
     out <- S4Vectors::makePrettyMatrixForCompactPrinting(x, makeNakedMatFromGInteractions)
@@ -100,15 +108,17 @@ setMethod("showLinkSet", "linkSet",function(object, margin="", print.seqinfo=FAL
 
   if (print.classinfo) {
     if (baitRegion) {
-      .COL2CLASS <- c(bait = "character", seqnames_bait = "Rle", ranges_bait = "IRanges", 
-                      "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges")
+      .COL2CLASS <- c(
+        bait = "character", seqnames_bait = "Rle", ranges_bait = "IRanges",
+        "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges"
+      )
     } else {
       .COL2CLASS <- c(bait = "character", "   " = "", seqnames_oe = "Rle", ranges_oe = "IRanges")
     }
     extraColumnNames <- GenomicRanges:::extraColumnSlotNames(x)
     .COL2CLASS <- c(.COL2CLASS, methods::getSlots(class(x))[extraColumnNames])
     classinfo <- S4Vectors::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
-    classinfo[,"   "] <- ""
+    classinfo[, "   "] <- ""
     stopifnot(identical(colnames(classinfo), colnames(out)))
     out <- rbind(classinfo, out)
   }
@@ -116,40 +126,44 @@ setMethod("showLinkSet", "linkSet",function(object, margin="", print.seqinfo=FAL
   if (nrow(out) != 0L) {
     rownames(out) <- paste0(margin, rownames(out))
   }
-  print(out, quote=FALSE, right=TRUE, max=length(out))
+  print(out, quote = FALSE, right = TRUE, max = length(out))
   if (print.seqinfo) {
-    cat(margin, "-------\n", sep="")
-    ncr <-  safeNMcols(regions(x))
-    cat(margin, "regions: ", nr, " ranges and ", ncr, " metadata ", ifelse(ncr==1L, "column", "columns"), "\n", sep="")
-    cat(margin, "seqinfo: ", summary(seqinfo(x)), "\n", sep="")
+    cat(margin, "-------\n", sep = "")
+    ncr <- safeNMcols(regions(x))
+    cat(margin, "regions: ", nr, " ranges and ", ncr, " metadata ", ifelse(ncr == 1L, "column", "columns"), "\n", sep = "")
+    cat(margin, "seqinfo: ", summary(seqinfo(x)), "\n", sep = "")
   }
 })
 
 
 safeNMcols <- function(x) {
-  #return column number safely
+  # return column number safely
   nc <- ncol(mcols(x))
-  if (is.null(nc)) { nc <- 0L }
+  if (is.null(nc)) {
+    nc <- 0L
+  }
   return(nc)
 }
 
-makeNakedMatFromGInteractions <- function(x, baitRegion=FALSE) {
+makeNakedMatFromGInteractions <- function(x, baitRegion = FALSE) {
   lx <- length(x)
   nc <- safeNMcols(x)
-  
+
   if (baitRegion && !is.null(regionsBait(x))) {
-    ans <- cbind(pasteAnchor(anchors(x, type="bait"), append="bait"),
-                 pasteAnchor(regionsBait(x), append="bait"),
-                 "   " = rep.int("---", lx),
-                 pasteAnchor(anchors(x, type="oe"), append="oe"))
+    ans <- cbind(pasteAnchor(anchors(x, type = "bait"), append = "bait"),
+      pasteAnchor(regionsBait(x), append = "bait"),
+      "   " = rep.int("---", lx),
+      pasteAnchor(anchors(x, type = "oe"), append = "oe")
+    )
   } else {
-    ans <- cbind(pasteAnchor(anchors(x, type="bait"), append="bait"),
-                 "   " = rep.int("---", lx),
-                 pasteAnchor(anchors(x, type="oe"), append="oe"))
+    ans <- cbind(pasteAnchor(anchors(x, type = "bait"), append = "bait"),
+      "   " = rep.int("---", lx),
+      pasteAnchor(anchors(x, type = "oe"), append = "oe")
+    )
   }
-  
+
   if (nc > 0L) {
-    tmp <- do.call(data.frame, c(lapply(mcols(x), showAsCell), list(check.names=FALSE)))
+    tmp <- do.call(data.frame, c(lapply(mcols(x), showAsCell), list(check.names = FALSE)))
     ans <- cbind(ans, `|` = rep.int("|", lx), as.matrix(tmp))
   }
   ans
@@ -160,34 +174,34 @@ makeNakedMatFromGInteractions <- function(x, baitRegion=FALSE) {
 #' @importFrom S4Vectors showAsCell
 #' @keywords internal
 pasteAnchor <- function(x, append) {
-  if(is.character(x)){
+  if (is.character(x)) {
     out <- as.matrix(x)
     colnames(out) <- "bait"
-  } else{
+  } else {
     out <- cbind(as.character(seqnames(x)), showAsCell(ranges(x)))
-    colnames(out) <- paste0(c("seqnames", "ranges"),"_", append)
+    colnames(out) <- paste0(c("seqnames", "ranges"), "_", append)
   }
   out
 }
 ###############################################################
 # Constructors
 #' Enforce order of anchors
-#' 
+#'
 #' @description
 #' Ensure consistent ordering of anchor pairs
-#' 
+#'
 #' @param anchor1 First anchor indices
 #' @param anchor2 Second anchor indices
 #' @keywords internal
 #' @return List with ordered anchors
 enforceOrder <- function(anchor1, anchor2) {
-    swap <- anchor2 < anchor1
-    if (any(swap)) { 
-        temp <- anchor1[swap]
-        anchor1[swap] <- anchor2[swap]
-        anchor2[swap] <- temp
-    }
-    return(list(anchor1=anchor1, anchor2=anchor2))
+  swap <- anchor2 < anchor1
+  if (any(swap)) {
+    temp <- anchor1[swap]
+    anchor1[swap] <- anchor2[swap]
+    anchor2[swap] <- temp
+  }
+  return(list(anchor1 = anchor1, anchor2 = anchor2))
 }
 
 
@@ -200,7 +214,7 @@ resortRegions <- function(anchor1, anchor2, regions) {
     anchor2 <- new.pos[anchor2]
     regions <- regions[o]
   }
-  return(list(anchor1=anchor1, anchor2=anchor2, regions=regions))
+  return(list(anchor1 = anchor1, anchor2 = anchor2, regions = regions))
 }
 
 #' @keywords internal
@@ -210,11 +224,13 @@ newLK <- function(anchor1, anchor2, nameBait, regions, metadata) {
   # Checking odds and ends.
   anchor1 <- as.integer(anchor1)
   anchor2 <- as.integer(anchor2)
-  if (is.null(nameBait)){
+  if (is.null(nameBait)) {
     nameBait <- paste(regions[anchor1])
   }
   msg <- checkInputs(anchor1, anchor2, nameBait, regions)
-  if (is.character(msg)) { stop(msg) }
+  if (is.character(msg)) {
+    stop(msg)
+  }
 
   # out <- resortRegions(anchor1, anchor2, regions)
   # anchor1 <- out$anchor1
@@ -222,14 +238,15 @@ newLK <- function(anchor1, anchor2, nameBait, regions, metadata) {
   # regions <- out$regions
 
   cls <- "linkSet"
-  #browser()
+  # browser()
   new(cls,
-      anchor1=anchor1,
-      anchor2=anchor2,
-      nameBait=nameBait,
-      regions=regions,
-      elementMetadata=elementMetadata,
-      metadata=as.list(metadata))
+    anchor1 = anchor1,
+    anchor2 = anchor2,
+    nameBait = nameBait,
+    regions = regions,
+    elementMetadata = elementMetadata,
+    metadata = as.list(metadata)
+  )
 }
 
 
@@ -241,29 +258,32 @@ newLK <- function(anchor1, anchor2, nameBait, regions, metadata) {
 #' @param ... Additional columns to add to the linkSet's elementMetadata
 #' @return A linkSet object containing the interaction data
 #' @export
-setMethod("linkSet", c("character", "GRanges","character_Or_missing"),
-          function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
-            mcol2 <- mcols(anchor2)
-            mcols(anchor2) <- NULL
-            colnames(mcol2) <- sprintf("anchor2.%s", colnames(mcol2))
-            extraCols <- DataFrame(...)
-            if (ncol(extraCols) == 0L) {
-              extraCols <- make_zero_col_DFrame(length(anchor1))
-            }
-            mcolBind <- cbind(extraCols, mcol2)
-            nameBait <- anchor1
-            anchor1 <- NULL
+setMethod(
+  "linkSet", c("character", "GRanges", "character_Or_missing"),
+  function(anchor1, anchor2, specificCol, metadata = list(), ...) {
+    mcol2 <- mcols(anchor2)
+    mcols(anchor2) <- NULL
+    colnames(mcol2) <- sprintf("anchor2.%s", colnames(mcol2))
+    extraCols <- DataFrame(...)
+    if (ncol(extraCols) == 0L) {
+      extraCols <- make_zero_col_DFrame(length(anchor1))
+    }
+    mcolBind <- cbind(extraCols, mcol2)
+    nameBait <- anchor1
+    anchor1 <- NULL
 
-            collated <- collateGRanges(anchor2)
-            regions <- collated$ranges
-            anchor2 <- collated$indices[[1]]
+    collated <- collateGRanges(anchor2)
+    regions <- collated$ranges
+    anchor2 <- collated$indices[[1]]
 
-            out <- newLK(anchor1=anchor1, anchor2=anchor2,
-                           nameBait=nameBait,regions=regions,
-                           metadata=metadata)
-            mcols(out) <- mcolBind
-            out
-          }
+    out <- newLK(
+      anchor1 = anchor1, anchor2 = anchor2,
+      nameBait = nameBait, regions = regions,
+      metadata = metadata
+    )
+    mcols(out) <- mcolBind
+    out
+  }
 )
 
 collateGRanges <- function(...) {
@@ -282,7 +302,7 @@ collateGRanges <- function(...) {
   new.pos <- cumsum(is.first)
   combined <- combined[is.first]
   refdex <- new.pos[refdex]
-  return(list(indices=split(refdex, obj.dex), ranges=combined))
+  return(list(indices = split(refdex, obj.dex), ranges = combined))
 }
 
 #' Create a linkSet object from input data
@@ -293,85 +313,88 @@ collateGRanges <- function(...) {
 #' @param ... Additional columns to add to the linkSet's elementMetadata
 #' @return A linkSet object containing the interaction data
 #' @export
-setMethod("linkSet", c("GRanges", "GRanges","character_Or_missing"),
-          function(anchor1, anchor2, specificCol,metadata=list(),  ...) {
-            # Stripping metadata and putting it somewhere else.
-            mcol1 <- mcols(anchor1)
-            mcols(anchor1) <- NULL
-            colnames(mcol1) <- sprintf("anchor1.%s", colnames(mcol1))
-            mcol2 <- mcols(anchor2)
-            mcols(anchor2) <- NULL
-            colnames(mcol2) <- sprintf("anchor2.%s", colnames(mcol2))
+setMethod(
+  "linkSet", c("GRanges", "GRanges", "character_Or_missing"),
+  function(anchor1, anchor2, specificCol, metadata = list(), ...) {
+    # Stripping metadata and putting it somewhere else.
+    mcol1 <- mcols(anchor1)
+    mcols(anchor1) <- NULL
+    colnames(mcol1) <- sprintf("anchor1.%s", colnames(mcol1))
+    mcol2 <- mcols(anchor2)
+    mcols(anchor2) <- NULL
+    colnames(mcol2) <- sprintf("anchor2.%s", colnames(mcol2))
 
-            # Additional Interaction-specific metadata
-            extraCols <- DataFrame(...)
-            if (ncol(extraCols) == 0L) {
-              extraCols <- make_zero_col_DFrame(length(anchor1))
-            }
+    # Additional Interaction-specific metadata
+    extraCols <- DataFrame(...)
+    if (ncol(extraCols) == 0L) {
+      extraCols <- make_zero_col_DFrame(length(anchor1))
+    }
 
-            mcolBind <- cbind(extraCols, mcol1, mcol2)
+    mcolBind <- cbind(extraCols, mcol1, mcol2)
 
-            if (!missing(specificCol)){
-              if (length(specificCol) > 1) {
-                if (length(specificCol) == nrow(mcolBind)) {
-                  nameBait <- specificCol
-                } else {
-                  warning("Length of specificCol does not match the number of rows in mcolBind. Using default naming.")
-                  nameBait <- paste(anchor1)
-                }
-              } else {
-                specificColName <- paste0("anchor1.",specificCol)
-                if (specificColName %in% colnames(mcolBind)){
-                  nameBait <- mcolBind[specificColName]
-                  nameBait <- unlist(nameBait)
-                } else{
-                  warning("Can't find ", specificCol, " in metadata............")
-                  nameBait <- paste(anchor1)
-                }
-              }
-            } else{
-              nameBait <- paste(anchor1)
-            }
+    if (!missing(specificCol)) {
+      if (length(specificCol) > 1) {
+        if (length(specificCol) == nrow(mcolBind)) {
+          nameBait <- specificCol
+        } else {
+          warning("Length of specificCol does not match the number of rows in mcolBind. Using default naming.")
+          nameBait <- paste(anchor1)
+        }
+      } else {
+        specificColName <- paste0("anchor1.", specificCol)
+        if (specificColName %in% colnames(mcolBind)) {
+          nameBait <- mcolBind[specificColName]
+          nameBait <- unlist(nameBait)
+        } else {
+          warning("Can't find ", specificCol, " in metadata............")
+          nameBait <- paste(anchor1)
+        }
+      }
+    } else {
+      nameBait <- paste(anchor1)
+    }
 
-            collated <- collateGRanges(anchor1, anchor2)
-            regions <- collated$ranges
-            anchor1 <- collated$indices[[1]]
-            anchor2 <- collated$indices[[2]]
+    collated <- collateGRanges(anchor1, anchor2)
+    regions <- collated$ranges
+    anchor1 <- collated$indices[[1]]
+    anchor2 <- collated$indices[[2]]
 
-            # regionBait <- anchor1
-            # anchor1 <- seq_along(regionBait)
-            # regionOE <- anchor2
-            # anchor2 <- seq_along(regionOE)
+    # regionBait <- anchor1
+    # anchor1 <- seq_along(regionBait)
+    # regionOE <- anchor2
+    # anchor2 <- seq_along(regionOE)
 
-            out <- newLK(anchor1=anchor1, anchor2=anchor2,
-                           nameBait=nameBait,
-                           regions= regions,
-                           metadata=metadata)
-            mcols(out) <- mcolBind
-            out
-          }
+    out <- newLK(
+      anchor1 = anchor1, anchor2 = anchor2,
+      nameBait = nameBait,
+      regions = regions,
+      metadata = metadata
+    )
+    mcols(out) <- mcolBind
+    out
+  }
 )
 
 #' @rdname cleanUnusedRegions
 #' @export
 setMethod("cleanUnusedRegions", "linkSet", function(x) {
-    used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
-    new_regions <- regions(x)[used_regions]
-    
-    # Create a mapping from old indices to new indices
-    index_map <- integer(length(regions(x)))
-    index_map[used_regions] <- seq_along(used_regions)
-    
-    # Update anchor indices
-    new_anchor1 <- index_map[anchor1(x)]
-    new_anchor2 <- index_map[anchor2(x)]
-    
-    # Update the linkSet object
-    unchecked_regions(x) <- new_regions
-    unchecked_anchor1(x) <- new_anchor1
-    unchecked_anchor2(x) <- new_anchor2
-    
-    return(x)
+  used_regions <- sort(unique(c(anchor1(x), anchor2(x))))
+  new_regions <- regions(x)[used_regions]
+
+  # Create a mapping from old indices to new indices
+  index_map <- integer(length(regions(x)))
+  index_map[used_regions] <- seq_along(used_regions)
+
+  # Update anchor indices
+  new_anchor1 <- index_map[anchor1(x)]
+  new_anchor2 <- index_map[anchor2(x)]
+
+  # Update the linkSet object
+  unchecked_regions(x) <- new_regions
+  unchecked_anchor1(x) <- new_anchor1
+  unchecked_anchor2(x) <- new_anchor2
+
+  return(x)
 })
 
 #' @rdname cleanUnusedRegions
@@ -381,7 +404,7 @@ setMethod("clean_unused_regions", "linkSet", function(x) {
   cleanUnusedRegions(x)
 })
 
-#== subset ==#
+# == subset ==#
 #' Subset linkSet object based on bait names
 #' @rdname linkSet-subset-methods
 #' @aliases subsetBait

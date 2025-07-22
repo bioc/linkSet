@@ -1,9 +1,9 @@
 # Helper function to create a sample linkSet object
 #' Create sample linkSet object
-#' 
+#'
 #' @description
 #' Create a sample linkSet object for testing purposes
-#' 
+#'
 #' @keywords internal
 #' @return A linkSet object with sample data
 createSampleLinkSet <- function() {

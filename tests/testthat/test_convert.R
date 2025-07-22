@@ -6,11 +6,12 @@ test_that("Convert function works correctly for GInteractions", {
     regions = GRanges(
       seqnames = c("chr1", "chr1", "chr2", "chr2", "chr3", "chr3"),
       ranges = IRanges(start = c(1, 50, 100, 150, 200, 250), width = 10)
-    ))
+    )
+  )
   mcols(gi) <- DataFrame(symbol = c("Gene1", "Gene2", "Gene3"), score = c(0.1, 0.2, 0.3))
 
   # Convert GInteractions to linkSet
-  ls <- Convert(gi,baitCol="symbol")
+  ls <- Convert(gi, baitCol = "symbol")
 
   # Test that the conversion was successful
   expect_s4_class(ls, "linkSet")
@@ -41,8 +42,10 @@ test_that("Convert method for data.frame works correctly", {
   expect_equal(length(result_custom), 3)
 
   # Test error when columns are missing
-  expect_error(Convert(test_df, baitCol = "nonexistent", oeCol = "peak"),
-               "baitCol and oeCol must be columns in the data.frame")
+  expect_error(
+    Convert(test_df, baitCol = "nonexistent", oeCol = "peak"),
+    "baitCol and oeCol must be columns in the data.frame"
+  )
 
   # Test with single row data
   single_row_df <- test_df[1, , drop = FALSE]

@@ -49,11 +49,14 @@ cleanupConnections <- function() {
   for (conn_key in ls(dbCache)) {
     src <- get(conn_key, envir = dbCache)
     if (inherits(src, "src_dbi") && DBI::dbIsValid(src$con)) {
-      tryCatch({
-        DBI::dbDisconnect(src$con)
-      }, error = function(e) {
-        warning("Failed to disconnect from database: ", e$message)
-      })
+      tryCatch(
+        {
+          DBI::dbDisconnect(src$con)
+        },
+        error = function(e) {
+          warning("Failed to disconnect from database: ", e$message)
+        }
+      )
     }
   }
   rm(list = ls(dbCache), envir = dbCache)
@@ -73,16 +76,20 @@ cleanupConnections <- function() {
 #' @export
 #'
 #' @examples
-#'   gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                 ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-#'                 strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-#'   gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                 ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-#'                 strand = "+")
-#'   linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
+#' gr1 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'   strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT")
+#' )
+#' gr2 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'   strand = "+"
+#' )
+#' linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
 #'
-#'   # Test annotatePromoter
-#'   annotated_linkset <- suppressWarnings(annotatePromoter(linkset_obj, genome = "hg38", upstream = 500,overwrite = TRUE))
+#' # Test annotatePromoter
+#' annotated_linkset <- suppressWarnings(annotatePromoter(linkset_obj, genome = "hg38", upstream = 500, overwrite = TRUE))
 #'
 #'
 # Modified annotatePromoter method
@@ -97,33 +104,38 @@ setMethod("annotatePromoter", "linkSet", function(x, genome = "hg38",
     warning("regionsBait is being overwritten")
   }
 
-  tryCatch({
-    # Get cached or new connection
-    src <- getDbConnection(genome)
+  tryCatch(
+    {
+      # Get cached or new connection
+      src <- getDbConnection(genome)
 
-    genes <- bait(x)
-    geneGr <- Organism.dplyr::genes(src, filter = ~(symbol %in% genes))
-    promoterGr <- IRanges::promoters(geneGr, upstream = upstream)
+      genes <- bait(x)
+      geneGr <- Organism.dplyr::genes(src, filter = ~ (symbol %in% genes))
+      promoterGr <- IRanges::promoters(geneGr, upstream = upstream)
 
-    index <- match(genes, geneGr$symbol)
-    if (any(is.na(index))) {
-      warning("Some genes are not found in the txDb, they will be set to chrNULL")
-      newIndex <- which(!is.na(index))
-      grMatch <- promoterGr[index[newIndex]]
-      gr <- GRanges(seqnames = rep("chrNULL", length(genes)),
-                    ranges = IRanges(rep(0, length(genes)), rep(0, length(genes))))
-      mcols(grMatch) <- NULL
-      gr[newIndex] <- grMatch
-    } else {
-      gr <- promoterGr[index]
+      index <- match(genes, geneGr$symbol)
+      if (any(is.na(index))) {
+        warning("Some genes are not found in the txDb, they will be set to chrNULL")
+        newIndex <- which(!is.na(index))
+        grMatch <- promoterGr[index[newIndex]]
+        gr <- GRanges(
+          seqnames = rep("chrNULL", length(genes)),
+          ranges = IRanges(rep(0, length(genes)), rep(0, length(genes)))
+        )
+        mcols(grMatch) <- NULL
+        gr[newIndex] <- grMatch
+      } else {
+        gr <- promoterGr[index]
+      }
+
+      regionsBait(x) <- gr
+      return(x)
+    },
+    error = function(e) {
+      warning(e$message)
+      return(x)
     }
-
-    regionsBait(x) <- gr
-    return(x)
-  }, error = function(e) {
-    warning(e$message)
-    return(x)
-  })
+  )
 })
 
 # Register cleanup function to be called when R exits
@@ -140,24 +152,25 @@ reg.finalizer(dbCache, function(e) {
   if (inherits(x, "mock_organism_src")) {
     # This is our fallback case
     if (!requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) ||
-        !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+      !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
       stop("Required packages not available for mm10 annotation")
     }
-    
+
     txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
     gene_ranges <- GenomicFeatures::genes(txdb)
-    
+
     if ("symbol" %in% columns) {
       gene_ids <- names(gene_ranges)
-      symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db, 
-                                     keys = gene_ids, 
-                                     columns = "SYMBOL", 
-                                     keytype = "ENTREZID")
+      symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
+        keys = gene_ids,
+        columns = "SYMBOL",
+        keytype = "ENTREZID"
+      )
       symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
       mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
       gene_ranges <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
     }
-    
+
     return(gene_ranges)
   } else {
     # Try to use Organism.dplyr if available
@@ -176,66 +189,71 @@ reg.finalizer(dbCache, function(e) {
 #' @importFrom methods setMethod
 #' @importFrom stats setNames
 #' @export
-setMethod("withTxDb", signature(x = "character", expr = "function"),
+setMethod(
+  "withTxDb", signature(x = "character", expr = "function"),
   function(x, expr, ...) {
     if (!x %in% c("mm10", "hg38", "hg19")) {
       stop("Unsupported genome. Please use 'hg38', 'hg19' or 'mm10'.")
     }
-    
+
     # Use the original approach with proper error handling
-    tryCatch({
-      src <- getDbConnection(x)
-      result <- expr(src, ...)
-      return(result)
-    }, error = function(e) {
-      # If Organism.dplyr fails, try fallback approach
-      warning("Organism.dplyr approach failed: ", e$message, ". Using fallback.")
-      
-      if (x == "mm10") {
-        # Create a fallback implementation that works directly with the expected call
-        if (!requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) ||
-            !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
-          stop("Required packages not available for mm10 annotation")
-        }
-        
-        # Create mock source object with its own genes method
-        mock_src <- list()
-        class(mock_src) <- "mock_organism_src"
-        
-        # Create custom environment that intercepts Organism.dplyr::genes calls
-        custom_env <- new.env(parent = globalenv())
-        
-        # Create mock Organism.dplyr namespace
-        mock_organism_dplyr <- new.env()
-        mock_organism_dplyr$genes <- function(src, columns = NULL, filter = NULL, ...) {
-          txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
-          gene_ranges <- GenomicFeatures::genes(txdb)
-          
-          if ("symbol" %in% columns) {
-            gene_ids <- names(gene_ranges)
-            symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db, 
-                                           keys = gene_ids, 
-                                           columns = "SYMBOL", 
-                                           keytype = "ENTREZID")
-            symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
-            mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
-            gene_ranges <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
-          }
-          
-          return(gene_ranges)
-        }
-        
-        # Assign the mock to the custom environment
-        assign("Organism.dplyr", mock_organism_dplyr, envir = custom_env)
-        
-        # Set the expression's environment to our custom one
-        environment(expr) <- custom_env
-        
-        result <- expr(mock_src, ...)
+    tryCatch(
+      {
+        src <- getDbConnection(x)
+        result <- expr(src, ...)
         return(result)
-      } else {
-        stop("Fallback not implemented for genome: ", x)
+      },
+      error = function(e) {
+        # If Organism.dplyr fails, try fallback approach
+        warning("Organism.dplyr approach failed: ", e$message, ". Using fallback.")
+
+        if (x == "mm10") {
+          # Create a fallback implementation that works directly with the expected call
+          if (!requireNamespace("TxDb.Mmusculus.UCSC.mm10.knownGene", quietly = TRUE) ||
+            !requireNamespace("org.Mm.eg.db", quietly = TRUE)) {
+            stop("Required packages not available for mm10 annotation")
+          }
+
+          # Create mock source object with its own genes method
+          mock_src <- list()
+          class(mock_src) <- "mock_organism_src"
+
+          # Create custom environment that intercepts Organism.dplyr::genes calls
+          custom_env <- new.env(parent = globalenv())
+
+          # Create mock Organism.dplyr namespace
+          mock_organism_dplyr <- new.env()
+          mock_organism_dplyr$genes <- function(src, columns = NULL, filter = NULL, ...) {
+            txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
+            gene_ranges <- GenomicFeatures::genes(txdb)
+
+            if ("symbol" %in% columns) {
+              gene_ids <- names(gene_ranges)
+              symbols <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
+                keys = gene_ids,
+                columns = "SYMBOL",
+                keytype = "ENTREZID"
+              )
+              symbol_map <- setNames(symbols$SYMBOL, symbols$ENTREZID)
+              mcols(gene_ranges)$symbol <- symbol_map[names(gene_ranges)]
+              gene_ranges <- gene_ranges[!is.na(mcols(gene_ranges)$symbol)]
+            }
+
+            return(gene_ranges)
+          }
+
+          # Assign the mock to the custom environment
+          assign("Organism.dplyr", mock_organism_dplyr, envir = custom_env)
+
+          # Set the expression's environment to our custom one
+          environment(expr) <- custom_env
+
+          result <- expr(mock_src, ...)
+          return(result)
+        } else {
+          stop("Fallback not implemented for genome: ", x)
+        }
       }
-    })
+    )
   }
 )

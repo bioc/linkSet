@@ -42,12 +42,12 @@ setGeneric("anchor2<-", function(x, value) standardGeneric("anchor2<-"))
 #' @export
 #' @rdname linkSet-accessors
 setGeneric("unchecked_regions<-", function(x, value) standardGeneric("unchecked_regions<-"))
-#' Set unchecked anchor1 
+#' Set unchecked anchor1
 #' @keywords internal
 setGeneric("unchecked_anchor1<-", function(x, value) standardGeneric("unchecked_anchor1<-"))
 
 #' Set unchecked anchor2
-#' @keywords internal  
+#' @keywords internal
 setGeneric("unchecked_anchor2<-", function(x, value) standardGeneric("unchecked_anchor2<-"))
 
 #' @export
@@ -68,13 +68,13 @@ setGeneric("subsetOE", function(x, ...) {
 
 # annotate.R
 #' @export
-setGeneric("annotatePromoter", function(x, genome = "hg38", keyType = "symbol",upstream = 500,overwrite = FALSE,...) standardGeneric("annotatePromoter"))
+setGeneric("annotatePromoter", function(x, genome = "hg38", keyType = "symbol", upstream = 500, overwrite = FALSE, ...) standardGeneric("annotatePromoter"))
 
 #' Execute Database Operation with Automatic Connection Management
-#' 
+#'
 #' @title Database Operation with Connection Management
 #' @description Executes a database operation while managing the connection lifecycle automatically.
-#' 
+#'
 #' @param x The genome name or object to operate on
 #' @param expr Expression to evaluate with database connection
 #' @param ... Additional arguments
@@ -91,49 +91,49 @@ setGeneric("annotatePromoter", function(x, genome = "hg38", keyType = "symbol",u
 #' }
 #' @export
 setGeneric("withTxDb", function(x, expr, ...) {
-    standardGeneric("withTxDb")
+  standardGeneric("withTxDb")
 })
 
 
 #' Set Other End Anchors for linkSet Object
-#' 
+#'
 #' @title Set Other End (OE) Anchors
 #' @description Replace the other end (oe) anchors of a linkSet object with new values
-#' 
+#'
 #' @param x A linkSet object
 #' @param value A GRanges object containing the new other end anchors
 #' @return The modified linkSet object
 #' @examples
 #' # Create example data
-#' gr1 <- GRanges("chr1", IRanges(1:3, width=1))
-#' gr2 <- GRanges("chr1", IRanges(4:6, width=1))
+#' gr1 <- GRanges("chr1", IRanges(1:3, width = 1))
+#' gr2 <- GRanges("chr1", IRanges(4:6, width = 1))
 #' linkset_obj <- linkSet(gr1, gr2)
-#' 
+#'
 #' # Create new other end anchors
-#' new_oe <- GRanges("chr1", IRanges(7:9, width=1))
-#' 
+#' new_oe <- GRanges("chr1", IRanges(7:9, width = 1))
+#'
 #' # Replace other end anchors
 #' oe(linkset_obj) <- new_oe
 #' @export
 setGeneric("oe<-", function(x, value) standardGeneric("oe<-"))
 
 #' Set Bait Regions for linkSet Object
-#' 
+#'
 #' @title Set Bait Regions
 #' @description Replace the regions corresponding to the bait anchors of a linkSet object
-#' 
+#'
 #' @param x A linkSet object
 #' @param value A GRanges object containing the new bait regions
 #' @return The modified linkSet object
 #' @examples
 #' # Create example data
-#' gr1 <- GRanges("chr1", IRanges(1:3, width=1))
-#' gr2 <- GRanges("chr1", IRanges(4:6, width=1))
+#' gr1 <- GRanges("chr1", IRanges(1:3, width = 1))
+#' gr2 <- GRanges("chr1", IRanges(4:6, width = 1))
 #' linkset_obj <- linkSet(gr1, gr2)
-#' 
+#'
 #' # Create new bait regions
-#' new_bait <- GRanges("chr1", IRanges(7:9, width=1))
-#' 
+#' new_bait <- GRanges("chr1", IRanges(7:9, width = 1))
+#'
 #' # Replace bait regions
 #' regionsBait(linkset_obj) <- new_bait
 #' @export
@@ -144,30 +144,34 @@ setGeneric("regionsBait<-", function(x, value) standardGeneric("regionsBait<-"))
 setGeneric("linkSet", function(anchor1, anchor2, specificCol, ...) standardGeneric("linkSet"))
 
 #' Display Detailed Information About a linkSet Object
-#' 
+#'
 #' @title Show linkSet Object Details
 #' @description Displays detailed information about a linkSet object, including regions,
 #' metadata, and optionally sequence information.
-#' 
+#'
 #' @param object A linkSet object to display
 #' @param margin Character string for display margin (default: "")
 #' @param print.seqinfo Logical, whether to print sequence information (default: FALSE)
 #' @param print.classinfo Logical, whether to print class information (default: FALSE)
 #' @param baitRegion Logical, whether to display bait regions (default: FALSE)
 #' @param ... Additional arguments
-#' 
+#'
 #' @return None (invisible NULL)
 #' @examples
-#' gr1 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-#'                strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-#' gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-#'                ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-#'                strand = "+")
+#' gr1 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+#'   strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT")
+#' )
+#' gr2 <- GRanges(
+#'   seqnames = c("chr1", "chr2", "chr3"),
+#'   ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+#'   strand = "+"
+#' )
 #' linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
 #' showLinkSet(linkset_obj)
 #' @export
-setGeneric("showLinkSet", function(object, margin="", print.seqinfo=FALSE, print.classinfo=FALSE, baitRegion=FALSE,...) standardGeneric("showLinkSet"))
+setGeneric("showLinkSet", function(object, margin = "", print.seqinfo = FALSE, print.classinfo = FALSE, baitRegion = FALSE, ...) standardGeneric("showLinkSet"))
 
 #' @export
 setGeneric("regionsBait", function(x) standardGeneric("regionsBait"))
@@ -195,7 +199,7 @@ setGeneric("annotateInter", function(x) standardGeneric("annotateInter"))
 
 
 #' @export
-setGeneric("pairdist", function(x, type="mid") standardGeneric("pairdist"))
+setGeneric("pairdist", function(x, type = "mid") standardGeneric("pairdist"))
 
 #' @export
 setGeneric("diagnoseLinkSet", function(x) standardGeneric("diagnoseLinkSet"))
@@ -209,7 +213,7 @@ setGeneric("Convert", function(x, ...) {
 })
 
 #' Convert GInteractions with bait range and oe ranges to linkSet
-#' 
+#'
 #' @title Convert GInteractions to linkSet with bait annotations
 #' @param x A GInteractions object
 #' @param geneGr A GRanges object representing genes
@@ -217,12 +221,12 @@ setGeneric("Convert", function(x, ...) {
 #' @param ... Additional arguments
 #' @return A linkSet object
 #' @export
-setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
+setGeneric("baitGInteractions", function(x, geneGr, peakGr, ...) {
   standardGeneric("baitGInteractions")
 })
 
 #' Convert linkSet object to GInteractions
-#' 
+#'
 #' @title Convert to GInteractions
 #' @param x A linkset object
 #' @return A GInteractions object
@@ -231,15 +235,15 @@ setGeneric("baitGInteractions", function(x, geneGr, peakGr,...) {
 #' gi <- as.GInteractions(linkExample)
 #' gi
 #' @export
-setGeneric("as.GInteractions", function(x){
+setGeneric("as.GInteractions", function(x) {
   standardGeneric("as.GInteractions")
 })
 
 #' Export linkSet to interBed Format
-#' 
+#'
 #' @title Export linkSet to interBed format
 #' @description Exports a linkSet object to a tab-delimited interBed format file
-#' 
+#'
 #' @param x A linkSet object
 #' @param outfile Output file path
 #' @return None. The function writes to the specified file.
@@ -249,15 +253,15 @@ setGeneric("as.GInteractions", function(x){
 #' exportInterBed(linkExample, tmpfile)
 #' cat(readLines(tmpfile), sep = "\n")
 #' @export
-setGeneric("exportInterBed", function(x, outfile){
+setGeneric("exportInterBed", function(x, outfile) {
   standardGeneric("exportInterBed")
 })
 
 #' Export linkSet to WashU Format
-#' 
+#'
 #' @title Export linkSet to WashU browser format
 #' @description Exports a linkSet object to a tab-delimited format compatible with the WashU genome browser
-#' 
+#'
 #' @param x A linkSet object
 #' @param outfile Output file path
 #' @return None. The function writes to the specified file.
@@ -267,26 +271,26 @@ setGeneric("exportInterBed", function(x, outfile){
 #' exportWashU(linkExample, tmpfile)
 #' cat(readLines(tmpfile), sep = "\n")
 #' @export
-setGeneric("exportWashU", function(x, outfile){
+setGeneric("exportWashU", function(x, outfile) {
   standardGeneric("exportWashU")
 })
 
 # grange_method.R
 
 #' @export
-setGeneric("resizeRegions", function(x,width = 1000, fix = "center", use.names = TRUE,region="both", ...) standardGeneric("resizeRegions"))
+setGeneric("resizeRegions", function(x, width = 1000, fix = "center", use.names = TRUE, region = "both", ...) standardGeneric("resizeRegions"))
 
 #' @export
-setGeneric("narrowRegions", function(x,  start = 1L, end = 1000L, width = 1000L, use.names = TRUE,region="both",...) standardGeneric("narrowRegions"))
+setGeneric("narrowRegions", function(x, start = 1L, end = 1000L, width = 1000L, use.names = TRUE, region = "both", ...) standardGeneric("narrowRegions"))
 
 #' @export
-setGeneric("shiftRegions", function(x, width = 1000, shift = 0L, use.names = TRUE,region="both",...) standardGeneric("shiftRegions"))
+setGeneric("shiftRegions", function(x, width = 1000, shift = 0L, use.names = TRUE, region = "both", ...) standardGeneric("shiftRegions"))
 
 #' @export
-setGeneric("flankRegions", function(x,width = 1000,start=TRUE, both=FALSE, use.names=TRUE,ignore.strand=FALSE,region="both", ...) standardGeneric("flankRegions"))
+setGeneric("flankRegions", function(x, width = 1000, start = TRUE, both = FALSE, use.names = TRUE, ignore.strand = FALSE, region = "both", ...) standardGeneric("flankRegions"))
 
 #' @export
-setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.names=TRUE,region="both", ...) standardGeneric("promoterRegions"))
+setGeneric("promoterRegions", function(x, upstream = 2000, downstream = 200, use.names = TRUE, region = "both", ...) standardGeneric("promoterRegions"))
 
 
 
@@ -294,7 +298,7 @@ setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.name
 
 #' Count Bait and Other End Interactions
 #'
-#' This function takes a linkSet object and counts the number of interactions 
+#' This function takes a linkSet object and counts the number of interactions
 #' for each bait and other end.
 #'
 #' @param x A linkSet object
@@ -302,41 +306,41 @@ setGeneric("promoterRegions", function(x,upstream=2000, downstream=200, use.name
 #' @return A linkSet object with counts for each unique interaction
 #' @examples
 #' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
+#' linkSet <- c(linkExample, linkExample)
+#' linkSet <- countInteractions(linkSet)
 #' linkSet
 #' @aliases countBaitOe
 #' @export
 setGeneric("countInteractions", function(x, baitRegions = TRUE) standardGeneric("countInteractions"))
 
 #' Count Interaction Interactibility
-#' 
+#'
 #' @title Count bait and oe interactibility
-#' @description This function calculates the number of trans interactions for each bait and oe. 
+#' @description This function calculates the number of trans interactions for each bait and oe.
 #' The word "interactibility" can refer to https://doi.org/10.1038%2Fnature11279.
-#' 
+#'
 #' @param x A linkSet object
 #' @param baitRegions Whether to count bait regions (default: TRUE)
 #' @return A linkSet object with counts for each unique interaction
 #' @examples
 #' data(linkExample)
-#' linkSet = c(linkExample,linkExample)
-#' linkSet = countInteractions(linkSet)
-#' linkSet = countInteractibility(linkSet)
+#' linkSet <- c(linkExample, linkExample)
+#' linkSet <- countInteractions(linkSet)
+#' linkSet <- countInteractibility(linkSet)
 #' @export
 setGeneric("countInteractibility", function(x, baitRegions = TRUE) standardGeneric("countInteractibility"))
 
 #' Reduce a linkSet Object
-#' 
+#'
 #' @title Reduce Regions in a linkSet Object
-#' @description This function reduces the bait and/or oe regions of a linkSet object 
+#' @description This function reduces the bait and/or oe regions of a linkSet object
 #' and optionally counts interactions, while maintaining the original length of the linkSet.
-#' 
+#'
 #' @param x A linkSet object
 #' @param region Character, specifying which regions to reduce: "both", "bait", or "oe" (default: "both")
 #' @param countInteractions Logical, whether to count interactions after reducing (default: TRUE)
 #' @param ... Additional arguments passed to GenomicRanges::reduce
-#' 
+#'
 #' @return A reduced linkSet object with the same length as the input
 #' @examples
 #' data(linkExample)
@@ -363,10 +367,10 @@ setGeneric("orderLinks", function(x, by = "count", decreasing = TRUE) {
 
 # plot.R
 #' Add Genome Links to Coverage Plot
-#' 
+#'
 #' @title Add Genome Links to Coverage Plot
 #' @description Creates a visualization of genomic links for a linkSet object
-#' 
+#'
 #' @param linkSet A linkSet object
 #' @param score.col Column name containing score information (default: "count")
 #' @param score.threshold Score threshold for filtering links (default: NULL)
@@ -381,33 +385,34 @@ setGeneric("orderLinks", function(x, by = "count", decreasing = TRUE) {
 #' @param show.rect Whether to show rectangle borders (default: FALSE)
 #' @param x.range Range for x-axis (default: NULL)
 #' @param log.scale Whether to use log scale for scores (default: TRUE)
-#' 
+#'
 #' @return A ggplot layer object
 #' @export
-setGeneric("geom_linkset", 
-    function(linkSet, 
-             score.col = "count", 
-             score.threshold = NULL, 
-             score.color = c("grey70", "#56B1F7", "#132B43"),
-             scale.range = 10, 
-             plot.space = 0.1, 
-             plot.height = 0.2, 
-             arrow.size = 0.05, 
-             remove_x_axis = FALSE,
-             link_plot_on_top = FALSE,
-             extend.base = 10000,
-             show.rect = FALSE, 
-             x.range = NULL, 
-             log.scale = TRUE) {
-        standardGeneric("geom_linkset")
-    }
+setGeneric(
+  "geom_linkset",
+  function(linkSet,
+           score.col = "count",
+           score.threshold = NULL,
+           score.color = c("grey70", "#56B1F7", "#132B43"),
+           scale.range = 10,
+           plot.space = 0.1,
+           plot.height = 0.2,
+           arrow.size = 0.05,
+           remove_x_axis = FALSE,
+           link_plot_on_top = FALSE,
+           extend.base = 10000,
+           show.rect = FALSE,
+           x.range = NULL,
+           log.scale = TRUE) {
+    standardGeneric("geom_linkset")
+  }
 )
 
 #' Plot Genomic Ranges from linkSet Object
-#' 
+#'
 #' @title Plot Genomic Ranges
 #' @description Creates a visualization of genomic ranges and interactions from a linkSet object
-#' 
+#'
 #' @param linkset A linkSet object
 #' @param showBait Logical indicating whether to show bait regions (default: NULL)
 #' @param showOE Logical indicating whether to show other end regions (default: NULL)
@@ -431,65 +436,65 @@ setGeneric("geom_linkset",
 #' @param plot.height Relative height of plot (default: 0.4)
 #' @param plot.space Plot spacing (default: 0.1)
 #' @param log.scale Whether to use log scale (default: TRUE)
-#' 
+#'
 #' @return A ggplot object
 #' @export
 setGeneric("plotGenomicRanges", function(linkset, showBait = NULL, showOE = NULL, x.range = NULL,
-                                        score.col = "count",
-                                        show.rect = TRUE,
-                                        extend.base = 10000,
-                                        ...,
-                                        bait_col = "red",
-                                        oe_col = "DeepSkyBlue3",
-                                        default_col = "grey",
-                                        vjust = NULL,
-                                        linejoin = "mitre",
-                                        na.rm = FALSE,
-                                        minimal_width = 0.01,
-                                        show.legend = NA,
-                                        inherit.aes = TRUE,
-                                        link_plot_on_top = FALSE,
-                                        arrow.size = 0.05, remove_x_axis = FALSE,
-                                        plot.height = 0.4, plot.space = 0.1,
-                                        log.scale = TRUE) {
+                                         score.col = "count",
+                                         show.rect = TRUE,
+                                         extend.base = 10000,
+                                         ...,
+                                         bait_col = "red",
+                                         oe_col = "DeepSkyBlue3",
+                                         default_col = "grey",
+                                         vjust = NULL,
+                                         linejoin = "mitre",
+                                         na.rm = FALSE,
+                                         minimal_width = 0.01,
+                                         show.legend = NA,
+                                         inherit.aes = TRUE,
+                                         link_plot_on_top = FALSE,
+                                         arrow.size = 0.05, remove_x_axis = FALSE,
+                                         plot.height = 0.4, plot.space = 0.1,
+                                         log.scale = TRUE) {
   standardGeneric("plotGenomicRanges")
 })
 
 #' @rdname plotGenomicRanges
 #' @export
 setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NULL, x.range = NULL,
-                                          score.col = "count",
-                                          show.rect = TRUE,
-                                          extend.base = 10000,
-                                          ...,
-                                          bait_col = "red",
-                                          oe_col = "DeepSkyBlue3",
-                                          default_col = "grey",
-                                          vjust = NULL,
-                                          linejoin = "mitre",
-                                          na.rm = FALSE,
-                                          minimal_width = 0.01,
-                                          show.legend = NA,
-                                          inherit.aes = TRUE,
-                                          link_plot_on_top = FALSE,
-                                          arrow.size = 0.05, remove_x_axis = FALSE,
-                                          plot.height = 0.4, plot.space = 0.1,
-                                          log.scale = TRUE) {
+                                           score.col = "count",
+                                           show.rect = TRUE,
+                                           extend.base = 10000,
+                                           ...,
+                                           bait_col = "red",
+                                           oe_col = "DeepSkyBlue3",
+                                           default_col = "grey",
+                                           vjust = NULL,
+                                           linejoin = "mitre",
+                                           na.rm = FALSE,
+                                           minimal_width = 0.01,
+                                           show.legend = NA,
+                                           inherit.aes = TRUE,
+                                           link_plot_on_top = FALSE,
+                                           arrow.size = 0.05, remove_x_axis = FALSE,
+                                           plot.height = 0.4, plot.space = 0.1,
+                                           log.scale = TRUE) {
   standardGeneric("plot_genomic_ranges")
 })
 
 
 # statical.R
 #' Run ChICANE Analysis on linkSet Object
-#' 
+#'
 #' @title Run ChICANE Analysis
-#' @description This function adapts the \code{chicane} function from the \code{ChICANE} 
-#' package to work with the \code{linkSet} object format. It runs the full method for 
+#' @description This function adapts the \code{chicane} function from the \code{ChICANE}
+#' package to work with the \code{linkSet} object format. It runs the full method for
 #' detecting significant interactions in capture Hi-C experiments.
-#' 
+#'
 #' @param linkSet A linkSet object containing interaction data
 #' @param ... Additional arguments passed to methods
-#' 
+#'
 #' @return A linkSet object with additional columns:
 #' \itemize{
 #'   \item{expected}{The expected number of reads linking fragments under the fitted model}
@@ -498,5 +503,5 @@ setGeneric("plot_genomic_ranges", function(linkset, showBait = NULL, showOE = NU
 #' }
 #' @export
 setGeneric("run_chicane", function(linkSet, ...) {
-    standardGeneric("run_chicane")
+  standardGeneric("run_chicane")
 })

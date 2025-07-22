@@ -5,47 +5,44 @@
 #' @return A linkSet object with an additional metadata column 'inter_type'
 #' @export
 #' @aliases annotateInter
-#' 
+#'
 #' @examples
 #' data(linkExample)
 #' linkExample <- annotateInter(linkExample)
-
 setMethod("annotateInter", "linkSet", function(x) {
-
   if (is.null(regionsBait(x))) {
     stop("regionsBait is not annotated. Please run annotatePromoter first.")
   }
 
   bait_seqnames <- as.character(seqnames(regionsBait(x)))
-  oe_seqnames <- as.character(seqnames(anchors(x, type="oe")))
+  oe_seqnames <- as.character(seqnames(anchors(x, type = "oe")))
 
-  inter_type <- ifelse(bait_seqnames == oe_seqnames, "inter","intra")
+  inter_type <- ifelse(bait_seqnames == oe_seqnames, "inter", "intra")
 
   # Add the new column to mcols
   mcols(x)$inter_type <- inter_type
 
   return(x)
-}
-)
+})
 
 #' @importFrom S4Vectors mcols mcols<-
-existInter <- function(x){
+existInter <- function(x) {
   !is.null(mcols(x)$inter_type)
-  }
+}
 
 #' @importFrom S4Vectors mcols mcols<-
-existDistance <- function(x){
+existDistance <- function(x) {
   !is.null(mcols(x)$distance)
-  }
+}
 
 #' Get distance output
-#' 
+#'
 #' @description
 #' Calculate distance metrics for genomic interactions
-#' 
+#'
 #' @param regs Genomic regions
 #' @param ai1 Anchor 1 indices
-#' @param ai2 Anchor 2 indices  
+#' @param ai2 Anchor 2 indices
 #' @param type Distance type
 #' @param inter_type Interaction type
 #' @keywords internal
@@ -61,9 +58,11 @@ getDistOutput <- function(regs, ai1, ai2, type, inter_type) {
 
 
   # Protection when all inter's.
-  is.same <- inter_type=="inter"
+  is.same <- inter_type == "inter"
   output <- rep(as.integer(NA), length(larger))
-  if (!any(is.same)) { return(output) }
+  if (!any(is.same)) {
+    return(output)
+  }
 
   st <- start(regs)
   en <- end(regs)
@@ -74,13 +73,13 @@ getDistOutput <- function(regs, ai1, ai2, type, inter_type) {
   all.ts <- st[smaller]
   all.te <- en[smaller]
 
-  if (type=="gap") {
+  if (type == "gap") {
     output[is.same] <- pmax(all.as, all.ts) - pmin(all.ae, all.te) - 1L
-  } else if (type=="span") {
+  } else if (type == "span") {
     output[is.same] <- pmax(all.ae, all.te) - pmin(all.as, all.ts) + 1L
-  } else if (type=="mid") {
-    output[is.same] <- as.integer(abs(all.as + all.ae - all.ts - all.te)/2L) # Need 'abs', in case later range has earlier midpoint (e.g., if nested).
-  } else if (type=="diag") {
+  } else if (type == "mid") {
+    output[is.same] <- as.integer(abs(all.as + all.ae - all.ts - all.te) / 2L) # Need 'abs', in case later range has earlier midpoint (e.g., if nested).
+  } else if (type == "diag") {
     output[is.same] <- larger - smaller
   }
   return(output)
@@ -92,7 +91,7 @@ getDistOutput <- function(regs, ai1, ai2, type, inter_type) {
 #' @description
 #' Outputs an integer vector specifying the distance between the interacting bins,
 #' depending on the type of distance specified.
-#' 
+#'
 #' Example:
 #' ```
 #'    rangeA:  |---------|
@@ -116,21 +115,21 @@ getDistOutput <- function(regs, ai1, ai2, type, inter_type) {
 #'
 #' @examples
 #' data(linkExample)
-#' linkExample <- pairdist(linkExample, type="mid")
+#' linkExample <- pairdist(linkExample, type = "mid")
 #'
-setMethod("pairdist", "linkSet", function(x, type="mid"){
-    if (!is.null(regionsBait(x))) {
-        ai1 <- anchor1(x)
-        ai2 <- anchor2(x)
-    } else {
-        stop("No regionsBait found. Please annotate regionsBait first.")
-    }
-    if (!existInter(x)){
-      x <- annotateInter(x)
-    }
-    inter_type <- mcols(x)$inter_type
-    mcols(x)$distance <- getDistOutput(regions(x), ai1, ai2, type, inter_type)
-    return(x)
+setMethod("pairdist", "linkSet", function(x, type = "mid") {
+  if (!is.null(regionsBait(x))) {
+    ai1 <- anchor1(x)
+    ai2 <- anchor2(x)
+  } else {
+    stop("No regionsBait found. Please annotate regionsBait first.")
+  }
+  if (!existInter(x)) {
+    x <- annotateInter(x)
+  }
+  inter_type <- mcols(x)$inter_type
+  mcols(x)$distance <- getDistOutput(regions(x), ai1, ai2, type, inter_type)
+  return(x)
 })
 
 #' Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
@@ -140,11 +139,11 @@ setMethod("pairdist", "linkSet", function(x, type="mid"){
 #' data(linkExample)
 #' diagnoseLinkSet(linkExample)
 #' @param x A linkSet object
-setMethod("diagnoseLinkSet", "linkSet", function(x){
-  if (!existInter(x)){
+setMethod("diagnoseLinkSet", "linkSet", function(x) {
+  if (!existInter(x)) {
     x <- annotateInter(x)
   }
-  if (!existDistance(x)){
+  if (!existDistance(x)) {
     x <- pairdist(x)
   }
   inter_type <- mcols(x)$inter_type
@@ -153,8 +152,9 @@ setMethod("diagnoseLinkSet", "linkSet", function(x){
   df <- data.frame(distance = inter_distance)
   p1 <- ggplot2::ggplot(df, ggplot2::aes(x = distance)) +
     ggplot2::geom_histogram() +
-    ggplot2::labs(title = "Distance Distribution", x = "log10 Distance(bp)", y = "Count")+ggplot2::theme_bw()
-  
+    ggplot2::labs(title = "Distance Distribution", x = "log10 Distance(bp)", y = "Count") +
+    ggplot2::theme_bw()
+
   # Calculate proportions manually
   type_counts <- table(inter_type)
   type_props <- prop.table(type_counts)
@@ -162,14 +162,14 @@ setMethod("diagnoseLinkSet", "linkSet", function(x){
     inter_type = factor(names(type_props), levels = c("inter", "intra")),
     proportion = as.numeric(type_props)
   )
-  
+
   p2 <- ggplot2::ggplot(df2, ggplot2::aes(x = inter_type, y = .data$proportion)) +
     ggplot2::geom_bar(stat = "identity", fill = "steelblue") +
     ggplot2::labs(title = "Inter/Intra Interaction", x = "Interaction Type", y = "Percentage") +
-    ggplot2::scale_x_discrete(drop = FALSE) +  # This ensures both levels are shown
+    ggplot2::scale_x_discrete(drop = FALSE) + # This ensures both levels are shown
     ggplot2::scale_y_continuous(labels = scales::percent_format()) +
     ggplot2::theme_bw()
-  p <- p1|p2
+  p <- p1 | p2
   print(p)
   return(x)
 })

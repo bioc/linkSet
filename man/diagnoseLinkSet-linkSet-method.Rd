@@ -10,6 +10,9 @@
 \arguments{
 \item{x}{A linkSet object}
 }
+\value{
+Returns the input linkSet object with additional metadata columns for inter/intra interaction types and distances. Also prints diagnostic plots showing distance distribution and inter/intra interaction proportions.
+}
 \description{
 Diagnose the linkSet object, return barplot of inter/intra interaction and distance distribution
 }

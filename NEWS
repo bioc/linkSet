@@ -1,0 +1,40 @@
+# linkSet 0.99.15
+
+## New Features
+
+* Initial Bioconductor submission
+* Comprehensive framework for representing, analyzing, and visualizing genomic interactions
+* Support for gene-enhancer relationships from Hi-C, PCHi-C, and single-cell ATAC-seq data
+* Conversion from common interaction formats (GInteractions, data frames)
+* Annotation of promoters and enhancers
+* Distance-based analyses and interaction strength metrics
+* Statistical modeling using CHiCANE methodology
+* Tailored visualization tools for genomic interactions
+
+## Classes and Methods
+
+* `linkSet` class extending GenomicRanges infrastructure
+* Methods for subsetting, concatenation, and manipulation of interaction data
+* Accessor methods for bait regions, other end regions, and metadata
+* Conversion methods to/from GInteractions and data frames
+
+## Analysis Features
+
+* Cross-gene enhancer analysis
+* Distance calculations between interacting regions
+* Inter/intra-chromosomal interaction classification
+* Statistical significance testing with CHiCANE
+* Interaction filtering and quality control
+
+## Visualization
+
+* Genomic range plotting with interaction links
+* Diagnostic plots for interaction quality assessment
+* ggplot2-based visualization framework
+* Custom themes for genomic interaction plots
+
+## Documentation
+
+* Comprehensive vignettes with examples
+* Complete API documentation
+* Integration examples with Bioconductor packages

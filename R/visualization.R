@@ -12,19 +12,19 @@
 #'
 #'
 setMethod("geom_linkset", "linkSet", function(linkSet,
-                      score.col = "count",
-                      score.threshold = NULL,
-                      score.color = c("grey70", "#56B1F7" , "#132B43"),
-                      scale.range = 10,
-                      plot.space = 0.1,
-                      plot.height = 0.2,
-                      arrow.size = 0.05,
-                      remove_x_axis = FALSE,
-                      link_plot_on_top = FALSE,
-                      extend.base = 1000000,
-                      show.rect = FALSE,
-                      x.range = NULL,
-                      log.scale = TRUE) {
+                                              score.col = "count",
+                                              score.threshold = NULL,
+                                              score.color = c("grey70", "#56B1F7", "#132B43"),
+                                              scale.range = 10,
+                                              plot.space = 0.1,
+                                              plot.height = 0.2,
+                                              arrow.size = 0.05,
+                                              remove_x_axis = FALSE,
+                                              link_plot_on_top = FALSE,
+                                              extend.base = 1000000,
+                                              show.rect = FALSE,
+                                              x.range = NULL,
+                                              log.scale = TRUE) {
   structure(
     list(
       linkSet = linkSet,
@@ -108,10 +108,10 @@ ggplot_add.interSet <- function(object, plot, object_name) {
   }
   # filter link gr
   link.point.df <- link.point.df[link.point.df$start >= x.range[1] &
-                                link.point.df$end >= x.range[1] &
-                                link.point.df$end <= x.range[2]&
-                                link.point.df$start <= x.range[2], ]
-  if(nrow(link.point.df) == 0){
+    link.point.df$end >= x.range[1] &
+    link.point.df$end <= x.range[2] &
+    link.point.df$start <= x.range[2], ]
+  if (nrow(link.point.df) == 0) {
     warning("There are no valid links in the given region!")
     return(NULL)
   }
@@ -126,7 +126,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     link.point.df$group <- seq_len(length.out = nrow(link.point.df))
     link.point.plot <- link.point.df
     link.point.plot$width <- link.point.df$end - link.point.df$start
-    #browser()
+    # browser()
     # scale width to range
     link.point.plot$rw <- scales::rescale(link.point.plot$width, to = c(1, scale.range))
 
@@ -142,8 +142,8 @@ ggplot_add.interSet <- function(object, plot, object_name) {
     }
 
     y_limit <- ifelse(flip_arrow, 0, 1)
-    link.point.plot.pos <- link.point.plot[link.point.plot$width > 0,]
-    link.point.plot.neg <- link.point.plot[link.point.plot$width < 0,]
+    link.point.plot.pos <- link.point.plot[link.point.plot$width > 0, ]
+    link.point.plot.neg <- link.point.plot[link.point.plot$width < 0, ]
     link.basic.plot <-
       ggplot2::ggplot(data = link.point.plot) +
       ggplot2::geom_curve(
@@ -177,7 +177,7 @@ ggplot_add.interSet <- function(object, plot, object_name) {
         arrow = ggplot2::arrow(length = ggplot2::unit(arrow.size, "npc"))
       ) +
       scale_color +
-      ggplot2::scale_y_continuous(limits = c(0,1)) +
+      ggplot2::scale_y_continuous(limits = c(0, 1)) +
       ggplot2::scale_size_continuous(range = c(0.5, 2))
   }
 
@@ -190,12 +190,14 @@ ggplot_add.interSet <- function(object, plot, object_name) {
       margin.len = plot.space,
       show.rect = show.rect
     ) +
-    ggplot2::guides(size = "none")  # Remove legend for arrow size
+    ggplot2::guides(size = "none") # Remove legend for arrow size
 
   # Add chromosome name to the side
   link.plot <- link.plot +
-    ggplot2::annotate("text", x = min(x.range), y = 1,
-                      label = plot.range.chr, hjust = 0, vjust = 1)
+    ggplot2::annotate("text",
+      x = min(x.range), y = 1,
+      label = plot.range.chr, hjust = 0, vjust = 1
+    )
 
   # assemble plot
   patchwork::wrap_plots(
@@ -310,11 +312,11 @@ ggplot_add.interSet <- function(object, plot, object_name) {
 #' @keywords internal
 #' @noRd
 geomRange <- function(mapping = NULL, data = NULL,
-                    stat = "identity", position = "identity",
-                    ...,
-                    na.rm = FALSE,
-                    show.legend = NA,
-                    inherit.aes = TRUE) {
+                      stat = "identity", position = "identity",
+                      ...,
+                      na.rm = FALSE,
+                      show.legend = NA,
+                      inherit.aes = TRUE) {
   ggplot2::layer(
     data = data,
     mapping = mapping,
@@ -371,28 +373,28 @@ geomRange <- function(mapping = NULL, data = NULL,
 #' data(linkExample)
 #' plotGenomicRanges(linkExample, extend.base = 10)
 setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
-                                                  showOE = NULL,
-                                                  x.range = NULL,
-                                                  score.col = "count",
-                                                  show.rect = TRUE,
-                                                  extend.base = 10000,
-                                                  ...,
-                                                  bait_col = "red",
-                                                  oe_col = "DeepSkyBlue3",
-                                                  default_col = "grey",
-                                                  vjust = NULL,
-                                                  linejoin = "mitre",
-                                                  na.rm = FALSE,
-                                                  minimal_width = 0.01,
-                                                  show.legend = NA,
-                                                  inherit.aes = TRUE,
-                                                  link_plot_on_top = FALSE,
-                                                  arrow.size = 0.05, remove_x_axis = FALSE,
-                                                  plot.height = 0.4, plot.space = 0.1,
-                                                  log.scale = TRUE) {
+                                                   showOE = NULL,
+                                                   x.range = NULL,
+                                                   score.col = "count",
+                                                   show.rect = TRUE,
+                                                   extend.base = 10000,
+                                                   ...,
+                                                   bait_col = "red",
+                                                   oe_col = "DeepSkyBlue3",
+                                                   default_col = "grey",
+                                                   vjust = NULL,
+                                                   linejoin = "mitre",
+                                                   na.rm = FALSE,
+                                                   minimal_width = 0.01,
+                                                   show.legend = NA,
+                                                   inherit.aes = TRUE,
+                                                   link_plot_on_top = FALSE,
+                                                   arrow.size = 0.05, remove_x_axis = FALSE,
+                                                   plot.height = 0.4, plot.space = 0.1,
+                                                   log.scale = TRUE) {
   # Get the bait and oe plots
   plot_oe <- plot_bait <- NULL
-  
+
   # Extract bait and OE regions
   bait_regions <- regionsBait(linkset)
   if (is.null(bait_regions)) {
@@ -406,7 +408,7 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
     names(bait_regions) <- unique_baits
   }
   bait_ids <- seq_along(bait_regions)
-  
+
   # If showBait or showOE are provided, filter the linkSet
   if (!is.null(showBait)) {
     if (is.character(showBait)) {
@@ -423,17 +425,17 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       stop("showBait must be a character or numeric vector")
     }
   }
-  
+
   # Get the regions in these bait IDs
   bait_regions_subset <- bait_regions[bait_ids]
-  
+
   # Function to create range plot
   create_range_plot <- function(gr, x.range = NULL, region_color, title = NULL) {
     # Calculate mid point of each range
     start_pos <- GenomicRanges::start(gr)
     end_pos <- GenomicRanges::end(gr)
     mid_pos <- (start_pos + end_pos) / 2
-    
+
     # Determine x-axis range
     if (is.null(x.range)) {
       min_pos <- min(start_pos) - extend.base
@@ -442,7 +444,7 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       min_pos <- x.range[1]
       max_pos <- x.range[2]
     }
-    
+
     # Create data frame for plotting
     plot_data <- data.frame(
       chromosome = as.character(GenomicRanges::seqnames(gr)),
@@ -450,57 +452,61 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       end = end_pos,
       name = if (is.null(names(gr))) paste0("region_", seq_along(gr)) else names(gr)
     )
-    
+
     # Check if there's only one chromosome
     unique_chromosomes <- unique(plot_data$chromosome)
     if (length(unique_chromosomes) > 1) {
       warning("Multiple chromosomes detected. Using the first chromosome for plotting.")
       plot_data <- plot_data[plot_data$chromosome == unique_chromosomes[1], ]
     }
-    
-    # Create ggplot  
+
+    # Create ggplot
     p <- ggplot(plot_data, aes_string(xmin = "start", xmax = "end", ymin = -0.1, ymax = 0.1)) +
       geomRange(color = region_color, size = 3) +
-      scale_x_continuous(limits = c(min_pos, max_pos), 
-                         labels = function(x) paste0(x / 1000, "kb"),
-                         expand = ggplot2::expansion(mult = 0.01)) +
+      scale_x_continuous(
+        limits = c(min_pos, max_pos),
+        labels = function(x) paste0(x / 1000, "kb"),
+        expand = ggplot2::expansion(mult = 0.01)
+      ) +
       themeRange(x.range = c(min_pos, max_pos), show.rect = TRUE) +
       labs(title = title, x = "Position", y = "")
-    
+
     if (remove_x_axis) {
-      p <- p + theme(axis.text.x = element_blank(),
-                     axis.ticks.x = element_blank())
+      p <- p + theme(
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()
+      )
     }
-    
+
     return(p)
   }
-  
+
   # Create bait plot
   plot_bait <- create_range_plot(bait_regions_subset, x.range, bait_col, "Bait Regions")
-  
+
   # Process links
   if (!is.null(showBait)) {
     linkset_subset <- linkset[anchor1(linkset) %in% bait_ids]
   } else {
     linkset_subset <- linkset
   }
-  
+
   # If showOE is provided, further filter
   if (!is.null(showOE)) {
     # Implement logic to filter by OE regions
     # This would depend on how OE regions are identified in your linkSet
   }
-  
+
   # Get interaction data
   if (length(linkset_subset) == 0) {
     warning("No interactions to plot")
     return(NULL)
   }
-  
+
   # Check if anchor indices are valid
   anchor1_indices <- anchor1(linkset_subset)
   anchor2_indices <- anchor2(linkset_subset)
-  
+
   # For mock bait regions, map bait names to indices
   if (is.null(regionsBait(linkset))) {
     bait_names <- bait(linkset_subset)
@@ -510,14 +516,14 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       anchor1_indices[is.na(anchor1_indices)] <- 1
     }
   }
-  
+
   # Validate anchor1_indices are within bounds
   valid_anchor1 <- anchor1_indices >= 1 & anchor1_indices <= length(bait_regions)
   if (!all(valid_anchor1)) {
     warning("Some anchor1 indices are out of bounds, using first bait region as fallback")
     anchor1_indices[!valid_anchor1] <- 1
   }
-  
+
   # Validate anchor2_indices are within bounds
   valid_anchor2 <- anchor2_indices >= 1 & anchor2_indices <= length(regions(linkset_subset))
   if (!all(valid_anchor2)) {
@@ -532,15 +538,15 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
     anchor2_indices <- anchor2_indices[valid_interactions]
     linkset_subset <- linkset_subset[valid_interactions]
   }
-  
-  anchor1_pos <- GenomicRanges::start(bait_regions[anchor1_indices]) + 
-                  (GenomicRanges::end(bait_regions[anchor1_indices]) - 
-                     GenomicRanges::start(bait_regions[anchor1_indices])) / 2
-  
-  anchor2_pos <- GenomicRanges::start(regions(linkset_subset)[anchor2_indices]) + 
-                  (GenomicRanges::end(regions(linkset_subset)[anchor2_indices]) - 
-                     GenomicRanges::start(regions(linkset_subset)[anchor2_indices])) / 2
-  
+
+  anchor1_pos <- GenomicRanges::start(bait_regions[anchor1_indices]) +
+    (GenomicRanges::end(bait_regions[anchor1_indices]) -
+      GenomicRanges::start(bait_regions[anchor1_indices])) / 2
+
+  anchor2_pos <- GenomicRanges::start(regions(linkset_subset)[anchor2_indices]) +
+    (GenomicRanges::end(regions(linkset_subset)[anchor2_indices]) -
+      GenomicRanges::start(regions(linkset_subset)[anchor2_indices])) / 2
+
   # Create link data frame
   link_data <- data.frame(
     x = anchor1_pos,
@@ -548,19 +554,19 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
     xend = anchor2_pos,
     yend = rep(1, length(anchor2_pos))
   )
-  
+
   # Add score column if available
   if (score.col %in% colnames(mcols(linkset_subset))) {
     link_data$score <- mcols(linkset_subset)[[score.col]]
-    
+
     # Log transform if requested
     if (log.scale && any(link_data$score > 0)) {
       link_data$score[link_data$score > 0] <- log10(link_data$score[link_data$score > 0])
     }
   } else {
-    link_data$score <- 1  # Default score
+    link_data$score <- 1 # Default score
   }
-  
+
   # Create link plot
   if (link_plot_on_top) {
     link_plot <- ggplot(link_data, aes_string(x = "x", y = "y", xend = "xend", yend = "yend", color = "score")) +
@@ -568,65 +574,67 @@ setMethod("plotGenomicRanges", "linkSet", function(linkset, showBait = NULL,
       scale_color_gradientn(colors = c("#FDE725FF", "#5DC863FF", "#21908CFF", "#3B528BFF", "#440154FF")) +
       theme_void() +
       coord_cartesian(xlim = c(min(link_data$x, link_data$xend), max(link_data$x, link_data$xend)))
-    
+
     # Combine plots with patchwork
-    final_plot <- plot_bait + link_plot + 
+    final_plot <- plot_bait + link_plot +
       plot_layout(heights = c(plot.height, 1 - plot.height - plot.space))
   } else {
     # Logic for when links are not on top
     # You can implement this based on your requirements
     final_plot <- plot_bait
   }
-  
+
   return(final_plot)
 })
 
 #' @rdname plotGenomicRanges
 #' @export
 setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
-                                                    showOE = NULL,
-                                                    x.range = NULL,
-                                                    score.col = "count",
-                                                    show.rect = TRUE,
-                                                    extend.base = 10000,
-                                                    ...,
-                                                    bait_col = "red",
-                                                    oe_col = "DeepSkyBlue3",
-                                                    default_col = "grey",
-                                                    vjust = NULL,
-                                                    linejoin = "mitre",
-                                                    na.rm = FALSE,
-                                                    minimal_width = 0.01,
-                                                    show.legend = NA,
-                                                    inherit.aes = TRUE,
-                                                    link_plot_on_top = FALSE,
-                                                    arrow.size = 0.05, remove_x_axis = FALSE,
-                                                    plot.height = 0.4, plot.space = 0.1,
-                                                    log.scale = TRUE) {
+                                                     showOE = NULL,
+                                                     x.range = NULL,
+                                                     score.col = "count",
+                                                     show.rect = TRUE,
+                                                     extend.base = 10000,
+                                                     ...,
+                                                     bait_col = "red",
+                                                     oe_col = "DeepSkyBlue3",
+                                                     default_col = "grey",
+                                                     vjust = NULL,
+                                                     linejoin = "mitre",
+                                                     na.rm = FALSE,
+                                                     minimal_width = 0.01,
+                                                     show.legend = NA,
+                                                     inherit.aes = TRUE,
+                                                     link_plot_on_top = FALSE,
+                                                     arrow.size = 0.05, remove_x_axis = FALSE,
+                                                     plot.height = 0.4, plot.space = 0.1,
+                                                     log.scale = TRUE) {
   # Call the new function for backward compatibility
-  plotGenomicRanges(linkset = linkset, 
-                   showBait = showBait, 
-                   showOE = showOE,
-                   x.range = x.range,
-                   score.col = score.col,
-                   show.rect = show.rect,
-                   extend.base = extend.base,
-                   ...,
-                   bait_col = bait_col,
-                   oe_col = oe_col,
-                   default_col = default_col,
-                   vjust = vjust,
-                   linejoin = linejoin,
-                   na.rm = na.rm,
-                   minimal_width = minimal_width,
-                   show.legend = show.legend,
-                   inherit.aes = inherit.aes,
-                   link_plot_on_top = link_plot_on_top,
-                   arrow.size = arrow.size,
-                   remove_x_axis = remove_x_axis,
-                   plot.height = plot.height,
-                   plot.space = plot.space,
-                   log.scale = log.scale)
+  plotGenomicRanges(
+    linkset = linkset,
+    showBait = showBait,
+    showOE = showOE,
+    x.range = x.range,
+    score.col = score.col,
+    show.rect = show.rect,
+    extend.base = extend.base,
+    ...,
+    bait_col = bait_col,
+    oe_col = oe_col,
+    default_col = default_col,
+    vjust = vjust,
+    linejoin = linejoin,
+    na.rm = na.rm,
+    minimal_width = minimal_width,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    link_plot_on_top = link_plot_on_top,
+    arrow.size = arrow.size,
+    remove_x_axis = remove_x_axis,
+    plot.height = plot.height,
+    plot.space = plot.space,
+    log.scale = log.scale
+  )
 })
 
 #' Extract data from linkSet for plotting
@@ -634,10 +642,10 @@ setMethod("plot_genomic_ranges", "linkSet", function(linkset, showBait = NULL,
 #' @param linkset A linkSet object
 #' @return A data.frame with extracted data
 #' Extract data from linkSet object
-#' 
+#'
 #' @description
 #' Extract data from linkSet object for plotting
-#' 
+#'
 #' @param linkset A linkSet object
 #' @keywords internal
 #' @noRd
@@ -646,17 +654,17 @@ extractDataFromLinkset <- function(linkset) {
   # Extract regions
   regions_data <- as.data.frame(regions(linkset))
   regions_data$type <- "region"
-  
+
   # Extract bait regions
   bait_regions_data <- as.data.frame(regionsBait(linkset))
   bait_regions_data$type <- "bait"
-  
+
   # Combine all data
   all_data <- rbind(regions_data, bait_regions_data)
-  
+
   # Add unique identifiers
   all_data$id <- seq_len(nrow(all_data))
-  
+
   return(all_data)
 }
 
@@ -682,7 +690,7 @@ themeLinkset <- function(x.range, margin.len, show.rect) {
       axis.ticks.y = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(t = margin.len, r = margin.len, b = margin.len, l = margin.len)
     )
-  
+
   return(theme)
 }
 
@@ -706,7 +714,7 @@ themeRange <- function(x.range, show.rect) {
       axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 5)),
       axis.ticks.y = ggplot2::element_blank()
     )
-  
+
   return(theme)
 }
 
@@ -733,11 +741,10 @@ themeRange <- function(x.range, show.rect) {
 #' @param ... Additional plotting parameters
 #' @return A ggplot object
 #' @export
-plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, baits = NULL, plotBaitNames = TRUE, 
+plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, baits = NULL, plotBaitNames = TRUE,
                       plevel1 = 5, plevel2 = 3, outfile = NULL,
-                      width = 20, height = 20, extend.base = 1e6, bgCol = "black", lev2Col = "blue", 
+                      width = 20, height = 20, extend.base = 1e6, bgCol = "black", lev2Col = "blue",
                       lev1Col = "red", ...) {
-
   if (!is(linkset, "linkSet")) {
     stop("Input must be a linkSet object")
   }
@@ -746,22 +753,22 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
   } else {
     n <- length(baits)
   }
-  
+
   # Pre-compute color vector
   color_vector <- c(bgCol, lev2Col, lev1Col)
-  
+
   plot_list <- vector("list", n)
-  
+
   for (i in seq_len(n)) {
     bait <- baits[i]
     this <- subsetBait(linkset, bait)
-    
+
     if (!is.null(extend.base)) {
       baitGr <- regionsBait(this)
-      baitGr<- unique(baitGr)
+      baitGr <- unique(baitGr)
       new_start <- max(0, start(baitGr) - extend.base)
       new_end <- end(baitGr) + extend.base
-      
+
       expandGr <- GRanges(
         seqnames = seqnames(baitGr),
         ranges = IRanges(start = new_start, end = new_end),
@@ -777,12 +784,13 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
     plotDf <- as.data.frame(this)
     plotDf$oe_middle <- start(oe(this)) + (end(oe(this)) - start(oe(this))) / 2
     bait_middle <- start(baitGr) + (end(baitGr) - start(baitGr)) / 2
-    
+
     # Compute color factor
-    plotDf$color_factor <- cut(plotDf[[scoreCol]], 
-                               breaks = c(-Inf, plevel2, plevel1, Inf), 
-                               labels = c(1, 2, 3))
-    
+    plotDf$color_factor <- cut(plotDf[[scoreCol]],
+      breaks = c(-Inf, plevel2, plevel1, Inf),
+      labels = c(1, 2, 3)
+    )
+
     title <- if (plotBaitNames) {
       baitName <- bait
       if (grepl(",", baitName)) {
@@ -792,15 +800,17 @@ plotBaits <- function(linkset, scoreCol = "score", countCol = "count", n = 4, ba
     } else {
       as.character(bait)
     }
-    p <- ggplot2::ggplot(plotDf, 
-                         ggplot2::aes(x = .data$oe_middle, y = .data[[countCol]], color = .data$color_factor)) +
+    p <- ggplot2::ggplot(
+      plotDf,
+      ggplot2::aes(x = .data$oe_middle, y = .data[[countCol]], color = .data$color_factor)
+    ) +
       ggplot2::geom_point() +
       ggplot2::geom_vline(xintercept = bait_middle, color = "grey", linetype = "dashed") +
       ggplot2::labs(title = title, x = "Distance from viewpoint", y = countCol) +
       ggplot2::theme_minimal() +
       ggplot2::scale_y_continuous(limits = c(0, NA)) +
       ggplot2::scale_color_manual(values = color_vector, guide = "none")
-    
+
     plot_list[[i]] <- p
   }
 

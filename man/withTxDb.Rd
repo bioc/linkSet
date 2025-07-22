@@ -26,7 +26,7 @@ Executes a database operation while managing the connection lifecycle automatica
 Execute Database Operation with Automatic Connection Management
 }
 \examples{
-\dontrun{
+\donttest{
 # Example 1: Get genes from hg38
 result <- withTxDb("hg38", function(src) {
   genes <- Organism.dplyr::genes(src)

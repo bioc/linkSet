@@ -8,7 +8,7 @@ test_that("resizeRegions works correctly", {
   # Test resizing only bait region
   result_bait <- resizeRegions(ls, width = 75, fix = "start", region = "bait")
   expect_equal(width(regionsBait(result_bait)), rep(75, 3))
-  expect_equal(width(oe(result_bait)), c(50, 50,50))
+  expect_equal(width(oe(result_bait)), c(50, 50, 50))
 
   # Test resizing only oe region
   result_oe <- resizeRegions(ls, width = 60, fix = "end", region = "oe")

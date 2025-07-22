@@ -132,8 +132,9 @@ knitr::include_graphics("img/linkSetImport.png")
 
 To construct a `linkSet` object from GRanges objects:
 ```{r installation, eval = FALSE}
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 ```
 
 
@@ -142,16 +143,19 @@ suppressPackageStartupMessages(library(linkSet))
 ```
 ```{r construct-from-granges}
 library(GenomicRanges)
-gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
-              ranges = IRanges(start = c(1, 100, 200), width = 10),
-              strand = "+", symbol = c("Gene1", "Gene2", "Gene3"))
-gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr2"),
-              ranges = IRanges(start = c(50, 150, 250), width = 10),
-              strand = "+")
+gr1 <- GRanges(
+  seqnames = c("chr1", "chr1", "chr2"),
+  ranges = IRanges(start = c(1, 100, 200), width = 10),
+  strand = "+", symbol = c("Gene1", "Gene2", "Gene3")
+)
+gr2 <- GRanges(
+  seqnames = c("chr1", "chr2", "chr2"),
+  ranges = IRanges(start = c(50, 150, 250), width = 10),
+  strand = "+"
+)
 ## construct linkSet
 linkObj <- linkSet(gr1, gr2, specificCol = "symbol")
 linkObj
-
 ```
 
 ## Construction from GInteractions
@@ -165,11 +169,11 @@ gi <- GInteractions(
   regions = GRanges(
     seqnames = c("chr1", "chr1", "chr2", "chr2", "chr3", "chr3"),
     ranges = IRanges(start = c(1, 50, 100, 150, 200, 250), width = 10)
-    )
   )
+)
 mcols(gi)$score <- c(0.1, 0.2, 0.3)
 mcols(gi)$gene <- c("Sox2", "Sox9", "Sox10")
-##Convert to linkSet
+## Convert to linkSet
 linkObj_from_gi <- Convert(gi, baitCol = "gene")
 linkObj_from_gi
 ```
@@ -192,7 +196,6 @@ peakGr <- GRanges(
 linkObj_from_gi_2 <- baitGInteractions(gi, geneGr, peakGr, geneSymbol = "symbol")
 
 linkObj_from_gi_2
-
 ```
 
 ## Other construction methods
@@ -222,22 +225,22 @@ The important elements of the `linkSet` object can be easily accessed by the fol
 - `regionsOe(x)`: Get the other end regions of the `linkSet` object.
 - `mcols(x)`: Get the metadata of the `linkSet` object.
 
-```{r}
+```{r get-regions}
 linkSet::regions(linkObj)
 ```
 
-```{r}
+```{r get-regions-bait}
 regionsBait(linkObj)
 ```
 
-```{r}
+```{r get-oe}
 oe(linkObj)
 ```
 
-```{r}
+```{r get-bait}
 bait(linkObj)
 ```
-```{r}
+```{r get-mcols}
 mcols(linkObj)
 ```
 
@@ -245,8 +248,8 @@ mcols(linkObj)
 ## Setters
 Wait... You set wrong bait or oe region? You can also change it easily:
 
-```{r}
-new_bait <- c("Gene40","Gene41","Gene42")
+```{r set-new-bait-oe}
+new_bait <- c("Gene40", "Gene41", "Gene42")
 new_oe <- GRanges(
   seqnames = c("chr1", "chr2", "chr3"),
   ranges = IRanges(start = c(5, 105, 205), width = 20),
@@ -260,13 +263,13 @@ linkObj
 
 ## Subsetting and concatenation
 LinkSet object can be easily subsetted by index.
-```{r}
+```{r subset-by-index}
 linkset_sub <- linkObj[1:2]
 linkset_sub
 ```
 
 If you are interested in a specific gene or region, you can subset the `linkSet` object by the bait or oe region.
-```{r}
+```{r subset-by-bait}
 linkset_sub_2 <- subsetBait(linkObj, "Gene1")
 linkset_sub_2
 linkset_sub_3 <- subsetBaitRegion(linkObj, "chr1:100-200")
@@ -274,7 +277,7 @@ linkset_sub_3
 ```
 
 You can also concatenate two `linkSet` objects.
-```{r}
+```{r concatenate-linksets}
 linkset_concat <- c(linkObj, linkObj)
 linkset_concat
 ```
@@ -283,7 +286,7 @@ linkset_concat
 The features of linkSet is inherited from GRanges, which means you can use all the functions in GRanges to manipulate the linkSet object.
 The most wonderful things is that you can change the bait region and oe region separately.
 
-```{r}
+```{r resize-regions}
 data(linkExample)
 linkExample
 
@@ -298,14 +301,14 @@ resize_oe
 
 The `reduce` method allows the `linkSet` objects to be collapsed across the whole of the `linkSet` object. 
 
-```{r}
+```{r reduce-linkset}
 reduce_linkset <- reduce(linkset_concat)
 reduce_linkset
 ```
 By default, we will collapse the duplicate interactions, and count the interactions and store in the metadata columns.
 You can also choose not to count the interactions by set `countInteractions = FALSE`.
 
-```{r}
+```{r reduce-no-count}
 reduce_linkset_2 <- linkSet::reduceRegions(linkset_concat, countInteractions = FALSE)
 reduce_linkset_2
 ```
@@ -317,17 +320,17 @@ There are two metrics to diagnose the quality of the `linkSet` object:
 
 The `diagnose` function can help you to diagnose the `linkSet` object.
 
-```{r}
+```{r diagnose-linkset}
 diagnoseLinkSet(linkExample)
 ```
 
-```{r}
+```{r show-linkset-concat}
 linkset_concat
 ```
 The annotated distance and interaction type is shown in the `distance` and `inter_type` column.
 
 You can remove the intrachromosomal interactions by:
-```{r}
+```{r filter-intra}
 linkset_concat <- filterLinks(linkset_concat, filter_intra = TRUE)
 linkset_concat
 ```
@@ -337,32 +340,36 @@ linkset_concat
 It might be common that you only have the bait name, but don't have the exact bait region.
 The annotation function can help you to annotate the bait region from a gene annotation.
 
-```{r}
-gr1 <- GRanges(seqnames = c("chr1", "chr3", "chr3"),
-               ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
-               strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT"))
-gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr3"),
-               ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
-               strand = "+")
+```{r annotate-promoter}
+gr1 <- GRanges(
+  seqnames = c("chr1", "chr3", "chr3"),
+  ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+  strand = "+", symbol = c("BRCA1", "TP53", "NONEXISTENT")
+)
+gr2 <- GRanges(
+  seqnames = c("chr1", "chr2", "chr3"),
+  ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+  strand = "+"
+)
 linkObj <- linkSet(gr1, gr2, specificCol = "symbol")
 
 # Test annotatePromoter
-annotated_linkset <- suppressWarnings(annotatePromoter(linkObj, genome = "hg38", upstream = 500,overwrite = TRUE))
+annotated_linkset <- suppressWarnings(annotatePromoter(linkObj, genome = "hg38", upstream = 500, overwrite = TRUE))
 annotated_linkset
 ```
 
 ## Statistical analysis
 Functional enhancers usually regulate multiple genes, we can use cross gene analysis to identify the cross gene enhancers.
 
-```{r}
+```{r cross-gene-enhancer}
 annotated_linkset <- crossGeneEnhancer(annotated_linkset)
-annotated_linkset <- orderLinks(annotated_linkset,by = "crossFreq",decreasing = TRUE)
+annotated_linkset <- orderLinks(annotated_linkset, by = "crossFreq", decreasing = TRUE)
 annotated_linkset
 ```
 
 linkSet also implement the [`CHiCANE` analysis](https://www.nature.com/articles/s41596-021-00498-1), which can identifying the high-confidence interactions.
 **CHiCANE** needs to count interactibility and dist before running the statistical test.
-```{r}
+```{r chicane-analysis}
 annotated_linkset <- countInteractibility(annotated_linkset)
 annotated_linkset <- linkSet::pairdist(annotated_linkset)
 annotated_linkset <- run_chicane(annotated_linkset)
@@ -383,11 +390,11 @@ plot_genomic_ranges(linkExample, extend.base = 10)
 
 You can adjust the range of the views.
 ```{r, eval=FALSE}
-# Note: visualization requires annotated bait regions  
-plot_genomic_ranges(linkExample, extend.base = 10, x.range = c(50,200))
+# Note: visualization requires annotated bait regions
+plot_genomic_ranges(linkExample, extend.base = 10, x.range = c(50, 200))
 ```
 
 ## Session Information
-```{r}
+```{r session-info}
 sessionInfo()
 ```

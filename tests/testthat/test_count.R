@@ -1,11 +1,15 @@
 test_that("countInteractions works correctly", {
   # Create a sample linkSet object
-  gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
-                 ranges = IRanges(start = c(1, 100, 200, 300), width = 10),
-                 strand = "+", symbol = c("Gene1", "Gene2", "Gene3", "Gene4"))
-  gr2 <- GRanges(seqnames = c("chr1", "chr1", "chr2", "chr2"),
-                 ranges = IRanges(start = c(50, 150, 250, 350), width = 10),
-                 strand = "+")
+  gr1 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2", "chr2"),
+    ranges = IRanges(start = c(1, 100, 200, 300), width = 10),
+    strand = "+", symbol = c("Gene1", "Gene2", "Gene3", "Gene4")
+  )
+  gr2 <- GRanges(
+    seqnames = c("chr1", "chr1", "chr2", "chr2"),
+    ranges = IRanges(start = c(50, 150, 250, 350), width = 10),
+    strand = "+"
+  )
   ls <- linkSet(gr1, gr2, specificCol = "symbol")
 
   # Duplicate some interactions
@@ -65,11 +69,11 @@ test_that("filterLinks works correctly", {
 
   # Test filtering intrachromosomal interactions
   result_intra <- filterLinks(ls, filter_intra = TRUE, filter_unannotate = FALSE, distance = NULL)
-  expect_equal(length(result_intra), 2)  # Should keep only inter-chromosomal interactions
+  expect_equal(length(result_intra), 2) # Should keep only inter-chromosomal interactions
 
   # Test filtering unannotated interactions
   result_unannotate <- filterLinks(ls, filter_intra = FALSE, filter_unannotate = TRUE, distance = NULL)
-  expect_equal(length(result_unannotate), 4)  # Should remove the chrNULL interaction
+  expect_equal(length(result_unannotate), 4) # Should remove the chrNULL interaction
 
   # Test filtering by distance
   result_distance <- filterLinks(ls, filter_intra = FALSE, filter_unannotate = FALSE, distance = 100)
@@ -88,7 +92,6 @@ test_that("filterLinks works correctly", {
 })
 
 test_that("filterLinks handles edge cases", {
-
   # Create a linkSet with only intrachromosomal interactions
   gr1 <- GRanges(
     seqnames = c("chr1", "chr1"),
