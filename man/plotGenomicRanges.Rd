@@ -140,3 +140,23 @@ Creates a visualization of genomic ranges and interactions from a linkSet object
 \details{
 Plot Genomic Ranges from linkSet Object
 }
+\examples{
+# Create example linkSet object
+library(GenomicRanges)
+gr1 <- GRanges(seqnames = c("chr1", "chr1", "chr2"),
+               ranges = IRanges(start = c(1000, 2000, 3000), width = 100),
+               strand = "+", symbol = c("Gene1", "Gene2", "Gene3"))
+gr2 <- GRanges(seqnames = c("chr1", "chr2", "chr2"),
+               ranges = IRanges(start = c(5000, 6000, 7000), width = 100),
+               strand = "+")
+linkset_obj <- linkSet(gr1, gr2, specificCol = "symbol")
+
+# Add count metadata for plotting
+mcols(linkset_obj)$count <- c(10, 25, 15)
+
+# Plot genomic ranges (requires annotated bait regions)
+\donttest{
+# Note: This requires regionsBait to be annotated
+# plotGenomicRanges(linkset_obj, extend.base = 1000)
+}
+}

@@ -382,14 +382,14 @@ annotated_linkset
 With `plot_genomic_ranges` function, you can visualize the link between bait and oe region.
 
 You can choose the oe-centric views to visualize the functional enhancer which regulate multiple genes.
-```{r, eval=FALSE}
+```{r plot-genomic-ranges, eval=FALSE}
 # Note: visualization requires annotated bait regions
 # linkExample doesn't have regionsBait annotated, so this will be skipped
 plot_genomic_ranges(linkExample, extend.base = 10)
 ```
 
 You can adjust the range of the views.
-```{r, eval=FALSE}
+```{r plot-genomic-ranges-custom, eval=FALSE}
 # Note: visualization requires annotated bait regions
 plot_genomic_ranges(linkExample, extend.base = 10, x.range = c(50, 200))
 ```

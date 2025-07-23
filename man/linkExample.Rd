@@ -34,6 +34,9 @@ The dataset represents simulated chromatin interactions between regulatory eleme
 and promoters across several chromosomes. It includes interaction counts, genomic coordinates
 for both anchors of the interactions, and associated metadata.
 }
+\value{
+A linkSet object containing example genomic interactions. When loaded with \code{data(linkExample)}, it provides a linkSet object with simulated chromatin interactions for demonstration and testing purposes.
+}
 \examples{
 data(linkExample)
 show(linkExample)

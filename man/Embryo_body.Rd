@@ -27,14 +27,17 @@ Embryo_body
   specifically from the embryo body, and processed to identify regulatory elements.
   The original data were processed to create this example dataset for demonstration purposes.
 }
+\value{
+This is a data object. When loaded with \code{data(Embryo_body)}, it provides access to the file path of the compressed BED file containing embryo body genomic regions.
+}
 \examples{
   # Get the file path
   file_path <- system.file("extdata", "Embryo_body.bed.gz", package = "linkSet")
-  
+
   # Read the file
   if (file.exists(file_path)) {
-    embryo_data <- read.table(gzfile(file_path), 
-                             header = FALSE, 
+    embryo_data <- read.table(gzfile(file_path),
+                             header = FALSE,
                              sep = "\t",
                              stringsAsFactors = FALSE)
     head(embryo_data)

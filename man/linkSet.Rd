@@ -25,6 +25,9 @@ other regulatory elements).
 and intra-chromosomal interactions.
 }
 }
+\value{
+This is package documentation. The linkSet package provides classes and methods for working with genomic interaction data. See the individual function documentation for specific return values.
+}
 \examples{
 data(linkExample)
 linkExample
